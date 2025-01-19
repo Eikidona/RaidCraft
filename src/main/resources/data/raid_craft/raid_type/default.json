@@ -1,0 +1,14 @@
+{
+  "raidDisplay": "raid.raid_craft.raid",
+  "winDisplay": "raid.raid_craft.raid.win",
+  "loseDisplay": "raid.raid_craft.raid.lose",
+  "color": "red",
+  "overlay": "notched_10",
+  "raiders": [
+    {
+      "raider_type": "raid_craft:default",
+      "weight": 5,
+      "strength": 5
+    }
+  ]
+}

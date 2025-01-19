@@ -9,7 +9,6 @@ public class Registries {
 	public static final ResourceLocation DEFAULT_KEY = new ResourceLocation(RaidCraft.MODID, "empty");
 	
 	public static void register(IEventBus bus){
-		RaidTypes.register(bus);
-		RaiderTypes.register(bus);
+	
 	}
 }

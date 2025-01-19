@@ -28,9 +28,9 @@ public class WeightEntry<T> implements IWeightEntry<T> {
 	}
 	
 	// 使用泛型方法来创建Codec，避免使用具体的类型
-	public static <T> Codec<WeightEntry<T>> createCodec(Codec<T> elementCodec) {
+	public static <T> Codec<WeightEntry<T>> createCodec(Codec<T> elementCodec, String field) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				elementCodec.fieldOf("element").forGetter(WeightEntry::get),
+				elementCodec.fieldOf(field).forGetter(WeightEntry::get),
 				Codec.INT.fieldOf("weight").forGetter(WeightEntry::getWeight)
 		).apply(instance, WeightEntry::new));
 	}

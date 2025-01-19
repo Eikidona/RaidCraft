@@ -1,6 +1,5 @@
 package com.forget_melody.raid_craft;
 
-import com.forget_melody.raid_craft.registries.RaidTypes;
 import com.forget_melody.raid_craft.registries.Registries;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -19,7 +18,7 @@ public class RaidCraft
     
     public RaidCraft(FMLJavaModLoadingContext context)
     {
-        LOGGER.log(Level.INFO, "Mod RaidCraft 正在加载");
+//        LOGGER.log(Level.INFO, "Mod RaidCraft 正在加载");
         IEventBus bus = context.getModEventBus();
         Registries.register(bus);
     }

@@ -1,8 +1,9 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
-import com.forget_melody.raid_craft.IRaidType;
 import com.forget_melody.raid_craft.raid.Raid;
 import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.raid.raid_type.RaidType;
+import com.forget_melody.raid_craft.registries.api.RaidTypeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -68,7 +69,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	// 创建一个袭击
 	@Override
-	public Raid createRaid(BlockPos blockPos, IRaidType raidType) {
+	public Raid createRaid(BlockPos blockPos, RaidType raidType) {
 		Raid raid = getRaidAtPos(blockPos);
 		if (raid != null) {
 			return raid;
@@ -77,6 +78,17 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 			Raid raid1 = new Raid(id, level, blockPos, raidType);
 			raidMap.put(id, raid1);
 			return raid1;
+		}
+	}
+	
+	@Nullable
+	@Override
+	public Raid createRaid(BlockPos blockPos, ResourceLocation raidType) {
+		if(RaidTypeHelper.hasKey(raidType)){
+			return createRaid(blockPos, RaidTypeHelper.get(raidType));
+		}else {
+			RaidCraft.LOGGER.error("[RaidManager] Not found {} RaidType", raidType.toString());
+			return null;
 		}
 	}
 	

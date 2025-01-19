@@ -1,19 +1,25 @@
 package com.forget_melody.raid_craft.raid;
 
-import com.forget_melody.raid_craft.IRaidType;
 import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.api.event.raid.RaidComputeStrengthEvent;
+import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import com.forget_melody.raid_craft.raid.raider.RaiderType;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
 import com.forget_melody.raid_craft.capabilities.raider.api.RaiderHelper;
-import com.forget_melody.raid_craft.registries.RaidTypes;
+import com.forget_melody.raid_craft.registries.api.RaidTypeHelper;
 import com.forget_melody.raid_craft.utils.weight_table.WeightTable;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,6 +28,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -31,7 +39,7 @@ public class Raid {
 	private int id;
 	private ServerLevel level;
 	private BlockPos center;
-	private IRaidType raidType;
+	private RaidType raidType;
 	private ServerBossEvent bossEvent;
 	/**
 	 * Raider相关
@@ -40,7 +48,7 @@ public class Raid {
 	private Map<Integer, HashSet<Mob>> raiders = new HashMap<>();
 	private int waveSpawned = 0;
 	private int waveTotal = 3;
-	private WeightTable<IRaidType> raidTypeWeightTable;
+	private WeightTable<RaidType> raidTypeWeightTable;
 	/**
 	 * 数值状态
 	 */
@@ -58,7 +66,7 @@ public class Raid {
 	private boolean lose = false;
 	private boolean stopped = false;
 	
-	public Raid(int id, ServerLevel level, BlockPos blockPos, IRaidType raidType) {
+	public Raid(int id, ServerLevel level, BlockPos blockPos, RaidType raidType) {
 		this.id = id;
 		this.level = level;
 		this.center = blockPos;
@@ -74,7 +82,7 @@ public class Raid {
 		this.level = level;
 		this.id = tag.getInt("Id");
 		this.center = new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
-		this.raidType = RaidTypes.RAID_TYPE_REGISTRY.get().getValue(new ResourceLocation(tag.getString("RaidType")));
+		this.raidType = RaidTypeHelper.get(new ResourceLocation(tag.getString("RaidType")));
 		
 		this.bossEvent = new ServerBossEvent(this.raidType.getRaidDisplay(), this.raidType.getColor(), this.raidType.getOverlay());
 		// 设置可见性
@@ -228,8 +236,9 @@ public class Raid {
 			strength += 40;
 			this.waveTotal += 4;
 		}
-		strength += this.level.getCurrentDifficultyAt(this.getCenter()).getEffectiveDifficulty() * 10;
+		strength += (int) (this.level.getCurrentDifficultyAt(this.getCenter()).getEffectiveDifficulty() * 10);
 		this.strength = strength;
+		MinecraftForge.EVENT_BUS.post(new RaidComputeStrengthEvent(getLevel(), this));
 	}
 	
 	private void start() {
@@ -245,12 +254,14 @@ public class Raid {
 		this.bossEvent.setName(this.raidType.getWinDisplay());
 		this.bossEvent.setProgress(0.0F);
 		this.win = true;
+		this.playSound(center, raidType.getVictorySoundEvent());
 	}
 	
 	public void defeated() {
 		this.bossEvent.setName(this.raidType.getLoseDisplay());
 		this.bossEvent.setProgress(0.0F);
 		this.lose = true;
+		this.playSound(center, raidType.getDefeatSoundEvent());
 	}
 	
 	public void stop() {
@@ -442,6 +453,7 @@ public class Raid {
 				}
 			}
 		}
+		playSound(center, raidType.getWaveSoundEvent());
 	}
 	
 	@Nullable
@@ -486,6 +498,25 @@ public class Raid {
 		return tag;
 	}
 	
+	private void playSound(BlockPos pPos, Holder<SoundEvent> soundEvent) {
+		float pitch = 1.0F;
+		float volume = 64.0F;
+		long seed = level.random.nextLong();
+		
+		Collection<ServerPlayer> collection = bossEvent.getPlayers();
+		for (ServerPlayer serverplayer : level.players()) {
+			Vec3 vec3 = serverplayer.position();
+			Vec3 vec31 = Vec3.atCenterOf(pPos);
+			double d0 = Math.sqrt((vec31.x - vec3.x) * (vec31.x - vec3.x) + (vec31.z - vec3.z) * (vec31.z - vec3.z)); // 距离
+			double d1 = vec3.x + 13.0D / d0 * (vec31.x - vec3.x); // 偏移
+			double d2 = vec3.z + 13.0D / d0 * (vec31.z - vec3.z); // 偏移
+			if (d0 <= 64.0D || collection.contains(serverplayer)) {
+				serverplayer.connection.send(new ClientboundSoundPacket(soundEvent, SoundSource.NEUTRAL, d1, serverplayer.getY(), d2, volume, pitch, seed));
+			}
+		}
+		
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -498,7 +529,7 @@ public class Raid {
 		return center;
 	}
 	
-	public IRaidType getRaidType() {
+	public RaidType getRaidType() {
 		return raidType;
 	}
 	
@@ -560,5 +591,9 @@ public class Raid {
 	
 	public int getCelebrateTicks() {
 		return celebrateTicks;
+	}
+	
+	public void setStrength(int strength) {
+		this.strength = strength;
 	}
 }

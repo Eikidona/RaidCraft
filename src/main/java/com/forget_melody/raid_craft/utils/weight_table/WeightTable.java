@@ -1,5 +1,7 @@
 package com.forget_melody.raid_craft.utils.weight_table;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -8,23 +10,24 @@ import java.util.function.Predicate;
 
 public class WeightTable<T> {
 	
-	private final List<? extends IWeightEntry<T>> weightEntryList;
+	private final List<WeightEntry<T>> weightEntryList;
 	
-	public WeightTable(List<? extends IWeightEntry<T>> list) {
+	public WeightTable(List<WeightEntry<T>> list) {
 		this.weightEntryList = list;
 	}
 	
 	/**
 	 * 获取随机权重项
+	 *
 	 * @return 权重项
 	 */
 	@Nullable
-	public IWeightEntry<T> getEntry() {
+	public WeightEntry<T> getEntry() {
 		int totalWeight = getTotalWeight();
 		int randomWeight = (int) (Math.random() * totalWeight);
 		int cumulativeWeight = 0;
 		
-		for (IWeightEntry<T> entry : weightEntryList) {
+		for (WeightEntry<T> entry : weightEntryList) {
 			cumulativeWeight += entry.getWeight();
 			if (cumulativeWeight >= randomWeight) {
 				return entry;
@@ -36,6 +39,7 @@ public class WeightTable<T> {
 	
 	/**
 	 * 总权重
+	 *
 	 * @return 权重表的所有权重
 	 */
 	public int getTotalWeight() {
@@ -53,18 +57,28 @@ public class WeightTable<T> {
 	 * @return 新的权重表实例
 	 */
 	public WeightTable<T> filter(Predicate<T> predicate) {
-		List<? extends IWeightEntry<T>> filteredList = weightEntryList.stream()
-															.filter(entry -> predicate.test(entry.get()))
-															.toList();
+		List<WeightEntry<T>> filteredList = weightEntryList.stream()
+														   .filter(entry -> predicate.test(entry.get()))
+														   .toList();
 		return new WeightTable<>(filteredList);
 	}
 	
-	public List<? extends IWeightEntry<T>> getWeightEntryList() {
+	public List<WeightEntry<T>> getEntryList() {
 		return weightEntryList;
 	}
 	
+	public static <T> Codec<WeightTable<T>> createCodec(Codec<T> codec, String elementField, String listField) {
+		return RecordCodecBuilder.create(instance -> instance.group(
+				Codec.list(WeightEntry.createCodec(codec, elementField)).fieldOf(listField).forGetter(WeightTable::getEntryList)
+		).apply(instance, WeightTable::new));
+	}
+	
+	public static <T> WeightTable<T> of(List<WeightEntry<T>> list){
+		return new WeightTable<>(list);
+	}
+	
 	public static class Builder<T> {
-		private final List<IWeightEntry<T>> list = new ArrayList<>();
+		private final List<WeightEntry<T>> list = new ArrayList<>();
 		
 		public Builder() {
 		}
