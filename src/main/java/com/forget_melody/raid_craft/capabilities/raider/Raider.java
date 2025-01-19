@@ -1,30 +1,40 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
-import com.forget_melody.raid_craft.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import com.forget_melody.raid_craft.RaidCraft;
-import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.capabilities.raid_manager.RaidManager;
-import net.minecraft.core.Direction;
+import com.forget_melody.raid_craft.capabilities.raid_manager.api.RaidManagerHelper;
+import com.forget_melody.raid_craft.entity.ai.goal.InvadeHomeGoal;
+import com.forget_melody.raid_craft.entity.ai.goal.MoveTowardsRaidGoal;
+import com.forget_melody.raid_craft.entity.ai.goal.RaidOpenDoorGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	public static final ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raider");
-	public static final Raider EMPTY = new Raider(null);
 	
-	private Mob mob;
+	private final Mob mob;
 	private Raid raid;
 	private int wave;
 	
+	private final InvadeHomeGoal invadeHomeGoal;
+	private RaidOpenDoorGoal raidOpenDoorGoal;
+	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
+	
 	public Raider(Mob mob) {
 		this.mob = mob;
+		invadeHomeGoal = new InvadeHomeGoal(mob, 1.05F, 1);
+		moveTowardsRaidGoal = new MoveTowardsRaidGoal<>(mob);
+		if (GoalUtils.hasGroundPathNavigation(mob)) {
+			raidOpenDoorGoal = new RaidOpenDoorGoal(mob);
+		}
 	}
 	
 	@Override
@@ -41,6 +51,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	@Override
 	public void setRaid(Raid raid) {
 		this.raid = raid;
+		updateRaidGoals();
 	}
 	
 	@Override
@@ -55,7 +66,22 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	
 	@Override
 	public boolean hasActiveRaid() {
-		return raid == null ? false : raid.isStarted();
+		return raid != null && raid.isActive();
+	}
+	
+	@Override
+	public void updateRaidGoals() {
+		if (raid != null) {
+			if (raidOpenDoorGoal != null) {
+				mob.goalSelector.addGoal(2, raidOpenDoorGoal);
+			}
+			mob.goalSelector.addGoal(3, moveTowardsRaidGoal);
+			mob.goalSelector.addGoal(4, invadeHomeGoal);
+		} else {
+			mob.goalSelector.removeGoal(moveTowardsRaidGoal);
+			mob.goalSelector.removeGoal(invadeHomeGoal);
+			mob.goalSelector.removeGoal(raidOpenDoorGoal);
+		}
 	}
 	
 	@Override
@@ -70,39 +96,14 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
 		if (nbt.contains("Raid")) {
-			IRaidManager raidManager = mob.level().getCapability(Capabilities.RAID_MANAGER).orElse(RaidManager.EMPTY);
-			if (raidManager != RaidManager.EMPTY) {
-				this.raid = raidManager.getRaid(nbt.getInt("Raid"));
-			}
-			if (this.raid != null) {
-				this.raid.addWaveMob(this.wave, mob);
-			}
+			Optional<IRaidManager> optional = RaidManagerHelper.get((ServerLevel) mob.level());
+			optional.ifPresent(iRaidManager -> {
+				this.raid = iRaidManager.getRaid(nbt.getInt("Raid"));
+				if (this.raid != null) {
+					this.raid.addWaveMob(this.wave, mob);
+				}
+			});
+			updateRaidGoals();
 		}
 	}
-	
-	public static class Provider implements ICapabilitySerializable<CompoundTag> {
-		private IRaider raider;
-		private LazyOptional<IRaider> raiderLazyOptional;
-		
-		public Provider(Mob mob) {
-			raider = new Raider(mob);
-			raiderLazyOptional = LazyOptional.of(() -> raider);
-		}
-		
-		@Override
-		public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-			return Capabilities.RAIDER.orEmpty(cap, raiderLazyOptional);
-		}
-		
-		@Override
-		public CompoundTag serializeNBT() {
-			return raider.serializeNBT();
-		}
-		
-		@Override
-		public void deserializeNBT(CompoundTag nbt) {
-			raider.deserializeNBT(nbt);
-		}
-	}
-	
 }

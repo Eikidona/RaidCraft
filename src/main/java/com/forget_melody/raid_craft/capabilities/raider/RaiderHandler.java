@@ -1,6 +1,7 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.capabilities.Capabilities;
+import com.forget_melody.raid_craft.capabilities.raider.api.RaiderHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -10,12 +11,14 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Optional;
+
 @Mod.EventBusSubscriber
 public class RaiderHandler {
 	@SubscribeEvent
 	public static void addCapability(AttachCapabilitiesEvent<Entity> event) {
 		if(event.getObject() instanceof Mob){
-			event.addCapability(Raider.ID, new Raider.Provider((Mob) event.getObject()));
+			event.addCapability(Raider.ID, new RaiderProvider((Mob) event.getObject()));
 		}
 	}
 	// 测试
@@ -23,9 +26,9 @@ public class RaiderHandler {
 	public static void playerEntity(PlayerInteractEvent.EntityInteract event){
 		if(event.getHand() != InteractionHand.MAIN_HAND || event.getLevel().isClientSide()) return;
 		if(event.getTarget() instanceof  Mob){
-			IRaider raider =  event.getTarget().getCapability(Capabilities.RAIDER).orElse(Raider.EMPTY);
-			if(raider.getRaid() != null){
-				event.getEntity().sendSystemMessage(Component.literal("Raid %d".formatted(raider.getRaid().getId())));
+			Optional<IRaider> optional = RaiderHelper.getRaider(event.getTarget());
+			if(optional.isPresent() && optional.get().hasActiveRaid()){
+				event.getEntity().sendSystemMessage(Component.literal("Raid %d".formatted(optional.get().getRaid().getId())));
 			}else {
 				event.getEntity().sendSystemMessage(Component.literal("Raid is null"));
 			}

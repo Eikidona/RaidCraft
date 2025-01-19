@@ -1,30 +1,23 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
 import com.forget_melody.raid_craft.IRaidType;
-import com.forget_melody.raid_craft.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import com.forget_melody.raid_craft.RaidCraft;
-import com.forget_melody.raid_craft.capabilities.Capabilities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> {
-	public static final RaidManager EMPTY = new RaidManager(null);
 	public static ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raid_manager");
-	private ServerLevel level;
-	private HashMap<Integer, Raid> raidMap = new HashMap<>();
+	private final ServerLevel level;
+	private final HashMap<Integer, Raid> raidMap = new HashMap<>();
 	
 	public RaidManager(ServerLevel level) {
 		this.level = level;
@@ -75,10 +68,16 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	// 创建一个袭击
 	@Override
-	public void createRaid(ServerLevel level, BlockPos blockPos, IRaidType raidType) {
-		int id = raidMap.size();
-		Raid raid = new Raid(id, level, blockPos, raidType);
-		raidMap.put(id, raid);
+	public Raid createRaid(BlockPos blockPos, IRaidType raidType) {
+		Raid raid = getRaidAtPos(blockPos);
+		if (raid != null) {
+			return raid;
+		} else {
+			int id = raidMap.size();
+			Raid raid1 = new Raid(id, level, blockPos, raidType);
+			raidMap.put(id, raid1);
+			return raid1;
+		}
 	}
 	
 	@Override
@@ -92,7 +91,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		if(nbt.contains("Raids")){
+		if (nbt.contains("Raids")) {
 			nbt.getList("Raids", ListTag.TAG_COMPOUND)
 			   .forEach(tag -> {
 				   Raid raid = new Raid(level, (CompoundTag) tag);
@@ -102,28 +101,4 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	}
 	
 	
-	public static class Provider implements ICapabilitySerializable<CompoundTag> {
-		private IRaidManager raidManager;
-		private LazyOptional<IRaidManager> raidManagerLazyOptional;
-		
-		public Provider(ServerLevel level) {
-			raidManager = new RaidManager(level);
-			this.raidManagerLazyOptional = LazyOptional.of(() -> raidManager);
-		}
-		
-		@Override
-		public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-			return Capabilities.RAID_MANAGER.orEmpty(cap, raidManagerLazyOptional);
-		}
-		
-		@Override
-		public CompoundTag serializeNBT() {
-			return raidManager.serializeNBT();
-		}
-		
-		@Override
-		public void deserializeNBT(CompoundTag nbt) {
-			raidManager.deserializeNBT(nbt);
-		}
-	}
 }

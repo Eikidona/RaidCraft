@@ -8,16 +8,15 @@ import java.util.function.Predicate;
 
 public class WeightTable<T> {
 	
-	private final List<IWeightEntry<T>> weightEntryList;
+	private final List<? extends IWeightEntry<T>> weightEntryList;
 	
-	public WeightTable(List<IWeightEntry<T>> list) {
+	public WeightTable(List<? extends IWeightEntry<T>> list) {
 		this.weightEntryList = list;
 	}
 	
 	/**
 	 * 获取随机权重项
-	 *
-	 * @return
+	 * @return 权重项
 	 */
 	@Nullable
 	public IWeightEntry<T> getEntry() {
@@ -37,8 +36,7 @@ public class WeightTable<T> {
 	
 	/**
 	 * 总权重
-	 *
-	 * @return
+	 * @return 权重表的所有权重
 	 */
 	public int getTotalWeight() {
 		int totalWeight = 0;
@@ -51,14 +49,17 @@ public class WeightTable<T> {
 	/**
 	 * 过滤返回新权重表
 	 *
-	 * @param predicate
-	 * @return
+	 * @param predicate 过滤条件
+	 * @return 新的权重表实例
 	 */
 	public WeightTable<T> filter(Predicate<T> predicate) {
-		return new WeightTable<>(weightEntryList.stream().filter(entry -> predicate.test(entry.get())).toList());
+		List<? extends IWeightEntry<T>> filteredList = weightEntryList.stream()
+															.filter(entry -> predicate.test(entry.get()))
+															.toList();
+		return new WeightTable<>(filteredList);
 	}
 	
-	public List<IWeightEntry<T>> getWeightEntryList() {
+	public List<? extends IWeightEntry<T>> getWeightEntryList() {
 		return weightEntryList;
 	}
 	
@@ -66,15 +67,14 @@ public class WeightTable<T> {
 		private final List<IWeightEntry<T>> list = new ArrayList<>();
 		
 		public Builder() {
-		
 		}
 		
-		public Builder<T> add(T element, int weight){
+		public Builder<T> add(T element, int weight) {
 			list.add(WeightEntry.of(element, weight));
 			return this;
 		}
 		
-		public WeightTable<T> build(){
+		public WeightTable<T> build() {
 			return new WeightTable<>(list);
 		}
 		

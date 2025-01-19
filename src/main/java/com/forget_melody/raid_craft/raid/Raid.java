@@ -1,8 +1,11 @@
-package com.forget_melody.raid_craft;
+package com.forget_melody.raid_craft.raid;
 
+import com.forget_melody.raid_craft.IRaidType;
+import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.raid.raider.RaiderType;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.capabilities.raider.Raider;
+import com.forget_melody.raid_craft.capabilities.raider.api.RaiderHelper;
 import com.forget_melody.raid_craft.registries.RaidTypes;
 import com.forget_melody.raid_craft.utils.weight_table.WeightTable;
 import net.minecraft.core.BlockPos;
@@ -106,17 +109,23 @@ public class Raid {
 	 */
 	public void joinRaid(Mob mob) {
 		if (mob.getCapability(Capabilities.RAIDER).isPresent()) {
-			IRaider raider = mob.getCapability(Capabilities.RAIDER).orElse(Raider.EMPTY);
-			addWaveMob(waveSpawned, mob);
-			this.totalHealth += mob.getMaxHealth();
-			raider.setRaid(this);
-			raider.setWave(waveSpawned);
+			Optional<IRaider> optional = RaiderHelper.getRaider(mob);
+			optional.ifPresent(raider -> {
+				addWaveMob(waveSpawned, mob);
+				this.totalHealth += mob.getMaxHealth();
+				raider.setRaid(this);
+				raider.setWave(waveSpawned);
+			});
+			
 		}
 	}
 	
-	public void removeRaid(Mob mob, boolean outOfRaid){
-		IRaider raider = mob.getCapability(Capabilities.RAIDER).orElse(Raider.EMPTY);
-		removeWaveRaid(raider.getWave(), mob, outOfRaid);
+	public void removeRaid(Mob mob, boolean outOfRaid) {
+		Optional<IRaider> optional = RaiderHelper.getRaider(mob);
+		optional.ifPresent(raider -> {
+			removeWaveRaid(raider.getWave(), mob, outOfRaid);
+		});
+		
 	}
 	
 	public void addWaveMob(int wave, Mob mob) {
@@ -126,12 +135,15 @@ public class Raid {
 	
 	public void removeWaveRaid(int wave, Mob mob, boolean outOfRaid) {
 		this.raiders.get(wave).remove(mob);
-		IRaider raider = mob.getCapability(Capabilities.RAIDER).orElse(Raider.EMPTY);
-		raider.setRaid(null);
-		raider.setWave(null);
-		if (outOfRaid) {
-			this.totalHealth -= raider.get().getMaxHealth();
-		}
+		Optional<IRaider> optional = RaiderHelper.getRaider(mob);
+		optional.ifPresent(raider -> {
+			raider.setRaid(null);
+			raider.setWave(null);
+			if (outOfRaid) {
+				this.totalHealth -= raider.get().getMaxHealth();
+			}
+		});
+		
 	}
 	
 	/**
@@ -159,7 +171,7 @@ public class Raid {
 		Iterator<HashSet<Mob>> mobSets = this.raiders.values().iterator();
 		while (mobSets.hasNext()) {
 			Iterator<Mob> mobs = mobSets.next().iterator();
-			while (mobs.hasNext()){
+			while (mobs.hasNext()) {
 				Mob mob = mobs.next();
 				// 移除超出范围
 				if (mob.blockPosition().distSqr(this.center) >= RAID_REMOVAL_THRESHOLD_SQR) {
@@ -169,7 +181,7 @@ public class Raid {
 				/*
 				  @todo {也许应该使用Goal}
 				 */
-				
+
 //				// 导航实体
 //				else {
 //					if (mob.isAlive()) {
@@ -183,7 +195,7 @@ public class Raid {
 		}
 		
 		Iterator<Mob> removeMobs = set.iterator();
-		while (removeMobs.hasNext()){
+		while (removeMobs.hasNext()) {
 			Mob mob = removeMobs.next();
 			removeWaveRaid(waveSpawned, mob, true);
 		}
@@ -197,7 +209,7 @@ public class Raid {
 	private float getHealthOfAliveRaiders() {
 		float health = 0;
 		Iterator<Mob> mobs = getRaidersOfAlive().iterator();
-		while (mobs.hasNext()){
+		while (mobs.hasNext()) {
 			health += mobs.next().getHealth();
 		}
 		this.health = health;
@@ -231,11 +243,13 @@ public class Raid {
 	
 	public void victory() {
 		this.bossEvent.setName(this.raidType.getWinDisplay());
+		this.bossEvent.setProgress(0.0F);
 		this.win = true;
 	}
 	
 	public void defeated() {
 		this.bossEvent.setName(this.raidType.getLoseDisplay());
+		this.bossEvent.setProgress(0.0F);
 		this.lose = true;
 	}
 	
@@ -260,7 +274,7 @@ public class Raid {
 		return this.stopped;
 	}
 	
-	public boolean isActive(){
+	public boolean isActive() {
 		return isStarted() && !isOver();
 	}
 	
@@ -270,9 +284,9 @@ public class Raid {
 		while (raiderSets.hasNext()) {
 			Iterator<Mob> raiders = raiderSets.next().iterator();
 			
-			while (raiders.hasNext()){
+			while (raiders.hasNext()) {
 				Mob mob = raiders.next();
-				if(mob.isAlive()){
+				if (mob.isAlive()) {
 					aliveRaiders.add(mob);
 				}
 			}
@@ -283,7 +297,7 @@ public class Raid {
 	public void tick() {
 		if (this.isStop()) return;
 		
-		if(level.getDifficulty() == Difficulty.PEACEFUL){
+		if (level.getDifficulty() == Difficulty.PEACEFUL) {
 			this.stop();
 			return;
 		}
@@ -359,12 +373,12 @@ public class Raid {
 					}
 					// 检查玩家存活
 					if (bossEvent.getPlayers().isEmpty()) {
-						if(this.raidCooldown == 0){
+						if (this.raidCooldown == 0) {
 							defeated();
-						}else {
+						} else {
 							this.raidCooldown = 300;
 						}
-					}else {
+					} else {
 						this.raidCooldown = 300;
 					}
 					
@@ -415,11 +429,13 @@ public class Raid {
 			if (pos != null) {
 				RaiderType raiderType = raidType.getRaiderTypes().getEntry().get();
 				if (raiderType != null) {
-					Entity entity = raiderType.getEntityType().spawn(level, pos, MobSpawnType.EVENT);
-					if (entity instanceof Mob) {
-						joinRaid((Mob) entity);
+					if (raiderType.getEntityType().isPresent()) {
+						Entity entity = raiderType.getEntityType().get().spawn(level, pos, MobSpawnType.EVENT);
+						if (entity instanceof Mob) {
+							joinRaid((Mob) entity);
+						}
+						cumulativeStrength += raiderType.getStrength();
 					}
-					cumulativeStrength += raiderType.getStrength();
 				} else {
 					cumulativeStrength = strength;
 					RaidCraft.LOGGER.warn("RaiderType的RaiderTypes是空列表");
