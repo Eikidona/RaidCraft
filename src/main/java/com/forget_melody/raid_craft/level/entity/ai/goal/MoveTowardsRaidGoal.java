@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.level.entity.ai.goal;
 
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.capabilities.raider.api.RaiderHelper;
+import com.forget_melody.raid_craft.capabilities.raider.RaiderHelper;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 

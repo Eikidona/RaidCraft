@@ -1,7 +1,6 @@
-package com.forget_melody.raid_craft.capabilities.raid_manager.api;
+package com.forget_melody.raid_craft.capabilities.raid_manager;
 
 import com.forget_melody.raid_craft.capabilities.Capabilities;
-import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import net.minecraft.server.level.ServerLevel;
 
 import java.util.Optional;

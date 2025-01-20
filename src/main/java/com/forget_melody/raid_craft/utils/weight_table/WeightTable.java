@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class WeightTable<T> {
 	
@@ -37,6 +38,11 @@ public class WeightTable<T> {
 		return null; // 如果没有找到条目，返回null
 	}
 	
+	@Nullable
+	public T getElement() {
+		return getEntry() != null ? getEntry().get() : null;
+	}
+	
 	/**
 	 * 总权重
 	 *
@@ -44,7 +50,7 @@ public class WeightTable<T> {
 	 */
 	public int getTotalWeight() {
 		int totalWeight = 0;
-		for (IWeightEntry<T> entry : weightEntryList) {
+		for (WeightEntry<T> entry : weightEntryList) {
 			totalWeight += entry.getWeight();
 		}
 		return totalWeight;
@@ -67,29 +73,42 @@ public class WeightTable<T> {
 		return weightEntryList;
 	}
 	
-	public static <T> Codec<WeightTable<T>> createCodec(Codec<T> codec, String elementField, String listField) {
+	public Stream<T> getElementList() {
+		return getEntryList().stream().map(WeightEntry::get);
+	}
+	
+	public static <T> Codec<WeightTable<T>> createCodec(Codec<WeightEntry<T>> entryCodec) {
 		return RecordCodecBuilder.create(instance -> instance.group(
-				Codec.list(WeightEntry.createCodec(codec, elementField)).fieldOf(listField).forGetter(WeightTable::getEntryList)
+				entryCodec.listOf().fieldOf("entries").forGetter(WeightTable::getEntryList)
 		).apply(instance, WeightTable::new));
 	}
 	
-	public static <T> WeightTable<T> of(List<WeightEntry<T>> list){
+	public static <T> WeightTable<T> of(List<WeightEntry<T>> list) {
 		return new WeightTable<>(list);
 	}
 	
+	public static <T> WeightTable<T> of() {
+		return new WeightTable<>(new ArrayList<>());
+	}
+	
 	public static class Builder<T> {
-		private final List<WeightEntry<T>> list = new ArrayList<>();
+		private final List<WeightEntry<T>> entries = new ArrayList<>();
 		
 		public Builder() {
 		}
 		
 		public Builder<T> add(T element, int weight) {
-			list.add(WeightEntry.of(element, weight));
+			entries.add(WeightEntry.of(element, weight));
+			return this;
+		}
+		
+		public Builder<T> addAll(List<WeightEntry<T>> list) {
+			entries.addAll(list);
 			return this;
 		}
 		
 		public WeightTable<T> build() {
-			return new WeightTable<>(list);
+			return new WeightTable<>(entries);
 		}
 		
 		public static <T> Builder<T> create() {

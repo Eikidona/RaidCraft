@@ -1,14 +1,13 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.raid.Raid;
-import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.capabilities.raid_manager.api.RaidManagerHelper;
+import com.forget_melody.raid_craft.capabilities.raid_manager.RaidManagerHelper;
 import com.forget_melody.raid_craft.level.entity.ai.goal.InvadeHomeGoal;
 import com.forget_melody.raid_craft.level.entity.ai.goal.MoveTowardsRaidGoal;
 import com.forget_melody.raid_craft.level.entity.ai.goal.RaidOpenDoorGoal;
+import com.forget_melody.raid_craft.raid.raider.RaiderType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.GoalUtils;
@@ -18,15 +17,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
-	public static final ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raider");
-	
 	private final Mob mob;
 	private Raid raid;
 	private int wave;
-	
 	private final InvadeHomeGoal invadeHomeGoal;
 	private RaidOpenDoorGoal raidOpenDoorGoal;
 	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
+	private RaiderType raiderType;
 	
 	public Raider(Mob mob) {
 		this.mob = mob;
@@ -82,6 +79,11 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 			mob.goalSelector.removeGoal(invadeHomeGoal);
 			mob.goalSelector.removeGoal(raidOpenDoorGoal);
 		}
+	}
+	
+	@Override
+	public void setRaiderType(RaiderType raiderType) {
+	
 	}
 	
 	@Override

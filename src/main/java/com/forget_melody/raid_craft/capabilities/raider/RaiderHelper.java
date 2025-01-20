@@ -1,7 +1,6 @@
-package com.forget_melody.raid_craft.capabilities.raider.api;
+package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.capabilities.Capabilities;
-import com.forget_melody.raid_craft.capabilities.raider.IRaider;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;

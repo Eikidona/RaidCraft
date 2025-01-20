@@ -1,4 +1,5 @@
 {
+  "faction": "raid_craft:default",
   "raidDisplay": "raid.raid_craft.raid",
   "winDisplay": "raid.raid_craft.raid.win",
   "loseDisplay": "raid.raid_craft.raid.lose",
@@ -6,9 +7,14 @@
   "overlay": "notched_10",
   "raiders": [
     {
+      "entity": "minecraft:husk",
+      "weight": 5
+    }
+  ],
+  "raider_types": [
+    {
       "raider_type": "raid_craft:default",
-      "weight": 5,
-      "strength": 5
+      "weight": 5
     }
   ]
 }

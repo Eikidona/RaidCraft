@@ -51,7 +51,7 @@ This software includes portions from the Apache Maven project at
 http://maven.apache.org/ specifically the ComparableVersion.java code. It is
 included based on guidelines at
 http://www.softwarefreedom.org/resources/2007/gpl-non-gpl-collaboration.html
-with notices intact. The only change is a non-functional change of package name.
+with notices intact. The only change is a non-functional change of package raidName.
 
 This software contains a partial repackaging of javaxdelta, a BSD licensed program for generating
 binary differences and applying them, sourced from the subversion at http://sourceforge.net/projects/javaxdelta/

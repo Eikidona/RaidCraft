@@ -5,9 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Objects;
 
-public class WeightEntry<T> implements IWeightEntry<T> {
-	private T element;
-	private int weight;
+public class WeightEntry<T> {
+	private final T element;
+	private final int weight;
 	
 	public WeightEntry(T element, int weight) {
 		this.element = element;
@@ -18,7 +18,6 @@ public class WeightEntry<T> implements IWeightEntry<T> {
 		return weight;
 	}
 	
-	@Override
 	public T get() {
 		return element;
 	}
@@ -27,7 +26,6 @@ public class WeightEntry<T> implements IWeightEntry<T> {
 		return new WeightEntry<T>(element, weight);
 	}
 	
-	// 使用泛型方法来创建Codec，避免使用具体的类型
 	public static <T> Codec<WeightEntry<T>> createCodec(Codec<T> elementCodec, String field) {
 		return RecordCodecBuilder.create(instance -> instance.group(
 				elementCodec.fieldOf(field).forGetter(WeightEntry::get),

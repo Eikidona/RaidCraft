@@ -2,12 +2,14 @@ package com.forget_melody.raid_craft.raid;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.api.event.raid.RaidComputeStrengthEvent;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import com.forget_melody.raid_craft.raid.raider.RaiderType;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.capabilities.raider.api.RaiderHelper;
-import com.forget_melody.raid_craft.registries.api.RaidTypeHelper;
+import com.forget_melody.raid_craft.capabilities.raider.RaiderHelper;
+import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.utils.weight_table.WeightEntry;
 import com.forget_melody.raid_craft.utils.weight_table.WeightTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -25,30 +27,34 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
 public class Raid {
 	public static final int RAID_REMOVAL_THRESHOLD_SQR = 12544;
-	private int id;
-	private ServerLevel level;
+	private final int id;
+	private final ServerLevel level;
 	private BlockPos center;
-	private RaidType raidType;
-	private ServerBossEvent bossEvent;
+	private final RaidType raidType;
+	private final ServerBossEvent bossEvent;
+	private final Faction faction;
+	private ArrayList<WeightTable<RaiderType>> raiderTypeTables;
 	/**
 	 * Raider相关
 	 */
-	private Map<Integer, Mob> leaderRaider;
-	private Map<Integer, HashSet<Mob>> raiders = new HashMap<>();
+	private final Map<Integer, Mob> leaderRaider = new HashMap<>();
+	private final Map<Integer, HashSet<Mob>> raiders = new HashMap<>();
 	private int waveSpawned = 0;
 	private int waveTotal = 3;
-	private WeightTable<RaidType> raidTypeWeightTable;
+	private final WeightTable<ResourceLocation> raiderTable;
+	private final WeightTable<ResourceLocation> raiderTypeTable;
 	/**
 	 * 数值状态
 	 */
@@ -70,8 +76,14 @@ public class Raid {
 		this.id = id;
 		this.level = level;
 		this.center = blockPos;
+		
+		this.faction = raidType.getFaction();
+		
+		
 		this.raidType = raidType;
-		this.bossEvent = new ServerBossEvent(raidType.getRaidDisplay(), raidType.getColor(), raidType.getOverlay());
+		this.raiderTable = WeightTable.of(raidType.getRaiders().stream().map(raiderEntry -> WeightEntry.of(raiderEntry.entityType(), raiderEntry.weight())).toList());
+		this.raiderTypeTable = WeightTable.of(raidType.getRaiderTypes().stream().map(raiderEntry -> WeightEntry.of(raiderEntry.raiderType(), raiderEntry.weight())).toList());
+		this.bossEvent = new ServerBossEvent(raidType.getNameComponent(), raidType.getColor(), raidType.getOverlay());
 		// 设置可见性
 		this.bossEvent.setVisible(true);
 		this.bossEvent.setProgress(0.0F);
@@ -82,9 +94,13 @@ public class Raid {
 		this.level = level;
 		this.id = tag.getInt("Id");
 		this.center = new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
-		this.raidType = RaidTypeHelper.get(new ResourceLocation(tag.getString("RaidType")));
+		this.faction = DatapackRegistries.FACTIONS.getValue(new ResourceLocation(tag.getString("Faction")));
+		this.raidType = DatapackRegistries.RAID_TYPES.getValue(new ResourceLocation(tag.getString("RaidType")));
 		
-		this.bossEvent = new ServerBossEvent(this.raidType.getRaidDisplay(), this.raidType.getColor(), this.raidType.getOverlay());
+		this.raiderTable = WeightTable.of(raidType.getRaiders().stream().filter(raiderEntry -> ForgeRegistries.ENTITY_TYPES.containsKey(raiderEntry.entityType())).map(raiderEntry -> WeightEntry.of(raiderEntry.entityType(), raiderEntry.weight())).toList());
+		this.raiderTypeTable = WeightTable.of(raidType.getRaiderTypes().stream().filter(raiderEntry -> DatapackRegistries.RAIDER_TYPES.containsKey(raiderEntry.raiderType())).map(raiderEntry -> WeightEntry.of(raiderEntry.raiderType(), raiderEntry.weight())).toList());
+		
+		this.bossEvent = new ServerBossEvent(this.raidType.getNameComponent(), this.raidType.getColor(), this.raidType.getOverlay());
 		// 设置可见性
 		this.bossEvent.setVisible(true);
 		this.bossEvent.setProgress(0.0F);
@@ -185,23 +201,8 @@ public class Raid {
 				if (mob.blockPosition().distSqr(this.center) >= RAID_REMOVAL_THRESHOLD_SQR) {
 					set.add(mob);
 				}
-				
-				/*
-				  @todo {也许应该使用Goal}
-				 */
-
-//				// 导航实体
-//				else {
-//					if (mob.isAlive()) {
-//						if (mob.getNavigation().isDone()) {
-//							mob.getNavigation().moveTo(this.center.getX(), this.center.getY(), this.center.getZ(), 1.1d);
-//						}
-//					}
-//				}
 			}
-			
 		}
-		
 		Iterator<Mob> removeMobs = set.iterator();
 		while (removeMobs.hasNext()) {
 			Mob mob = removeMobs.next();
@@ -226,7 +227,7 @@ public class Raid {
 	
 	private void computeStrength() {
 		Difficulty difficulty = this.level.getDifficulty();
-		int strength = 0;
+		int strength = raidType.getStrength();
 		if (difficulty == Difficulty.EASY) {
 			strength += 10;
 		} else if (difficulty == Difficulty.NORMAL) {
@@ -251,14 +252,14 @@ public class Raid {
 	}
 	
 	public void victory() {
-		this.bossEvent.setName(this.raidType.getWinDisplay());
+		this.bossEvent.setName(this.raidType.getVictoryComponent());
 		this.bossEvent.setProgress(0.0F);
 		this.win = true;
 		this.playSound(center, raidType.getVictorySoundEvent());
 	}
 	
 	public void defeated() {
-		this.bossEvent.setName(this.raidType.getLoseDisplay());
+		this.bossEvent.setName(this.raidType.getDefeatComponent());
 		this.bossEvent.setProgress(0.0F);
 		this.lose = true;
 		this.playSound(center, raidType.getDefeatSoundEvent());
@@ -324,7 +325,6 @@ public class Raid {
 				this.raidCooldown = 300;
 				this.start();
 			}
-			RaidCraft.LOGGER.info("Raid 初始化 %s $b".formatted(this.raidCooldown).formatted(this.started));
 		}
 		// 已经开始
 		else {
@@ -340,11 +340,8 @@ public class Raid {
 				int numAliveRaiders = raidersOfAlive.size();
 				// 存活数==0 && 还有更多波次
 				if (numAliveRaiders == 0) {
-					RaidCraft.LOGGER.info("Raid numAliveRaiders == 0");
 					// 还有更多波次
 					if (hasMoreWave()) {
-						RaidCraft.LOGGER.info("Raid hasMoreWave");
-						
 						// 冷却时间==0
 						if (this.raidCooldown == 0) {
 							this.spawnWave();
@@ -361,12 +358,11 @@ public class Raid {
 							}
 						}
 						// 显示组件
-						bossEvent.setName(raidType.getRaidDisplay());
+						bossEvent.setName(raidType.getNameComponent());
 					}
 					// 没更多波次
 					else {
-						bossEvent.setName(raidType.getWinDisplay());
-						RaidCraft.LOGGER.info("Raid victory");
+						bossEvent.setName(raidType.getVictoryComponent());
 						victory();
 					}
 					
@@ -378,9 +374,9 @@ public class Raid {
 						if (this.activeTicks % 120 == 0) {
 							raidersOfAlive.forEach(raider -> raider.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60)));
 						}
-						bossEvent.setName(raidType.getRaidDisplay().copy().append("-").append(Component.translatable("event.minecraft.raid.raiders_remaining", numAliveRaiders)));
+						bossEvent.setName(raidType.getNameComponent().copy().append("-").append(Component.translatable("event.minecraft.raid.raiders_remaining", numAliveRaiders)));
 					} else {
-						bossEvent.setName(raidType.getRaidDisplay());
+						bossEvent.setName(raidType.getNameComponent());
 					}
 					// 检查玩家存活
 					if (bossEvent.getPlayers().isEmpty()) {
@@ -413,7 +409,6 @@ public class Raid {
 		if (activeTicks % 20 == 0) {
 			updatePlayer();
 		}
-		RaidCraft.LOGGER.info("[Raid] RaidCooldown %d".formatted(this.raidCooldown));
 		activeTicks++;
 	}
 	
@@ -422,43 +417,42 @@ public class Raid {
 	}
 	
 	private void spawnWave() {
-		RaidCraft.LOGGER.info("Raid spawnWave 强度: %d".formatted(this.strength));
-		
 		// 状态更新
 		totalHealth = 0;
 		++waveSpawned;
-		// 累计强度
-		int cumulativeStrength = 0;
-		// 位置
+		// 每个参与Raid的faction都具有一个位置
 		BlockPos pos = null;
-		for (int i = 1; i < 2 && pos == null; i++) {
+		for (int i = 1; i < 2; i++) {
 			pos = findRandomPos(i, 20);
-			
 		}
 		// 生成
-		while (cumulativeStrength < strength) {
-			if (pos != null) {
-				RaiderType raiderType = raidType.getRaiderTypes().getEntry().get();
-				if (raiderType != null) {
-					if (raiderType.getEntityType().isPresent()) {
-						Entity entity = raiderType.getEntityType().get().spawn(level, pos, MobSpawnType.EVENT);
-						if (entity instanceof Mob) {
-							joinRaid((Mob) entity);
-						}
-						cumulativeStrength += raiderType.getStrength();
+		if (pos != null) {
+			int cumulativeStrength = 0;
+			while (cumulativeStrength < strength) {
+				EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(raiderTable.getElement());
+				RaiderType raiderType = DatapackRegistries.RAIDER_TYPES.getValue(raiderTypeTable.getElement());
+				Entity entity = entityType.spawn(level, pos, MobSpawnType.EVENT);
+				
+				if (entityType == null) break;
+				if (entity instanceof Mob) {
+					joinRaid((Mob) entity);
+					Optional<IRaider> optional = RaiderHelper.getRaider((Mob) entity);
+					if (raiderType != null) {
+						optional.ifPresent(raider -> raider.setRaiderType(raiderType));
+						cumulativeStrength += (2 + raiderType.getStrength());
+					} else {
+						cumulativeStrength += 2;
 					}
-				} else {
-					cumulativeStrength = strength;
-					RaidCraft.LOGGER.warn("RaiderType的RaiderTypes是空列表");
 				}
 			}
+			
 		}
+		
 		playSound(center, raidType.getWaveSoundEvent());
 	}
 	
-	@Nullable
-	private BlockPos findRandomPos(int mutiple, int tryCount) {
-		int mutiple_ = mutiple == 0 ? 2 : 2 - mutiple;
+	private BlockPos findRandomPos(int multiple, int tryCount) {
+		int mutiple_ = multiple == 0 ? 2 : 2 - multiple;
 		for (int i = 0; i < tryCount; i++) {
 			BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
 			float f = level.random.nextFloat() * ((float) Math.PI * 2);
@@ -479,7 +473,8 @@ public class Raid {
 		tag.putInt("X", this.center.getX());
 		tag.putInt("Y", this.center.getY());
 		tag.putInt("Z", this.center.getZ());
-		tag.putString("RaidType", this.raidType.getId().toString());
+		tag.putString("Faction", DatapackRegistries.FACTIONS.getKey(this.faction).toString());
+		tag.putString("RaidType", DatapackRegistries.RAID_TYPES.getKey(this.raidType).toString());
 		
 		tag.putInt("WaveSpawned", this.waveSpawned);
 		tag.putInt("WaveTotal", this.waveTotal);

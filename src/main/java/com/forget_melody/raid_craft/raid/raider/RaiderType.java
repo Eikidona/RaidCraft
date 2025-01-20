@@ -3,34 +3,61 @@ package com.forget_melody.raid_craft.raid.raider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class RaiderType {
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(raiderTypeInstance -> raiderTypeInstance.group(
-			Codec.INT.fieldOf("strength").forGetter(RaiderType::getStrength),
-			ResourceLocation.CODEC.fieldOf("entity_type").forGetter(RaiderType::getEntityTypeLocation)
+			Codec.INT.optionalFieldOf("strength", 5).forGetter(RaiderType::getStrength),
+			ResourceLocation.CODEC.listOf().xmap(HashSet::new, ArrayList::new).optionalFieldOf("black_list", new HashSet<>()).forGetter(RaiderType::getBlackList),
+			ResourceLocation.CODEC.listOf().xmap(HashSet::new, ArrayList::new).optionalFieldOf("white_list", new HashSet<>()).forGetter(RaiderType::getBlackList)
 	).apply(raiderTypeInstance, RaiderType::new));
 	
 	private final int strength;
-	private final ResourceLocation entityType;
+	private final HashSet<ResourceLocation> blackList;
+	private final HashSet<ResourceLocation> whiteList;
 	
-	public RaiderType(int strength, ResourceLocation entityType) {
+	public RaiderType(int strength, HashSet<ResourceLocation> blackList, HashSet<ResourceLocation> whiteList) {
 		this.strength = strength;
-		this.entityType = entityType;
+		this.blackList = blackList;
+		this.whiteList = whiteList;
 	}
 	
 	public int getStrength() {
 		return strength;
 	}
 	
-	public ResourceLocation getEntityTypeLocation(){
-		return entityType;
+	@Nullable
+	public HashSet<ResourceLocation> getBlackList() {
+		return blackList;
 	}
 	
-	public Optional<EntityType<?>> getEntityType() {
-		return Optional.ofNullable(ForgeRegistries.ENTITY_TYPES.getValue(entityType));
+	private boolean inBlackList(ResourceLocation name) {
+		if (blackList == null) {
+			return false;
+		} else {
+			return blackList.contains(name);
+		}
+	}
+	
+	private boolean inWhiteList(ResourceLocation name) {
+		if (whiteList == null) {
+			return false;
+		} else {
+			return whiteList.contains(name);
+		}
+	}
+	
+	public boolean canApply(ResourceLocation name) {
+		if(inWhiteList(name)){
+			return true;
+		}else {
+			if(!inBlackList(name)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
