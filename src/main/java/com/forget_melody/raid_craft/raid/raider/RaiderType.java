@@ -1,5 +1,7 @@
 package com.forget_melody.raid_craft.raid.raider;
 
+import com.forget_melody.raid_craft.capabilities.raider.IRaider;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -59,5 +61,9 @@ public class RaiderType {
 			}
 		}
 		return false;
+	}
+	
+	public void apply(IRaider raider){
+		raider.setRaiderType(this);
 	}
 }

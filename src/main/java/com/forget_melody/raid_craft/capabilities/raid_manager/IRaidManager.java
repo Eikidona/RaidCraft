@@ -1,6 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
-import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -17,13 +17,13 @@ public interface IRaidManager extends INBTSerializable<CompoundTag> {
 	
 	void tick();
 	
-	Raid getRaid(int id);
+	IRaid getRaid(int id);
 	
-	Raid getRaidAtPos(BlockPos blockPos);
+	IRaid getRaidAtPos(BlockPos blockPos);
 	
 	void createRaid(BlockPos blockPos, RaidType raidType);
 	
 	void createRaid(BlockPos blockPos, ResourceLocation raidType);
 	
-	HashMap<Integer, Raid> getRaids();
+	HashMap<Integer, IRaid> getRaids();
 }

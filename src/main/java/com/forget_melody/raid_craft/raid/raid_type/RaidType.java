@@ -2,6 +2,7 @@ package com.forget_melody.raid_craft.raid.raid_type;
 
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
 import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.utils.weight_table.IWeightEntry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -78,22 +79,7 @@ public class RaidType {
 		this.defeatComponent = Component.translatable(defeat);
 		this.color = BossEvent.BossBarColor.byName(colorId);
 		this.overlay = BossEvent.BossBarOverlay.byName(overlayId);
-
-//		// RaidType中已定义的EntityType
-//		Set<ResourceLocation> entityTypes = new HashSet<>();
-//		List<RaiderEntry> entityTypeEntries = new ArrayList<>();
-//		for(RaiderEntry entry: raiders){
-//			if(getFaction().getEntities().contains(entry.entityType)){
-//				entityTypes.add(entry.entityType);
-//				entityTypeEntries.add(entry);
-//			}
-//		}
-//		for (ResourceLocation factionEntity : getFaction().getEntities()) {
-//			if (entityTypes.contains(factionEntity)) continue;
-//			entityTypeEntries.add(new RaiderEntry(factionEntity, 5));
-//		}
 		this.raiders = raiders;
-		
 		this.raiderTypes = raiderTypes;
 	}
 	
@@ -177,6 +163,7 @@ public class RaidType {
 				ResourceLocation.CODEC.fieldOf("entity").forGetter(RaiderEntry::entityType),
 				Codec.INT.fieldOf("weight").forGetter(RaiderEntry::weight)
 		).apply(instance, RaiderEntry::new));
+		
 	}
 	
 	public record RaiderTypeEntry(ResourceLocation raiderType, int weight) {
@@ -184,6 +171,7 @@ public class RaidType {
 				ResourceLocation.CODEC.fieldOf("raider_type").forGetter(RaiderTypeEntry::raiderType),
 				Codec.INT.fieldOf("weight").forGetter(RaiderTypeEntry::weight)
 		).apply(instance, RaiderTypeEntry::new));
+		
 	}
 	
 }

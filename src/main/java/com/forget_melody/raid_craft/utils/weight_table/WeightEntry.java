@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Objects;
 
-public class WeightEntry<T> {
+public class WeightEntry<T> implements IWeightEntry<T>{
 	private final T element;
 	private final int weight;
 	
@@ -14,15 +14,17 @@ public class WeightEntry<T> {
 		this.weight = weight;
 	}
 	
+	@Override
 	public int getWeight() {
 		return weight;
 	}
 	
+	@Override
 	public T get() {
 		return element;
 	}
 	
-	public static <T> WeightEntry<T> of(T element, int weight) {
+	public static <T> IWeightEntry<T> of(T element, int weight) {
 		return new WeightEntry<T>(element, weight);
 	}
 	

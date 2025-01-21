@@ -1,6 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
-import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.capabilities.raid_manager.RaidManagerHelper;
 import com.forget_melody.raid_craft.level.entity.ai.goal.InvadeHomeGoal;
@@ -12,18 +12,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	private final Mob mob;
-	private Raid raid;
+	private IRaid raid;
 	private int wave;
 	private final InvadeHomeGoal invadeHomeGoal;
 	private RaidOpenDoorGoal raidOpenDoorGoal;
 	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
 	private RaiderType raiderType;
+	private boolean leader;
 	
 	public Raider(Mob mob) {
 		this.mob = mob;
@@ -35,18 +35,17 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
-	public Mob get() {
+	public Mob getEntity() {
 		return mob;
 	}
 	
-	@Nullable
 	@Override
-	public Raid getRaid() {
+	public IRaid getRaid() {
 		return raid;
 	}
 	
 	@Override
-	public void setRaid(Raid raid) {
+	public void setRaid(IRaid raid) {
 		this.raid = raid;
 		updateRaidGoals();
 	}
@@ -87,6 +86,16 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
+	public void setLeader(boolean leader) {
+		this.leader = leader;
+	}
+	
+	@Override
+	public boolean isLeader() {
+		return leader;
+	}
+	
+	@Override
 	public CompoundTag serializeNBT() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (raid != null) {
@@ -102,7 +111,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 			optional.ifPresent(iRaidManager -> {
 				this.raid = iRaidManager.getRaid(nbt.getInt("Raid"));
 				if (this.raid != null) {
-					this.raid.addWaveMob(this.wave, mob);
+					this.raid.joinRaid(mob);
 				}
 			});
 			updateRaidGoals();

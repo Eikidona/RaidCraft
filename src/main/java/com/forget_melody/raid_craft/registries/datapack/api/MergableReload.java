@@ -26,102 +26,29 @@ import java.util.function.BiFunction;
  *
  * @param <T>
  */
-public class MergableReload<T extends Replaceable> extends SimplePreparableReloadListener<Map<ResourceLocation, T>> implements IRegistry<T> {
-	public static final String JSON_EXTENSION = ".json";
-	protected final String folder;
-	protected final String prefix;
-	protected final Codec<T> codec;
-	protected final Map<ResourceLocation, T> LOADED_DATA_BY_VALUE = new HashMap<>();
-	protected final Map<T, ResourceLocation> LOADED_DATA_BY_KEY = new HashMap<>();
+public class MergableReload<T extends Replaceable> extends NormalReload<T> implements IRegistry<T> {
 	private final BiFunction<T, T, T> function;
 	
 	public MergableReload(String folder, Codec<T> codec, BiFunction<T, T, T> function) {
-		this.folder = folder;
-		this.prefix = folder + '/';
-		this.codec = codec;
+		super(folder, codec);
 		this.function = function;
 	}
 	
 	@Override
-	protected Map<ResourceLocation, T> prepare(ResourceManager resourceManager, ProfilerFiller filler) {
-		return listResources(resourceManager, filler);
-	}
-	
-	@Override
-	protected void apply(Map<ResourceLocation, T> map, ResourceManager manager, ProfilerFiller filler) {
-		map.putAll(LOADED_DATA_BY_VALUE);
-	}
-	
-	private Map<ResourceLocation, T> listResources(ResourceManager resourceManager, ProfilerFiller profiler) {
-		RaidCraft.LOGGER.info("[RaidCraft] {} listResources is running", folder);
-		profiler.startTick();
-		for (Map.Entry<ResourceLocation, Resource> resource : resourceManager.listResources(folder, p -> p.getPath().endsWith(JSON_EXTENSION)).entrySet()) {
-			
-			if (!resource.getKey().getPath().startsWith(prefix)) continue;
-			ResourceLocation name = new ResourceLocation(resource.getKey().getNamespace(), resource.getKey().getPath().replace(prefix, "").replace(JSON_EXTENSION, ""));
-			
-			try (Reader reader = resource.getValue().openAsReader()) {
-				JsonElement element = JsonParser.parseReader(reader);
-				codec.parse(JsonOps.INSTANCE, element)
-					 .resultOrPartial(error -> RaidCraft.LOGGER.error("Failed to parse datapack entry: {}", error))
-					 .ifPresent(instance -> {
-						 // replace == true 直接覆盖
-						 if (instance.isReplace()) {
-							 register(name, instance);
-						 }
-						 // 处理合并
-						 else {
-							 if (LOADED_DATA_BY_VALUE.containsKey(name)) {
-								 T mergeInstance = function.apply(LOADED_DATA_BY_VALUE.get(name), instance);
-								 register(name, mergeInstance);
-							 }else {
-								 register(name, instance);
-							 }
-						 }
-					 });
-			} catch (JsonParseException e) {
-				RaidCraft.LOGGER.error("Failed to parse JSON for datapack entry: {}, {}", name, resource.getKey(), e);
-			} catch (Exception e) {
-				RaidCraft.LOGGER.error("Failed to parse JSON for datapack entry: {}, {}", name, resource.getKey(), e);
+	public void register(ResourceLocation name, T value) {
+		if (value.isReplace()) {
+			LOADED_DATA_BY_VALUE.put(name, value);
+			LOADED_DATA_BY_KEY.put(value, name);
+		} else {
+			if (containsKey(name)) {
+				T oldInstance = getValue(name);
+				T mergeInstance = function.apply(oldInstance, value);
+				LOADED_DATA_BY_VALUE.put(name, mergeInstance);
+				LOADED_DATA_BY_KEY.put(mergeInstance, name);
+			} else {
+				LOADED_DATA_BY_VALUE.put(name, value);
+				LOADED_DATA_BY_KEY.put(value, name);
 			}
 		}
-		profiler.endTick();
-		return LOADED_DATA_BY_VALUE;
-	}
-	
-	@Override
-	public @Nullable T getValue(ResourceLocation name) {
-		return LOADED_DATA_BY_VALUE.get(name);
-	}
-	
-	@Override
-	public @Nullable ResourceLocation getKey(T value) {
-		return LOADED_DATA_BY_KEY.get(value);
-	}
-	
-	@Override
-	public boolean containsValue(T value) {
-		return LOADED_DATA_BY_KEY.containsKey(value);
-	}
-	
-	@Override
-	public boolean containsKey(ResourceLocation name) {
-		return LOADED_DATA_BY_VALUE.containsKey(name);
-	}
-	
-	@Override
-	public void register(ResourceLocation name, T value) {
-		LOADED_DATA_BY_VALUE.put(name, value);
-		LOADED_DATA_BY_KEY.put(value, name);
-	}
-	
-	@Override
-	public Collection<T> getValues() {
-		return LOADED_DATA_BY_VALUE.values();
-	}
-	
-	@Override
-	public Collection<ResourceLocation> getKeys() {
-		return LOADED_DATA_BY_KEY.values();
 	}
 }

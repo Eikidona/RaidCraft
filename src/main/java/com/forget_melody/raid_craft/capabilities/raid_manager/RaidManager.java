@@ -1,6 +1,7 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
-import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
+import com.forget_melody.raid_craft.raid.raid.Raid;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
@@ -10,14 +11,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> {
 	private final ServerLevel level;
-	private final HashMap<Integer, Raid> raidMap = new HashMap<>();
+	private final HashMap<Integer, IRaid> raidMap = new HashMap<Integer, IRaid>();
 	
 	public RaidManager(ServerLevel level) {
 		this.level = level;
@@ -30,36 +30,35 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	@Override
 	public void tick() {
-		Iterator<Raid> iterator = raidMap.values().iterator();
+		Iterator<IRaid> iterator = raidMap.values().iterator();
 		if (iterator.hasNext()) {
-			Raid raid = iterator.next();
-			if (raid.isStop()) {
+			IRaid raid = iterator.next();
+			if (raid.isStopped()) {
+				RaidCraft.LOGGER.info("raid is stopped");
 				iterator.remove();
 			} else {
-				RaidCraft.LOGGER.info("Raid ticking");
+				RaidCraft.LOGGER.info("raid is tick");
 				raid.tick();
 			}
 		}
 	}
 	
-	@Nullable
 	@Override
-	public Raid getRaid(int id) {
+	public IRaid getRaid(int id) {
 		return raidMap.get(id);
 	}
 	
-	public HashMap<Integer, Raid> getRaids() {
+	public HashMap<Integer, IRaid> getRaids() {
 		return raidMap;
 	}
 	
-	@Nullable
 	@Override
-	public Raid getRaidAtPos(BlockPos blockPos) {
-		Iterator<Raid> raidIterator = raidMap.values().iterator();
-		Raid raid = null;
+	public IRaid getRaidAtPos(BlockPos blockPos) {
+		Iterator<IRaid> raidIterator = raidMap.values().iterator();
+		IRaid raid = null;
 		while (raidIterator.hasNext()) {
 			raid = raidIterator.next();
-			if (raid.getCenter().distSqr(blockPos) <= Raid.RAID_REMOVAL_THRESHOLD_SQR) {
+			if (raid.getCenter().distSqr(blockPos) <= IRaid.RAID_REMOVAL_THRESHOLD_SQR) {
 				break;
 			}
 		}
@@ -69,13 +68,14 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	// 创建一个袭击
 	@Override
 	public void createRaid(BlockPos blockPos, RaidType raidType) {
-		Raid raid = getRaidAtPos(blockPos);
-		if (raid != null) {
-		} else {
+		IRaid raid = getRaidAtPos(blockPos);
+		if (raid == null) {
+			RaidCraft.LOGGER.error("create new raid");
 			int id = raidMap.size();
-			Raid raid1 = new Raid(id, level, blockPos, raidType);
+			IRaid raid1 = new Raid(level, id, raidType, blockPos);
 			raidMap.put(id, raid1);
 		}
+		RaidCraft.LOGGER.error("has raid, create is failed");
 	}
 	
 	@Override
@@ -101,8 +101,9 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 		if (nbt.contains("Raids")) {
 			nbt.getList("Raids", ListTag.TAG_COMPOUND)
 			   .forEach(tag -> {
-				   Raid raid = new Raid(level, (CompoundTag) tag);
+				   IRaid raid = new Raid(level, (CompoundTag) tag);
 				   raidMap.put(raid.getId(), raid);
+				   RaidCraft.LOGGER.info("deserializeNBT raid");
 			   });
 		}
 	}

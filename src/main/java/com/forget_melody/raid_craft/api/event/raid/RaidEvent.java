@@ -1,17 +1,18 @@
 package com.forget_melody.raid_craft.api.event.raid;
 
-import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
+import com.forget_melody.raid_craft.raid.raid.Raid;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.level.LevelEvent;
 
 public abstract class RaidEvent extends LevelEvent {
-	private final Raid raid;
-	public RaidEvent(LevelAccessor level, Raid raid) {
+	private final IRaid raid;
+	public RaidEvent(LevelAccessor level, IRaid raid) {
 		super(level);
 		this.raid = raid;
 	}
 	
-	public Raid getRaid() {
+	public IRaid getRaid() {
 		return raid;
 	}
 }

@@ -1,11 +1,12 @@
 package com.forget_melody.raid_craft.api.event.raid;
 
-import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.IRaid;
+import com.forget_melody.raid_craft.raid.raid.Raid;
 import net.minecraft.world.level.LevelAccessor;
 
 public class RaidComputeStrengthEvent extends RaidEvent {
 	
-	public RaidComputeStrengthEvent(LevelAccessor level, Raid raid) {
+	public RaidComputeStrengthEvent(LevelAccessor level, IRaid raid) {
 		super(level, raid);
 	}
 	

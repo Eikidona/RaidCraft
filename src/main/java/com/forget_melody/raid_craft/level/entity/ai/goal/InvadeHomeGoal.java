@@ -1,7 +1,6 @@
 package com.forget_melody.raid_craft.level.entity.ai.goal;
 
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.capabilities.raider.RaiderHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -49,11 +48,8 @@ public class InvadeHomeGoal extends Goal {
 	}
 	
 	private boolean isValidRaid() {
-		Optional<IRaider> raider = RaiderHelper.getRaider(mob);
-		if (!raider.isPresent()) {
-			return false;
-		}
-		return raider.get().hasActiveRaid();
+		IRaider raider = IRaider.getRaider(mob);
+		return raider.hasActiveRaid();
 	}
 	
 	private boolean hasSuitablePoi() {

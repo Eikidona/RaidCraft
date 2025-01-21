@@ -1,12 +1,10 @@
 package com.forget_melody.raid_craft.level.entity.ai.goal;
 
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.capabilities.raider.RaiderHelper;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	private final T mob;
@@ -18,29 +16,21 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public boolean canUse() {
-		Optional<IRaider> raider = RaiderHelper.getRaider(mob);
-		if(!raider.isPresent()){
-			return false;
-		}
-		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
+		IRaider raider = IRaider.getRaider(mob);
+		return mob.getTarget() == null && !mob.isVehicle() && raider.hasActiveRaid();
 	}
 	
 	@Override
 	public boolean canContinueToUse() {
-		Optional<IRaider> raider = RaiderHelper.getRaider(mob);
-		if(!raider.isPresent()){
-			return false;
-		}
-		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
+		IRaider raider = IRaider.getRaider(mob);
+		return mob.getTarget() == null && !mob.isVehicle() && raider.hasActiveRaid();
 	}
 	
 	@Override
 	public void tick() {
-		Optional<IRaider> raider = RaiderHelper.getRaider(mob);
-		raider.ifPresent(iRaider -> {
-			if(mob.getNavigation().isDone()){
-				mob.getNavigation().moveTo(raider.get().getRaid().getCenter().getX(), raider.get().getRaid().getCenter().getY(), raider.get().getRaid().getCenter().getZ(), 1.0D);
-			}
-		});
+		IRaider raider = IRaider.getRaider(mob);
+		if(mob.getNavigation().isDone()){
+			mob.getNavigation().moveTo(raider.getRaid().getCenter().getX(), raider.getRaid().getCenter().getY(), raider.getRaid().getCenter().getZ(), 1.0D);
+		}
 	}
 }
