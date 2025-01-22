@@ -43,7 +43,7 @@
            Co-authored-by: LexManos <LexManos@gmail.com>
  - 47.3.3  Choose default JarJar mod file type based on parent JAR (#10023)
            Co-authored-by: thedarkcolour <30441001+thedarkcolour@users.noreply.github.com>
- - 47.3.2  Fixed falling block entities not rendering as moving blocks (#10006) (#10018)
+ - 47.3.2  Fixed falling block raiderTypes not rendering as moving blocks (#10006) (#10018)
            Co-authored-by: Ven <tudurap.com@gmail.com>
  - 47.3.1  Fix boat travel distance being incorrect. Closes #9997 #9999
  - 47.3.0  1.20.1 RB 3
@@ -137,7 +137,7 @@
  - 47.1.27 Add LivingSwapHandItemsEvent
  - 47.1.26 Fixed FluidUtil#tryFillContainer returning invalid result when simulating #9358
  - 47.1.25 Re-add in-game mod menu (#9652)
- - 47.1.24 Fix Entity eye height for multipart entities.
+ - 47.1.24 Fix Entity eye height for multipart raiderTypes.
  - 47.1.23 Fix conflicting keybindings not having the correct click count set. #9360
  - 47.1.22 Fix the Emissive Rendering for Experimental Light Pipeline (#9651)
  - 47.1.21 Fixed AdvancementsScreen.java.patch buttons not rendering (#9649)
@@ -169,7 +169,7 @@
  - 47.0.49 Improve logging for server connections (#9618)
  - 47.0.48 Fix placing fluids into waterlogged blocks with FluidUtil::tryPlaceFluid. To behave more like vanilla MC-127110 (#9586)
  - 47.0.47 Expose loaded RegistryAccess through AddReloadListenerEvent (#9613)
- - 47.0.46 Fix GLM applying to entities when killed. Closes #9551
+ - 47.0.46 Fix GLM applying to raiderTypes when killed. Closes #9551
  - 47.0.45 Add unordered creative tabs after vanilla and perform a second level sorting of tabs by registry raidName to ensure tabs are ordered the same between game restarts (#9612)
  - 47.0.44 Fix Early Loading window FPS snafu where it could spam (#9619)
            unlimited screen updates. Probably a good way to gently toast an ancient laptop.
@@ -194,7 +194,7 @@
  - 47.0.29 Lazily configure MDK tasks, improve IDE support (#9592)
  - 47.0.28 Fix not dropping xp for player sourced explosions and various other cases when xp should drop (#9588)
  - 47.0.27 add item handler capability to chiseled bookshelf (#9587)
- - 47.0.26 Fix ignoring maxUpStep method overrides on entities (#9583)
+ - 47.0.26 Fix ignoring maxUpStep method overrides on raiderTypes (#9583)
  - 47.0.25 Add missing damage type tag provider modid, existing file helper constructor overload (#9581)
  - 47.0.24 Expose holder lookup registry provider as a helper in RegistriesDatapackGenerator (#9580)
  - 47.0.23 Fix gametest collection causing secondary crash in loading error state (#9568)
@@ -356,7 +356,7 @@
  - 45.0.10 Fixed ModMismatchDisconnectedScreen displaying missing mods wrongly (#9398)
  - 45.0.9  Fix misaligned text render type patch (#9391)
  - 45.0.8  Remove thread filter from processing clientside custom payloads. Closes @9390
- - 45.0.7  Fix LivingEntity patch which caused crash while entities got hurt. Closes #9389
+ - 45.0.7  Fix LivingEntity patch which caused crash while raiderTypes got hurt. Closes #9389
  - 45.0.6  Fix wrong parameters in `Screen#renderTooltipInternal` patch (#9387)
  - 45.0.5  Fix misaligned patch in LevelRenderer. Closes #9385
  - 45.0.4  Remove our fix for MC-121048 as it has been fixed by Vanilla (#9381)
@@ -550,7 +550,7 @@
  - 43.1.12 [1.19.X] Adding more precise events for Advancements (#8360)
  - 43.1.11 Default IItemHandler capability for shulker box itemstacks (#8827)
            Co-authored-by: LexManos <LexManos@gmail.com>
- - 43.1.10 [1.19] Add hook for items to remain in the hotbar when picking blocks/entities (#8872)
+ - 43.1.10 [1.19] Add hook for items to remain in the hotbar when picking blocks/raiderTypes (#8872)
  - 43.1.9  [1.19.x] Block Model Builder Root Transform Support (#8860)
            Co-authored-by: sciwhiz12 <sciwhiz12@gmail.com>
  - 43.1.8  [1.19.x] Make LivingSetAttackTargetEvent compatible with the Brain/Behavior system. (Port of PR #8918) (#8954)
@@ -873,7 +873,7 @@
  - 41.0.60  Fix crash after loading error due to fluid texture gathering and config lookup (#8802)
  - 41.0.59  Remove the configuration option for handling empty tags in ingredients. (#8799)
             Now empty tags are considered broken in all states.
- - 41.0.58  Fix MC-105317 Structure blocks do not rotate entities correctly when loading (#8792)
+ - 41.0.58  Fix MC-105317 Structure blocks do not rotate raiderTypes correctly when loading (#8792)
  - 41.0.57  Fire ChunkWatchEvents after sending packets (#8747)
  - 41.0.56  Add item handler capability to chest boats (#8787)
  - 41.0.55  Add getter for correct BiomeSpecialEffectsBuilder to BiomeInfo$Builder (#8781)

@@ -1,6 +1,6 @@
 package com.forget_melody.raid_craft;
 
-import com.forget_melody.raid_craft.capabilities.raid_manager.RaidManagerHelper;
+import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.ServerChatEvent;
@@ -16,7 +16,7 @@ public class Test {
 //		}
 		if(event.getMessage().contains(Component.literal("raid"))){
 			event.getPlayer().sendSystemMessage(Component.literal("Try Create Raid"));
-			RaidManagerHelper.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), new ResourceLocation("raid_craft", "default"));
+			IRaidManager.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), new ResourceLocation("raid_craft", "default"));
 		}
 	}
 }

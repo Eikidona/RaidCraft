@@ -1,20 +1,11 @@
 {
   "faction": "raid_craft:default",
-  "raidDisplay": "raid.raid_craft.raid",
-  "winDisplay": "raid.raid_craft.raid.win",
-  "loseDisplay": "raid.raid_craft.raid.lose",
+  "name": "raid.raid_craft.raid",
+  "victory": "raid.raid_craft.raid.win",
+  "defeat": "raid.raid_craft.raid.lose",
   "color": "red",
   "overlay": "notched_10",
   "raiders": [
-    {
-      "entity": "minecraft:husk",
-      "weight": 5
-    }
-  ],
-  "raider_types": [
-    {
-      "raider_type": "raid_craft:default",
-      "weight": 5
-    }
+    "raid_craft:default"
   ]
 }

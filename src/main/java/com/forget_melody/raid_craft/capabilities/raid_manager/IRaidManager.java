@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
+import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import net.minecraft.core.BlockPos;
@@ -10,9 +11,14 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IRaidManager extends INBTSerializable<CompoundTag> {
+	static Optional<IRaidManager> get(ServerLevel level) {
+		return level.getCapability(Capabilities.RAID_MANAGER).resolve();
+	}
+	
 	ServerLevel getLevel();
 	
 	void tick();

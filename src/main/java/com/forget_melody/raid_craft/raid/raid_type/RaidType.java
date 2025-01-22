@@ -1,8 +1,8 @@
 package com.forget_melody.raid_craft.raid.raid_type;
 
+import com.forget_melody.raid_craft.faction.IFaction;
+import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
-import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.utils.weight_table.IWeightEntry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -13,109 +13,92 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RaidType {
 	public static final Codec<RaidType> CODEC = RecordCodecBuilder.create(raidTypeInstance -> raidTypeInstance.group(
 			ResourceLocation.CODEC.fieldOf("faction").forGetter(RaidType::getFactionId),
-			Codec.STRING.optionalFieldOf("raidName", "event.minecraft.raid").forGetter(RaidType::getRaidName),
+			Codec.STRING.optionalFieldOf("name", "event.minecraft.raid").forGetter(RaidType::getName),
 			Codec.STRING.optionalFieldOf("victory", "event.minecraft.raid.victory").forGetter(RaidType::getVictory),
 			Codec.STRING.optionalFieldOf("defeat", "event.minecraft.raid.defeat").forGetter(RaidType::getDefeat),
-			Codec.STRING.optionalFieldOf("color", "red").forGetter(RaidType::getColorId),
-			Codec.STRING.optionalFieldOf("overlay", "notched_10").forGetter(RaidType::getOverlayId),
+			Codec.STRING.optionalFieldOf("color", "red").forGetter(RaidType::getColorString),
+			Codec.STRING.optionalFieldOf("overlay", "notched_10").forGetter(RaidType::getOverlayString),
 			Codec.INT.optionalFieldOf("strength", 20).forGetter(RaidType::getStrength),
 			SoundEvent.CODEC.optionalFieldOf("wave_sound", SoundEvents.RAID_HORN).forGetter(RaidType::getWaveSoundEvent),
 			SoundEvent.CODEC.optionalFieldOf("victory_sound", SoundEvents.RAID_HORN).forGetter(RaidType::getVictorySoundEvent),
 			SoundEvent.CODEC.optionalFieldOf("defeat_sound", SoundEvents.RAID_HORN).forGetter(RaidType::getDefeatSoundEvent),
-			RaiderEntry.CODEC.listOf().optionalFieldOf("raiders", new ArrayList<>()).forGetter(RaidType::getRaiders),
-			RaiderTypeEntry.CODEC.listOf().optionalFieldOf("raider_types", new ArrayList<>()).forGetter(RaidType::getRaiderTypes)
+			ResourceLocation.CODEC.listOf().optionalFieldOf("raiders", new ArrayList<>()).forGetter(RaidType::getFactionEntityTypeLocations)
 	).apply(raidTypeInstance, RaidType::new));
 	
-	private final String raidName;
+	private final String name;
 	private final String victory;
 	private final String defeat;
-	private final String colorId;
-	private final String overlayId;
+	private final String color;
+	private final String overlay;
 	private final int strength;
-	private final List<RaiderEntry> raiders;
-	private final List<RaiderTypeEntry> raiderTypes;
-	private final ResourceLocation factionId;
-	private final MutableComponent nameComponent;
-	private final MutableComponent victoryComponent;
-	private final MutableComponent defeatComponent;
-	private final BossEvent.BossBarColor color;
-	private final BossEvent.BossBarOverlay overlay;
+	private final ResourceLocation faction;
 	private final Holder<SoundEvent> waveSoundEvent;
 	private final Holder<SoundEvent> victorySoundEvent;
 	private final Holder<SoundEvent> defeatSoundEvent;
-	private Faction faction;
+	private final List<ResourceLocation> raiderTypes;
 	
 	public RaidType(
-			ResourceLocation factionName,
-			String raidName,
+			ResourceLocation faction,
+			String name,
 			String victory,
 			String defeat,
-			String colorId,
-			String overlayId,
+			String color,
+			String overlay,
 			int strength,
 			Holder<SoundEvent> waveSoundEvent,
 			Holder<SoundEvent> victorySoundEvent,
 			Holder<SoundEvent> defeatSoundEvent,
-			List<RaiderEntry> raiders,
-			List<RaiderTypeEntry> raiderTypes
+			List<ResourceLocation> raiderTypes
 	) {
-		this.raidName = raidName;
+		this.name = name;
 		this.victory = victory;
 		this.defeat = defeat;
-		this.colorId = colorId;
-		this.overlayId = overlayId;
-		this.factionId = factionName;
+		this.color = color;
+		this.overlay = overlay;
+		this.faction = faction;
 		this.strength = strength;
 		this.waveSoundEvent = waveSoundEvent;
 		this.victorySoundEvent = victorySoundEvent;
 		this.defeatSoundEvent = defeatSoundEvent;
-		this.nameComponent = Component.translatable(raidName);
-		this.victoryComponent = Component.translatable(victory);
-		this.defeatComponent = Component.translatable(defeat);
-		this.color = BossEvent.BossBarColor.byName(colorId);
-		this.overlay = BossEvent.BossBarOverlay.byName(overlayId);
-		this.raiders = raiders;
 		this.raiderTypes = raiderTypes;
 	}
 	
 	public ResourceLocation getFactionId() {
-		return factionId;
-	}
-	
-	public Faction getFaction() {
-		if (faction == null) {
-			faction = DatapackRegistries.FACTIONS.getValue(factionId);
-		}
 		return faction;
 	}
 	
-	public String getRaidName() {
-		return raidName;
+	public IFaction getFaction() {
+		return DatapackRegistries.FACTIONS.getValue(faction);
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public MutableComponent getNameComponent() {
-		return nameComponent;
+		return Component.translatable(name);
 	}
 	
 	public MutableComponent getVictoryComponent() {
-		return victoryComponent;
+		return Component.translatable(victory);
 	}
 	
 	public MutableComponent getDefeatComponent() {
-		return defeatComponent;
+		return Component.translatable(defeat);
 	}
 	
 	public BossEvent.BossBarColor getColor() {
-		return color;
+		return BossEvent.BossBarColor.byName(color);
 	}
 	
 	public BossEvent.BossBarOverlay getOverlay() {
-		return overlay;
+		return BossEvent.BossBarOverlay.byName(overlay);
 	}
 	
 	public Holder<SoundEvent> getWaveSoundEvent() {
@@ -138,40 +121,23 @@ public class RaidType {
 		return defeat;
 	}
 	
-	public String getColorId() {
-		return colorId;
+	public String getColorString() {
+		return color;
 	}
 	
-	public String getOverlayId() {
-		return overlayId;
+	public String getOverlayString() {
+		return overlay;
 	}
 	
 	public int getStrength() {
 		return strength;
 	}
 	
-	public List<RaiderEntry> getRaiders() {
-		return raiders;
-	}
-	
-	public List<RaiderTypeEntry> getRaiderTypes() {
+	public List<ResourceLocation> getFactionEntityTypeLocations() {
 		return raiderTypes;
 	}
 	
-	public record RaiderEntry(ResourceLocation entityType, int weight) {
-		public static final Codec<RaiderEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				ResourceLocation.CODEC.fieldOf("entity").forGetter(RaiderEntry::entityType),
-				Codec.INT.fieldOf("weight").forGetter(RaiderEntry::weight)
-		).apply(instance, RaiderEntry::new));
-		
+	public List<RaiderType> getFactionEntityTypes() {
+		return getFactionEntityTypeLocations().stream().map(DatapackRegistries.RAIDER_TYPES::getValue).toList();
 	}
-	
-	public record RaiderTypeEntry(ResourceLocation raiderType, int weight) {
-		public static final Codec<RaiderTypeEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				ResourceLocation.CODEC.fieldOf("raider_type").forGetter(RaiderTypeEntry::raiderType),
-				Codec.INT.fieldOf("weight").forGetter(RaiderTypeEntry::weight)
-		).apply(instance, RaiderTypeEntry::new));
-		
-	}
-	
 }

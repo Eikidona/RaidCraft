@@ -1,16 +1,16 @@
 package com.forget_melody.raid_craft.raid.raid;
 
 import com.forget_melody.raid_craft.RaidCraft;
-import com.forget_melody.raid_craft.api.event.raid.RaidComputeStrengthEvent;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
+import com.forget_melody.raid_craft.event.raid.RaidComputeStrengthEvent;
+import com.forget_melody.raid_craft.faction.IFaction;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
-import com.forget_melody.raid_craft.raid.raider.RaiderType;
+import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
-import com.forget_melody.raid_craft.utils.weight_table.IWeightEntry;
-import com.forget_melody.raid_craft.utils.weight_table.IWeightTable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerBossEvent;
@@ -18,16 +18,22 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractRaid implements IRaid {
 	protected final ServerLevel level;
@@ -38,10 +44,9 @@ public abstract class AbstractRaid implements IRaid {
 	protected IRaider leaderRaider;
 	protected Set<IRaider> raiders = new HashSet<>();
 	protected Set<IRaider> aliveRaiders = new HashSet<>();
+	protected final List<RaiderType> raiderTypeList;
 	protected int spawnedWave = 0;
 	protected int totalWave = 0;
-	protected final IWeightTable<EntityType<?>> entityTypeTable;
-	protected final IWeightTable<RaiderType> raiderTypeTable;
 	protected int strength;
 	
 	public AbstractRaid(ServerLevel level, int id, RaidType raidType, BlockPos center) {
@@ -52,28 +57,7 @@ public abstract class AbstractRaid implements IRaid {
 		this.bossBar.setProgress(0.0F);
 		this.bossBar.setVisible(true);
 		this.center = center;
-		
-		// Table
-		List<IWeightEntry<EntityType<?>>> entityTypeEntries = new ArrayList<>();
-		for (RaidType.RaiderEntry entry : raidType.getRaiders()) {
-			if (ForgeRegistries.ENTITY_TYPES.containsKey(entry.entityType())) {
-				EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entry.entityType());
-				entityTypeEntries.add(IWeightEntry.of(entityType, entry.weight()));
-			} else {
-				RaidCraft.LOGGER.warn("Not found entity type id: {}", entry.entityType());
-			}
-		}
-		List<IWeightEntry<RaiderType>> raiderTypeEntries = new ArrayList<>();
-		for (RaidType.RaiderTypeEntry entry : raidType.getRaiderTypes()) {
-			if (DatapackRegistries.RAIDER_TYPES.containsKey(entry.raiderType())) {
-				RaiderType raiderType = DatapackRegistries.RAIDER_TYPES.getValue(entry.raiderType());
-				raiderTypeEntries.add(IWeightEntry.of(raiderType, entry.weight()));
-			} else {
-				RaidCraft.LOGGER.warn("Not found raider type id: {}", entry.raiderType());
-			}
-		}
-		this.entityTypeTable = IWeightTable.of(entityTypeEntries);
-		this.raiderTypeTable = IWeightTable.of(raiderTypeEntries);
+		this.raiderTypeList = this.raidType.getFactionEntityTypes();
 	}
 	
 	public AbstractRaid(ServerLevel level, CompoundTag tag) {
@@ -83,28 +67,9 @@ public abstract class AbstractRaid implements IRaid {
 		this.bossBar = new ServerBossEvent(this.raidType.getNameComponent(), this.raidType.getColor(), this.raidType.getOverlay());
 		this.bossBar.setVisible(true);
 		this.center = new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
+		this.raiderTypeList = this.raidType.getFactionEntityTypes();
 		
-		// Table
-		List<IWeightEntry<EntityType<?>>> entityTypeEntries = new ArrayList<>();
-		for (RaidType.RaiderEntry entry : raidType.getRaiders()) {
-			if (ForgeRegistries.ENTITY_TYPES.containsKey(entry.entityType())) {
-				EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entry.entityType());
-				entityTypeEntries.add(IWeightEntry.of(entityType, entry.weight()));
-			} else {
-				RaidCraft.LOGGER.warn("Not found entity type id: {}", entry.entityType());
-			}
-		}
-		List<IWeightEntry<RaiderType>> raiderTypeEntries = new ArrayList<>();
-		for (RaidType.RaiderTypeEntry entry : raidType.getRaiderTypes()) {
-			if (DatapackRegistries.RAIDER_TYPES.containsKey(entry.raiderType())) {
-				RaiderType raiderType = DatapackRegistries.RAIDER_TYPES.getValue(entry.raiderType());
-				raiderTypeEntries.add(IWeightEntry.of(raiderType, entry.weight()));
-			} else {
-				RaidCraft.LOGGER.warn("Not found raider type id: {}", entry.raiderType());
-			}
-		}
-		this.entityTypeTable = IWeightTable.of(entityTypeEntries);
-		this.raiderTypeTable = IWeightTable.of(raiderTypeEntries);
+		
 	}
 	
 	protected void updateBossBar(float progress) {
@@ -125,6 +90,9 @@ public abstract class AbstractRaid implements IRaid {
 		}
 	}
 	
+	/**
+	 * 更新Raider 最大生命值 最小生命值 存活实体 Leader实体
+	 */
 	protected void updateRaider() {
 		float totalHealth = 0;
 		float health = 0;
@@ -132,15 +100,19 @@ public abstract class AbstractRaid implements IRaid {
 		
 		Set<IRaider> outOfRaidRaiders = new HashSet<>();
 		for (IRaider raider : raiders) {
-			if (raider.getEntity().isAlive()) {
-				if (raider.getEntity().blockPosition().distSqr(getCenter()) < IRaid.RAID_REMOVAL_THRESHOLD_SQR) {
-					health += raider.getEntity().getHealth();
+			if (raider.getMob().isAlive()) {
+				if (raider.getMob().blockPosition().distSqr(getCenter()) < IRaid.RAID_REMOVAL_THRESHOLD_SQR) {
+					health += raider.getMob().getHealth();
 					aliveRaiders.add(raider);
 				} else {
 					outOfRaidRaiders.add(raider);
 				}
+			} else {
+				if (raider.isLeader()) {
+					leaderRaider = null;
+				}
 			}
-			totalHealth += raider.getEntity().getMaxHealth();
+			totalHealth += raider.getMob().getMaxHealth();
 			
 		}
 		
@@ -189,19 +161,17 @@ public abstract class AbstractRaid implements IRaid {
 	
 	@Nullable
 	protected BlockPos findRandomPos(int offsetMultiplier, int maxTry) {
-		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		
 		for (int i1 = 0; i1 < maxTry; ++i1) {
 			float f = getLevel().getRandom().nextFloat() * ((float) Math.PI * 2F);
 			int j = getCenter().getX() + Mth.floor(Mth.cos(f) * 32.0F * (float) offsetMultiplier) + this.level.random.nextInt(5);
 			int l = getCenter().getZ() + Mth.floor(Mth.sin(f) * 32.0F * (float) offsetMultiplier) + this.level.random.nextInt(5);
-			int k = getLevel().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, j, l);
-			blockpos$mutableblockpos.set(j, k, l);
+			int k = getLevel().getHeight(Heightmap.Types.WORLD_SURFACE, j, l);
+			pos.set(j, k, l);
 			
-			if (getLevel().hasChunksAt(blockpos$mutableblockpos.getX() - 10, blockpos$mutableblockpos.getZ() - 10, blockpos$mutableblockpos.getX() + 10, blockpos$mutableblockpos.getZ() + 10) && this.level.isPositionEntityTicking(blockpos$mutableblockpos)) {
-				// 删掉的条件
-//				 && (NaturalSpawner.isSpawnPositionOk(SpawnPlacements.Type.ON_GROUND, this.level, blockpos$mutableblockpos, null) || this.level.getBlockState(blockpos$mutableblockpos.below()).is(Blocks.SNOW) && this.level.getBlockState(blockpos$mutableblockpos).isAir())
-				return blockpos$mutableblockpos;
+			if (getLevel().hasChunksAt(pos.getX() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getZ() + 10) && this.level.isPositionEntityTicking(pos) && level.getBlockState(pos.below()).is(TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), new ResourceLocation(RaidCraft.MODID, "raiders_spawnable_on")))) {
+				return pos;
 			}
 			
 		}
@@ -242,60 +212,65 @@ public abstract class AbstractRaid implements IRaid {
 		raider.setRaid(this);
 		raider.setWave(spawnedWave);
 		if (leaderRaider == null) {
-			raider.setLeader(true);
-			leaderRaider = raider;
+			setLeaderRaider(raider);
 		}
+	}
+	
+	@Override
+	public void setLeaderRaider(IRaider raider) {
+		if (leaderRaider != null) return;
+		raider.setLeader(true);
+		leaderRaider = raider;
 	}
 	
 	@Override
 	public void tick() {
 		if (isStopped()) return;
 		
-		if(raidData.getActiveTicks() >= 72000){
+		if (raidData.getActiveTicks() >= 72000 || level.getDifficulty() == Difficulty.PEACEFUL) {
 			stop();
 			return;
 		}
 		
 		updatePlayer();
-		
+		// 启动阶段
 		if (!isStarted()) {
 			if (raidData.getRaidCooldown() == 0) {
 				raidData.setRaidCooldown(300);
 				start();
+				computeStrength();
 			} else {
 				raidData.setRaidCooldown(raidData.getRaidCooldown() - 1);
 				updateBossBar((300 - (float) raidData.getRaidCooldown()) / 300);
 			}
 			return;
 		}
-		
+		// 活动阶段
 		if (!isOver()) {
-			RaidCraft.LOGGER.info("Raid is Not Over");
 			if (raidData.getActiveTicks() % 200 == 0) {
 				updateCenter();
 			}
 			updateRaider();
 			if (getNumOfAliveRaiders() == 0) {
-				RaidCraft.LOGGER.info("Raid num of alive raiders is 0");
 				if (firstWaveNotSpawned()) {
-					RaidCraft.LOGGER.info("try spawn frist wave");
 					spawnWave();
 				} else {
 					if (hasMoreWave()) {
 						if (raidData.getRaidCooldown() == 0) {
 							raidData.setRaidCooldown(300);
 							raiders.clear(); // 生成之前清理旧的实体
+							leaderRaider = null;
 							spawnWave();
 						} else {
 							raidData.setRaidCooldown(raidData.getRaidCooldown() - 1);
 							updateBossBar((300 - (float) raidData.getRaidCooldown()) / 300);
 						}
+						bossBar.setName(raidType.getNameComponent());
 					} else {
 						victory();
 					}
 				}
 			} else {
-				RaidCraft.LOGGER.info("Raid num of alive raiders is not 0");
 				if (bossBar.getPlayers().isEmpty()) {
 					if (raidData.getRaidCooldown() == 0) {
 						defeat();
@@ -305,9 +280,17 @@ public abstract class AbstractRaid implements IRaid {
 				} else {
 					raidData.setRaidCooldown(300);
 				}
+				if (getNumOfAliveRaiders() <= 3) {
+					if (raidData.getActiveTicks() % 200 == 0) {
+						getAliveRaiders().forEach(raider -> raider.getMob().addEffect(new MobEffectInstance(MobEffects.GLOWING, 200)));
+					}
+					bossBar.setName(raidType.getNameComponent().copy().append(" - ").append(Component.translatable("event.minecraft.raid.raiders_remaining", getNumOfAliveRaiders())));
+				}
 				updateBossBar(getHealth() / getTotalHealth());
 			}
-		} else {
+		}
+		// 结束阶段
+		else {
 			if (raidData.getCelebrateTicks() == 0) {
 				stop();
 			} else {
@@ -316,31 +299,6 @@ public abstract class AbstractRaid implements IRaid {
 		}
 		raidData.setActiveTicks(raidData.getActiveTicks() + 1);
 	}
-
-//	protected void init() {
-//		// Table
-//		List<IWeightEntry<EntityType<?>>> entityTypeEntries = new ArrayList<>();
-//		for (RaidType.RaiderEntry entry : raidType.getRaiders()) {
-//			if (ForgeRegistries.ENTITY_TYPES.containsKey(entry.entityType())) {
-//				EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entry.entityType());
-//				entityTypeEntries.add(IWeightEntry.of(entityType, entry.weight()));
-//			} else {
-//				RaidCraft.LOGGER.warn("Not found entity type id: {}", entry.entityType());
-//			}
-//		}
-//		List<IWeightEntry<RaiderType>> raiderTypeEntries = new ArrayList<>();
-//		for (RaidType.RaiderTypeEntry entry : raidType.getRaiderTypes()) {
-//			if (DatapackRegistries.RAIDER_TYPES.containsKey(entry.raiderType())) {
-//				RaiderType raiderType = DatapackRegistries.RAIDER_TYPES.getValue(entry.raiderType());
-//				raiderTypeEntries.add(IWeightEntry.of(raiderType, entry.weight()));
-//			} else {
-//				RaidCraft.LOGGER.warn("Not found raider type id: {}", entry.raiderType());
-//			}
-//		}
-//		this.entityTypeTable = IWeightTable.of(entityTypeEntries);
-//		this.raiderTypeTable = IWeightTable.of(raiderTypeEntries);
-//
-//	}
 	
 	protected void computeStrength() {
 		// Strength & TotalWave
@@ -380,9 +338,13 @@ public abstract class AbstractRaid implements IRaid {
 	}
 	
 	@Override
+	public IRaider getLeader() {
+		return leaderRaider;
+	}
+	
+	@Override
 	public void start() {
 		raidData.setStarted(true);
-		computeStrength();
 	}
 	
 	@Override
@@ -453,6 +415,16 @@ public abstract class AbstractRaid implements IRaid {
 	@Override
 	public RaidType getRaidType() {
 		return raidType;
+	}
+	
+	@Override
+	public IFaction getFaction() {
+		return raidType.getFaction();
+	}
+	
+	@Override
+	public ItemStack getBanner() {
+		return raidType.getFaction().getBanner();
 	}
 	
 	@Override

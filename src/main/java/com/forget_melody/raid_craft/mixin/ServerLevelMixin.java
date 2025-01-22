@@ -1,6 +1,6 @@
 package com.forget_melody.raid_craft.mixin;
 
-import com.forget_melody.raid_craft.api.event.spawner.TickSpawnerEvent;
+import com.forget_melody.raid_craft.event.spawner.TickSpawnerEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.common.MinecraftForge;

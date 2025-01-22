@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.api.event.raid;
+package com.forget_melody.raid_craft.event.raid;
 
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid.Raid;

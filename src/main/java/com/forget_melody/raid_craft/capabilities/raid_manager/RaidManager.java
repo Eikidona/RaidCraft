@@ -34,10 +34,10 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 		if (iterator.hasNext()) {
 			IRaid raid = iterator.next();
 			if (raid.isStopped()) {
-				RaidCraft.LOGGER.info("raid is stopped");
+//				RaidCraft.LOGGER.info("raid is stopped");
 				iterator.remove();
 			} else {
-				RaidCraft.LOGGER.info("raid is tick");
+//				RaidCraft.LOGGER.info("raid is tick");
 				raid.tick();
 			}
 		}

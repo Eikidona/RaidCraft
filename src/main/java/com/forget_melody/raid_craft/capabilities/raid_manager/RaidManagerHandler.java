@@ -29,7 +29,7 @@ public class RaidManagerHandler {
 	@SubscribeEvent
 	public static void tick(TickEvent.LevelTickEvent event) {
 		if (event.level.isClientSide()) return;
-		Optional<IRaidManager> optional = RaidManagerHelper.get((ServerLevel) event.level);
+		Optional<IRaidManager> optional = IRaidManager.get((ServerLevel) event.level);
 		optional.ifPresent(IRaidManager::tick);
 		
 	}

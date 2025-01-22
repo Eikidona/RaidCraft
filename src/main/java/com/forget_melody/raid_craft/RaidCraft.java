@@ -20,7 +20,7 @@ public class RaidCraft
     {
 //        LOGGER.log(Level.INFO, "Mod RaidCraft 正在加载");
         IEventBus bus = context.getModEventBus();
-//        Registries.register(bus);
+        Registries.register(bus);
     }
     
 }

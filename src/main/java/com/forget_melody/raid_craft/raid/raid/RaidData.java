@@ -47,7 +47,7 @@ public class RaidData {
 		tag.putBoolean("Started", this.started);
 		tag.putBoolean("Victory", this.victory);
 		tag.putBoolean("Defeat", this.defeat);
-		tag.putBoolean("Stopped", this.started);
+		tag.putBoolean("Stopped", this.stopped);
 		return tag;
 	}
 	

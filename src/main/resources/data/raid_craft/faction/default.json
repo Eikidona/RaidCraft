@@ -1,6 +1,6 @@
 {
   "replace":false,
-  "entities": [
-    "minecraft:husk"
+  "faction_entity_types": [
+    "raid_craft:default"
   ]
 }

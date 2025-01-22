@@ -1,37 +1,45 @@
 package com.forget_melody.raid_craft.faction;
 
 import com.forget_melody.raid_craft.RaidCraft;
-import com.forget_melody.raid_craft.registries.datapack.api.Internal.Replaceable;
 import com.forget_melody.raid_craft.faction.faction_relations.FactionRelations;
+import com.forget_melody.raid_craft.registries.datapack.api.Internal.Replaceable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.*;
 
-public class Faction implements Replaceable {
+public class Faction implements IFaction {
 	public static final Codec<Faction> CODEC = RecordCodecBuilder.create(factionInstance -> factionInstance.group(
 			Codec.BOOL.optionalFieldOf("replace", false).forGetter(Faction::isReplace),
-			CompoundTag.CODEC.optionalFieldOf("banner", new CompoundTag()).forGetter(Faction::getBanner),
+			CompoundTag.CODEC.optionalFieldOf("banner", new CompoundTag()).forGetter(Faction::getBannerTag),
 			ResourceLocation.CODEC.listOf().xmap(HashSet::new, ArrayList::new).optionalFieldOf("entities", new HashSet<>()).forGetter(Faction::getEntities),
-			FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getFactionRelations)
+			FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getFactionRelations),
+			ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(RaidCraft.MODID, "start")).forGetter(Faction::getActivationAdvancement)
 	).apply(factionInstance, Faction::new));
 	
-	private boolean replace;
-	private CompoundTag banner;
-	private HashSet<ResourceLocation> entities;
-	private List<EntityType<?>> entityTypes;
-	private FactionRelations factionRelations;
+	private final boolean replace;
+	private final CompoundTag banner;
+	private final HashSet<ResourceLocation> entities;
+	private final FactionRelations factionRelations;
+	private final ResourceLocation activationAdvancement;
 	
-	public Faction(boolean replace, CompoundTag banner, HashSet<ResourceLocation> entities, FactionRelations factionRelations) {
+	public Faction(boolean replace,
+				   CompoundTag banner,
+				   HashSet<ResourceLocation> entities,
+				   FactionRelations relations,
+				   ResourceLocation activationAdvancement
+	) {
 		this.replace = replace;
 		this.banner = banner;
 		this.entities = entities;
-		this.factionRelations = factionRelations;
-		
+		this.factionRelations = relations;
+		this.activationAdvancement = activationAdvancement;
 	}
 	
 	@Override
@@ -39,51 +47,29 @@ public class Faction implements Replaceable {
 		return replace;
 	}
 	
-	public CompoundTag getBanner() {
+	public CompoundTag getBannerTag() {
 		return banner;
 	}
 	
-	public FactionRelations getFactionRelations() {
-		return factionRelations;
+	@Override
+	public ItemStack getBanner() {
+		ItemStack itemstack = new ItemStack(Items.WHITE_BANNER);
+		BlockItem.setBlockEntityData(itemstack, BlockEntityType.BANNER, getBannerTag());
+		return itemstack;
 	}
 	
+	@Override
 	public HashSet<ResourceLocation> getEntities() {
 		return entities;
 	}
 	
-	public List<EntityType<?>> getEntityTypes() {
-		if(entityTypes == null){
-			entityTypes = new ArrayList<>();
-			entities.forEach(location -> {
-				if(ForgeRegistries.ENTITY_TYPES.containsKey(location)){
-					entityTypes.add(ForgeRegistries.ENTITY_TYPES.getValue(location));
-				}else {
-					RaidCraft.LOGGER.warn("[RaidCraft] Not found {} entity type", location.toString());
-				}
-			});
-		}
-		return entityTypes;
+	@Override
+	public FactionRelations getFactionRelations() {
+		return factionRelations;
 	}
 	
-	public void setReplace(boolean replace) {
-		this.replace = replace;
-	}
-	
-	public void setBanner(CompoundTag banner) {
-		this.banner = banner;
-	}
-	
-	public void setEntities(HashSet<ResourceLocation> entities) {
-		this.entities = entities;
-	}
-	
-	public void setFactionRelations(FactionRelations factionRelations) {
-		this.factionRelations = factionRelations;
-	}
-	
-	public EntityType<?> getRandomEntityType() {
-		List<EntityType<?>> list = getEntityTypes();
-		int index = (int) (Math.random() * list.size());
-		return list.get(index);
+	@Override
+	public ResourceLocation getActivationAdvancement() {
+		return activationAdvancement;
 	}
 }

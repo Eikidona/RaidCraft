@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.api.event.spawner;
+package com.forget_melody.raid_craft.event.spawner;
 
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.LevelAccessor;

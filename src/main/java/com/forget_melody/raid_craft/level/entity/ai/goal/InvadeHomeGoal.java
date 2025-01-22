@@ -32,6 +32,12 @@ public class InvadeHomeGoal extends Goal {
 		this.setFlags(EnumSet.of(Flag.MOVE));
 	}
 	
+	@Override
+	public boolean canUse() {
+		updateVisited();
+		return isValidRaid() && hasSuitablePoi() && mob.getTarget() == null;
+	}
+	
 	private void updateVisited() {
 		if (this.visited.size() > 2) {
 			this.visited.remove(0);
@@ -48,7 +54,7 @@ public class InvadeHomeGoal extends Goal {
 	}
 	
 	private boolean isValidRaid() {
-		IRaider raider = IRaider.getRaider(mob);
+		IRaider raider = IRaider.getRaider(mob).get();
 		return raider.hasActiveRaid();
 	}
 	
@@ -56,7 +62,7 @@ public class InvadeHomeGoal extends Goal {
 		ServerLevel level = (ServerLevel) mob.level();
 		BlockPos pos = mob.blockPosition();
 		Optional<BlockPos> optional = level.getPoiManager().getRandom(poiTypeHolder -> poiTypeHolder.is(PoiTypes.HOME), this::hasNotVisited, PoiManager.Occupancy.ANY, pos, 48, mob.getRandom());
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return false;
 		} else {
 			poiPos = optional.get().immutable();
@@ -106,10 +112,5 @@ public class InvadeHomeGoal extends Goal {
 			mob.getNavigation().moveTo(vec31.x, vec31.y, vec31.z, speedModifier);
 			
 		}
-	}
-	
-	@Override
-	public boolean canUse() {
-		return false;
 	}
 }

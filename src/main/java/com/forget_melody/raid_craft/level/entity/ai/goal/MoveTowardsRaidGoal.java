@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
+import java.util.Optional;
 
 public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	private final T mob;
@@ -16,21 +17,21 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public boolean canUse() {
-		IRaider raider = IRaider.getRaider(mob);
-		return mob.getTarget() == null && !mob.isVehicle() && raider.hasActiveRaid();
+		Optional<IRaider> raider = IRaider.getRaider(mob);
+		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	
 	@Override
 	public boolean canContinueToUse() {
-		IRaider raider = IRaider.getRaider(mob);
-		return mob.getTarget() == null && !mob.isVehicle() && raider.hasActiveRaid();
+		Optional<IRaider> raider = IRaider.getRaider(mob);
+		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	
 	@Override
 	public void tick() {
-		IRaider raider = IRaider.getRaider(mob);
+		Optional<IRaider> raider = IRaider.getRaider(mob);
 		if(mob.getNavigation().isDone()){
-			mob.getNavigation().moveTo(raider.getRaid().getCenter().getX(), raider.getRaid().getCenter().getY(), raider.getRaid().getCenter().getZ(), 1.0D);
+			mob.getNavigation().moveTo(raider.get().getRaid().getCenter().getX(), raider.get().getRaid().getCenter().getY(), raider.get().getRaid().getCenter().getZ(), 1.0D);
 		}
 	}
 }
