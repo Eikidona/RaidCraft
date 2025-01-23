@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.level.entity.ai.goal;
+package com.forget_melody.raid_craft.world.entity.ai.goal.raider;
 
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
 import net.minecraft.core.BlockPos;

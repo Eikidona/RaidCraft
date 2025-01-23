@@ -57,7 +57,7 @@ public class NormalReloadListener<T> extends SimplePreparableReloadListener<Map<
 					 .resultOrPartial(error -> RaidCraft.LOGGER.error("Failed to parse DataPack Entry: {}", error))
 					 .ifPresent(instance -> {
 						 register(name, instance);
-						 RaidCraft.LOGGER.info("[RaidCraft] DataPack {} is registering! Entry: {}", folder, name);
+						 RaidCraft.LOGGER.info("DataPack Entry {} is register! id: {}", folder, name);
 					 });
 			} catch (JsonParseException e) {
 				RaidCraft.LOGGER.error("Failed to parse JSON for DataPack entry: {}, {}", name, resource.getKey(), e);

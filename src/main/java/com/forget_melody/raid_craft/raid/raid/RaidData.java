@@ -17,6 +17,10 @@ public class RaidData {
 	private boolean defeat = false;
 	private boolean stopped = false;
 	
+	public RaidData(int id) {
+		this(id, 300, 600);
+	}
+	
 	public RaidData(int id, int raidCooldown, int celebrateTicks) {
 		this.id = id;
 		this.raidCooldown = raidCooldown;

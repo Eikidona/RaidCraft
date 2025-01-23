@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
@@ -15,6 +16,8 @@ import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IRaidManager extends INBTSerializable<CompoundTag> {
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raid_manager");
+	
 	static Optional<IRaidManager> get(ServerLevel level) {
 		return level.getCapability(Capabilities.RAID_MANAGER).resolve();
 	}

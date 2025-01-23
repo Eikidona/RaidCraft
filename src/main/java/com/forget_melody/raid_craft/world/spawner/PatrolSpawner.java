@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.level.spawner;
+package com.forget_melody.raid_craft.world.spawner;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.CustomSpawner;

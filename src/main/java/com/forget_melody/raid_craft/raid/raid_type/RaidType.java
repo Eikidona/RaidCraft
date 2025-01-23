@@ -15,6 +15,7 @@ import net.minecraft.world.BossEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RaidType {
 	public static final Codec<RaidType> CODEC = RecordCodecBuilder.create(raidTypeInstance -> raidTypeInstance.group(
@@ -133,11 +134,11 @@ public class RaidType {
 		return strength;
 	}
 	
-	public List<ResourceLocation> getFactionEntityTypeLocations() {
+	public List<ResourceLocation> getFactionEntityTypeLocations(){
 		return raiderTypes;
 	}
 	
 	public List<RaiderType> getFactionEntityTypes() {
-		return getFactionEntityTypeLocations().stream().map(DatapackRegistries.RAIDER_TYPES::getValue).toList();
+		return getFactionEntityTypeLocations().stream().map(DatapackRegistries.RAIDER_TYPES::getValue).filter(Objects::nonNull).toList();
 	}
 }

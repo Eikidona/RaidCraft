@@ -1,8 +1,7 @@
-package com.forget_melody.raid_craft.level.entity.ai.goal;
+package com.forget_melody.raid_craft.world.entity.ai.goal.raider;
 
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;

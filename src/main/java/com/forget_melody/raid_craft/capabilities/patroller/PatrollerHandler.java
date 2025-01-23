@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.capabilities.raider;
+package com.forget_melody.raid_craft.capabilities.patroller;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -7,11 +7,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
-public class RaiderHandler {
+public class PatrollerHandler {
 	@SubscribeEvent
-	public static void addCapability(AttachCapabilitiesEvent<Entity> event) {
+	public static void addCapability(AttachCapabilitiesEvent<Entity> event){
 		if(event.getObject() instanceof Mob){
-			event.addCapability(IRaider.ID, new RaiderProvider((Mob) event.getObject()));
+			event.addCapability(IPatroller.ID, new PatrollerProvider((Mob) event.getObject()));
 		}
 	}
 }

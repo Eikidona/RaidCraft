@@ -22,7 +22,7 @@ public class RaidManagerHandler {
 	@SubscribeEvent
 	public static void addCapability(AttachCapabilitiesEvent<Level> event) {
 		if (event.getObject() instanceof ServerLevel) {
-			event.addCapability(RaidManagerProvider.ID, new RaidManagerProvider((ServerLevel) event.getObject()));
+			event.addCapability(IRaidManager.ID, new RaidManagerProvider((ServerLevel) event.getObject()));
 		}
 	}
 	

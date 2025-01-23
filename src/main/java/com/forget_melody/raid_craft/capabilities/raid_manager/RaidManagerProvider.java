@@ -1,10 +1,8 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
-import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -13,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RaidManagerProvider implements ICapabilitySerializable<CompoundTag> {
-	public static ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raid_manager");
 	private final IRaidManager raidManager;
 	private final LazyOptional<IRaidManager> lazyOptional;
 	

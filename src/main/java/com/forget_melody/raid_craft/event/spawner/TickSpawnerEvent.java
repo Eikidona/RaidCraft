@@ -12,16 +12,16 @@ import java.util.List;
  * CustomSpawner尝试生成实体
  */
 public class TickSpawnerEvent extends LevelEvent {
-	private final List<CustomSpawner> list = new ArrayList<>();
+	private final List<CustomSpawner> spawners = new ArrayList<>();
 	public TickSpawnerEvent(LevelAccessor level) {
 		super(level);
 	}
 	
 	public void addCustomSpawner(CustomSpawner spawner){
-		list.add(spawner);
+		spawners.add(spawner);
 	}
 	
 	public List<? extends CustomSpawner> getCustomSpawners(){
-		return list;
+		return spawners;
 	}
 }

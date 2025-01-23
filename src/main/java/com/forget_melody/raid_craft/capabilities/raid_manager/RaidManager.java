@@ -1,8 +1,8 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid.Raid;
-import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
 import net.minecraft.core.BlockPos;
@@ -70,20 +70,22 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	public void createRaid(BlockPos blockPos, RaidType raidType) {
 		IRaid raid = getRaidAtPos(blockPos);
 		if (raid == null) {
-			RaidCraft.LOGGER.error("create new raid");
-			int id = raidMap.size();
-			IRaid raid1 = new Raid(level, id, raidType, blockPos);
-			raidMap.put(id, raid1);
+			if(raidType != null){
+				int id = raidMap.size();
+				IRaid raid1 = new Raid(level, id, raidType, blockPos);
+				raidMap.put(id, raid1);
+			}else {
+				RaidCraft.LOGGER.error("RaidType is Null!");
+			}
 		}
-		RaidCraft.LOGGER.error("has raid, create is failed");
 	}
 	
 	@Override
 	public void createRaid(BlockPos blockPos, ResourceLocation raidType) {
-		if(DatapackRegistries.RAID_TYPES.containsKey(raidType)){
+		if (DatapackRegistries.RAID_TYPES.containsKey(raidType)) {
 			createRaid(blockPos, DatapackRegistries.RAID_TYPES.getValue(raidType));
-		}else {
-			RaidCraft.LOGGER.error("[RaidManager] Not found {} RaidType", raidType.toString());
+		} else {
+			RaidCraft.LOGGER.error("Not found {} RaidType id", raidType.toString());
 		}
 	}
 	

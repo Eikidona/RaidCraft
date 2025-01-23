@@ -1,13 +1,13 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.level.entity.ai.goal.InvadeHomeGoal;
-import com.forget_melody.raid_craft.level.entity.ai.goal.MoveTowardsRaidGoal;
-import com.forget_melody.raid_craft.level.entity.ai.goal.ObtainRaidLeaderBannerGoal;
-import com.forget_melody.raid_craft.level.entity.ai.goal.RaidOpenDoorGoal;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
 import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.world.entity.ai.goal.raider.InvadeHomeGoal;
+import com.forget_melody.raid_craft.world.entity.ai.goal.raider.MoveTowardsRaidGoal;
+import com.forget_melody.raid_craft.world.entity.ai.goal.raider.ObtainRaidLeaderBannerGoal;
+import com.forget_melody.raid_craft.world.entity.ai.goal.raider.RaidOpenDoorGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -51,19 +51,28 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
+	public boolean canJoinRaid() {
+		return this.raid == null;
+	}
+	
+	@Override
 	public void setRaid(IRaid raid) {
 		this.raid = raid;
+		updateWave();
 		updateRaidGoals();
 	}
 	
-	@Override
-	public void setWave(Integer wave) {
-		this.wave = wave;
+	private void updateWave() {
+		if (this.raid == null) {
+			this.wave = 0;
+		} else {
+			this.wave = this.raid.getSpawnedWave();
+		}
 	}
 	
 	@Override
-	public int getWave() {
-		return wave;
+	public void setRaiderType(RaiderType raiderType) {
+		this.raiderType = raiderType;
 	}
 	
 	@Override
@@ -71,8 +80,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 		return raid != null && raid.isActive();
 	}
 	
-	@Override
-	public void updateRaidGoals() {
+	private void updateRaidGoals() {
 		if (raid != null) {
 			mob.goalSelector.addGoal(2, obtainRaidLeaderBannerGoal);
 			if (raidOpenDoorGoal != null) {
@@ -96,8 +104,8 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
-	public void setRaiderType(RaiderType raiderType) {
-		this.raiderType = raiderType;
+	public int getWave() {
+		return wave;
 	}
 	
 	@Override

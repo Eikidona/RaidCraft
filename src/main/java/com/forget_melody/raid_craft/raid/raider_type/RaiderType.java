@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 public class RaiderType {
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -76,10 +77,11 @@ public class RaiderType {
 		return maxSpawned;
 	}
 	
-	public IRaider spawn(ServerLevel level, BlockPos pos){
-		if(ForgeRegistries.ENTITY_TYPES.containsKey(entityType)){
+	@Nullable
+	public IRaider spawn(ServerLevel level, BlockPos pos) {
+		if (ForgeRegistries.ENTITY_TYPES.containsKey(entityType)) {
 			Entity entity = ForgeRegistries.ENTITY_TYPES.getValue(entityType).spawn(level, pos, MobSpawnType.EVENT);
-			if(entity instanceof Mob){
+			if (entity instanceof Mob) {
 				IRaider raider = IRaider.getRaider((Mob) entity).get();
 				raider.setRaiderType(this);
 				return raider;
