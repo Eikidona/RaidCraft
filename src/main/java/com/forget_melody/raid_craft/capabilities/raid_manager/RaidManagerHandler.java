@@ -1,7 +1,9 @@
 package com.forget_melody.raid_craft.capabilities.raid_manager;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -28,7 +30,7 @@ public class RaidManagerHandler {
 	
 	@SubscribeEvent
 	public static void tick(TickEvent.LevelTickEvent event) {
-		if (event.level.isClientSide()) return;
+		if(event.level.isClientSide()) return;
 		Optional<IRaidManager> optional = IRaidManager.get((ServerLevel) event.level);
 		optional.ifPresent(IRaidManager::tick);
 		

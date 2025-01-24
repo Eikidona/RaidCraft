@@ -8,6 +8,8 @@ import java.util.Collection;
 public interface IRegistry<T> {
 	@Nullable T getValue(ResourceLocation name);
 	@Nullable ResourceLocation getKey(T value);
+	@Nullable T getRandomValue();
+	@Nullable ResourceLocation getRandomKey();
 	boolean containsValue(T value);
 	boolean containsKey(ResourceLocation name);
 	void register(ResourceLocation name, T value);

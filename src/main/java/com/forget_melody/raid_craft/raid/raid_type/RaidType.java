@@ -1,8 +1,8 @@
 package com.forget_melody.raid_craft.raid.raid_type;
 
-import com.forget_melody.raid_craft.faction.IFaction;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -74,7 +74,7 @@ public class RaidType {
 		return faction;
 	}
 	
-	public IFaction getFaction() {
+	public Faction getFaction() {
 		return DatapackRegistries.FACTIONS.getValue(faction);
 	}
 	

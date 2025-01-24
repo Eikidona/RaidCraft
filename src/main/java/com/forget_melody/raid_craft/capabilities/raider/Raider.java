@@ -3,7 +3,7 @@ package com.forget_melody.raid_craft.capabilities.raider;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.InvadeHomeGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.MoveTowardsRaidGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.ObtainRaidLeaderBannerGoal;
@@ -100,7 +100,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	public void setLeader(boolean leader) {
 		this.leader = leader;
 		this.mob.setItemSlot(EquipmentSlot.HEAD, raid.getBanner());
-		this.mob.setDropChance(EquipmentSlot.HEAD, 1.0F);
+		this.mob.setDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 	
 	@Override

@@ -4,7 +4,7 @@ import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.raid.IRaid;
 import com.forget_melody.raid_craft.raid.raid.Raid;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

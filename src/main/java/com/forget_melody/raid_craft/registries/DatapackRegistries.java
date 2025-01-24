@@ -1,13 +1,15 @@
-package com.forget_melody.raid_craft.registries.datapack;
+package com.forget_melody.raid_craft.registries;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.raid.patrol_type.PatrolType;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
 import com.forget_melody.raid_craft.registries.datapack.api.IReMapRegistry;
 import com.forget_melody.raid_craft.registries.datapack.api.Internal.IRegistry;
 import com.forget_melody.raid_craft.registries.datapack.api.NormalReloadListener;
 import com.forget_melody.raid_craft.registries.datapack.api.ReMapMergeableReloadListener;
+import com.forget_melody.raid_craft.registries.datapack.api.ReMapReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.entity.EntityType;
@@ -16,6 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,8 @@ public class DatapackRegistries {
 		newFaction.getFactionRelations().getEnemies().forEach(location -> oldFaction.getFactionRelations().getEnemies().add(location));
 		return oldFaction;
 	}, faction -> faction.getEntities().stream().map(ForgeRegistries.ENTITY_TYPES::getValue).filter(Objects::nonNull).collect(Collectors.toSet()));
+	// Faction key与PatrolType的映射
+	public static final IReMapRegistry<PatrolType, ResourceLocation> PATROL_TYPES = new ReMapReloadListener<>("patrol_type", PatrolType.CODEC, patrolType -> Collections.singleton(patrolType.getFactionLocation()));
 //	public static final IRegistry<RaiderType> FACTION_ENTITY_TYPES = new NormalReload<>("faction_entity_type", RaiderType.CODEC);
 	
 	@SubscribeEvent
@@ -39,6 +44,6 @@ public class DatapackRegistries {
 		event.addListener((PreparableReloadListener) RAID_TYPES);
 		event.addListener((PreparableReloadListener) RAIDER_TYPES);
 		event.addListener((PreparableReloadListener) FACTIONS);
-//		event.addListener((PreparableReloadListener) FACTION_ENTITY_TYPES);
+		event.addListener((PreparableReloadListener) PATROL_TYPES);
 	}
 }

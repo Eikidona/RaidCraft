@@ -32,7 +32,7 @@ public class ReMapMergeableReloadListener<T extends Replaceable, K> extends Merg
 	}
 	
 	@Override
-	public @Nullable T getReMapValue(K key){
+	public @Nullable T getValueByReMapKey(K key){
 		return map.get(key);
 	}
 	

@@ -1,19 +1,19 @@
 package com.forget_melody.raid_craft.capabilities.faction_entity;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.faction.IFaction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
 import com.forget_melody.raid_craft.world.entity.ai.goal.faction_entity.NearestEnemyFactionEntityTargetGoal;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
-import com.forget_melody.raid_craft.registries.datapack.api.Factions;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
+import com.forget_melody.raid_craft.registries.Factions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class FactionEntity implements IFactionEntity {
 	private final Mob mob;
-	private IFaction faction = Factions.GAIA;
+	private Faction faction = Factions.DEFAULT;
 	private FactionEntityType factionEntityType;
 	private NearestEnemyFactionEntityTargetGoal goal;
 	
@@ -22,44 +22,51 @@ public class FactionEntity implements IFactionEntity {
 	}
 	
 	@Override
-	@Nullable
-	public IFaction getFaction() {
+	public Faction getFaction() {
 		return faction;
 	}
 	
 	@Override
-	public Mob getEntity() {
+	public Mob getMob() {
 		return mob;
 	}
 	
 	@Override
-	public boolean isEnemy(IFaction faction) {
-		return faction.getFactionRelations().getEnemies().add(DatapackRegistries.FACTIONS.getKey((Faction) faction));
+	public boolean isEnemy(Faction faction) {
+		if(faction == null){
+			RaidCraft.LOGGER.error("isEnemy NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
+			return false;
+		}
+		return faction.getFactionRelations().getEnemies().add(DatapackRegistries.FACTIONS.getKey(faction));
 	}
 	
 	@Override
-	public boolean isAlly(IFaction faction) {
-		return faction.getFactionRelations().getAllies().add(DatapackRegistries.FACTIONS.getKey((Faction) faction));
+	public boolean isAlly(Faction faction) {
+		if(faction == null){
+			RaidCraft.LOGGER.error("isAlly NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
+			return false;
+		}
+		return faction.getFactionRelations().getAllies().add(DatapackRegistries.FACTIONS.getKey(faction));
 	}
 	
 	@Override
 	public boolean isFriendly(Mob mob) {
-		return IFactionEntity.getFactionEntity(mob).get().isAlly(faction);
+		return IFactionEntity.get(mob).get().isAlly(faction);
 	}
 	
 	@Override
 	public boolean isHostility(Mob mob) {
-		return IFactionEntity.getFactionEntity(mob).get().isEnemy(faction);
+		return IFactionEntity.get(mob).get().isEnemy(faction);
 	}
 	
 	@Override
-	public void setFaction(IFaction IFaction) {
-		this.faction = IFaction;
+	public void setFaction(Faction faction) {
+		this.faction = faction;
 		updateGoal();
 	}
 	
 	private void updateGoal(){
-		if(faction != Factions.GAIA && goal == null){
+		if(faction != Factions.DEFAULT && goal == null){
 			goal = new NearestEnemyFactionEntityTargetGoal(mob);
 			mob.goalSelector.addGoal(2, goal);
 		}
@@ -84,7 +91,7 @@ public class FactionEntity implements IFactionEntity {
 	
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		IFaction IFaction = DatapackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
+		Faction IFaction = DatapackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
 		setFaction(IFaction);
 	}
 }

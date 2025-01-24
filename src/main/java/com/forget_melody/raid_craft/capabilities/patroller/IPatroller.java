@@ -2,12 +2,13 @@ package com.forget_melody.raid_craft.capabilities.patroller;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
-import net.minecraft.core.BlockPos;
+import com.forget_melody.raid_craft.raid.Patrol;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -20,25 +21,24 @@ public interface IPatroller extends INBTSerializable<CompoundTag> {
 		return mob.getCapability(Capabilities.PATROLLER).resolve();
 	}
 	
-	void setPatrolTarget(BlockPos blockPos);
+	Mob getMob();
 	
-	BlockPos getPatrolTarget();
+	@Nullable
+	Patrol getPatrol();
+	
+	void setPatrol(Patrol patrol);
 	
 	boolean isPatrolLeader();
 	
+	void setPatrolLeader(boolean leader);
+	
 	boolean isPatrolling();
-	
-	void setPatrolling(boolean patrolling);
-	
-	boolean hasPatrolTarget();
-	
-	void findPatrolTarget();
-	
-	boolean canJoinPatrol(Mob mob);
 	
 	@Override
 	CompoundTag serializeNBT();
 	
 	@Override
 	void deserializeNBT(CompoundTag nbt);
+	
+	
 }

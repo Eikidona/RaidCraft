@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.capabilities.raid_interaction;
 
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import com.forget_melody.raid_craft.world.effect.BadOmenEffect;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

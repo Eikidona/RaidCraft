@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -79,13 +80,15 @@ public class RaiderType {
 	
 	@Nullable
 	public IRaider spawn(ServerLevel level, BlockPos pos) {
-		if (ForgeRegistries.ENTITY_TYPES.containsKey(entityType)) {
-			Entity entity = ForgeRegistries.ENTITY_TYPES.getValue(entityType).spawn(level, pos, MobSpawnType.EVENT);
-			if (entity instanceof Mob) {
-				IRaider raider = IRaider.getRaider((Mob) entity).get();
-				raider.setRaiderType(this);
-				return raider;
-			}
+		EntityType<?> entityType1 = ForgeRegistries.ENTITY_TYPES.getValue(entityType);
+		if(entityType1 == null){
+			return null;
+		}
+		Entity entity = entityType1.spawn(level, pos, MobSpawnType.EVENT);
+		if (entity instanceof Mob) {
+			IRaider raider = IRaider.getRaider((Mob) entity).get();
+			raider.setRaiderType(this);
+			return raider;
 		}
 		return null;
 	}

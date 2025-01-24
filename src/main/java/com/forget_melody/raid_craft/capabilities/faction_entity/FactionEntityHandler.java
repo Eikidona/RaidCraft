@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.capabilities.faction_entity;
 
-import com.forget_melody.raid_craft.faction.IFaction;
-import com.forget_melody.raid_craft.registries.datapack.DatapackRegistries;
+import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -20,9 +20,10 @@ public class FactionEntityHandler {
 	
 	@SubscribeEvent
 	public static void joinFaction(EntityJoinLevelEvent event) {
+		if(event.getLevel().isClientSide()) return;
 		if (event.getEntity() instanceof Mob) {
-			IFactionEntity factionEntity = IFactionEntity.getFactionEntity((Mob) event.getEntity()).get();
-			IFaction faction = DatapackRegistries.FACTIONS.getReMapValue(event.getEntity().getType());
+			IFactionEntity factionEntity = IFactionEntity.get((Mob) event.getEntity()).get();
+			Faction faction = DatapackRegistries.FACTIONS.getValueByReMapKey(event.getEntity().getType());
 			if (faction != null) {
 				factionEntity.setFaction(faction);
 			}

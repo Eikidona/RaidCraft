@@ -1,8 +1,10 @@
 package com.forget_melody.raid_craft.capabilities.raid_interaction;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.world.effect.MobEffects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

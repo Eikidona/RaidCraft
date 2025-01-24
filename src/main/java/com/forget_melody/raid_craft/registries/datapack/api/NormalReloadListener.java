@@ -5,8 +5,8 @@ import com.forget_melody.raid_craft.registries.datapack.api.Internal.IRegistry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +48,7 @@ public class NormalReloadListener<T> extends SimplePreparableReloadListener<Map<
 		profiler.startTick();
 		for (Map.Entry<ResourceLocation, Resource> resource : resourceManager.listResources(folder, p -> p.getPath().endsWith(JSON_EXTENSION)).entrySet()) {
 			
-			if(!resource.getKey().getPath().startsWith(prefix)) continue;
+			if (!resource.getKey().getPath().startsWith(prefix)) continue;
 			ResourceLocation name = new ResourceLocation(resource.getKey().getNamespace(), resource.getKey().getPath().replace(prefix, "").replace(JSON_EXTENSION, ""));
 			
 			try (Reader reader = resource.getValue().openAsReader()) {
@@ -77,6 +77,24 @@ public class NormalReloadListener<T> extends SimplePreparableReloadListener<Map<
 	@Override
 	public @Nullable ResourceLocation getKey(T value) {
 		return LOADED_DATA.inverse().get(value);
+	}
+	
+	@Override
+	public @Nullable T getRandomValue() {
+		Collection<T> collection = getValues();
+		if (collection.isEmpty()) {
+			return null;
+		}
+		return collection.stream().toList().get((int) (Math.random() * collection.size()));
+	}
+	
+	@Override
+	public @Nullable ResourceLocation getRandomKey() {
+		Collection<ResourceLocation> collection = getKeys();
+		if(collection.isEmpty()){
+			return null;
+		}
+		return collection.stream().toList().get((int) (Math.random() * collection.size()));
 	}
 	
 	@Override

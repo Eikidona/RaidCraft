@@ -1,8 +1,7 @@
 package com.forget_melody.raid_craft.raid.raid;
 
-import com.forget_melody.raid_craft.capabilities.raid_interaction.IRaidInteraction;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.faction.IFaction;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.raid.raid_type.RaidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -58,7 +57,7 @@ public interface IRaid {
 	
 	BlockPos getCenter();
 	
-	IFaction getFaction();
+	Faction getFaction();
 	
 	ItemStack getBanner();
 	

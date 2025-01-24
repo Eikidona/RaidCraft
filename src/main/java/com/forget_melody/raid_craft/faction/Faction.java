@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.*;
 
-public class Faction implements IFaction {
+public class Faction implements Replaceable {
 	public static final Codec<Faction> CODEC = RecordCodecBuilder.create(factionInstance -> factionInstance.group(
 			Codec.BOOL.optionalFieldOf("replace", false).forGetter(Faction::isReplace),
 			CompoundTag.CODEC.optionalFieldOf("banner", new CompoundTag()).forGetter(Faction::getBannerTag),
@@ -51,24 +51,20 @@ public class Faction implements IFaction {
 		return banner;
 	}
 	
-	@Override
 	public ItemStack getBanner() {
 		ItemStack itemstack = new ItemStack(Items.WHITE_BANNER);
 		BlockItem.setBlockEntityData(itemstack, BlockEntityType.BANNER, getBannerTag());
 		return itemstack;
 	}
 	
-	@Override
 	public HashSet<ResourceLocation> getEntities() {
 		return entities;
 	}
 	
-	@Override
 	public FactionRelations getFactionRelations() {
 		return factionRelations;
 	}
 	
-	@Override
 	public ResourceLocation getActivationAdvancement() {
 		return activationAdvancement;
 	}

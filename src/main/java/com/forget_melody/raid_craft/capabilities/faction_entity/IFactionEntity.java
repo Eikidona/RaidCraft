@@ -3,7 +3,6 @@ package com.forget_melody.raid_craft.capabilities.faction_entity;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.faction.IFaction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -17,23 +16,23 @@ import java.util.Optional;
 public interface IFactionEntity extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "faction_entity");
 	
-	static Optional<IFactionEntity> getFactionEntity(Mob mob) {
+	static Optional<IFactionEntity> get(Mob mob) {
 		return mob.getCapability(Capabilities.FACTION_ENTITY).resolve();
 	}
 	
-	IFaction getFaction();
+	Faction getFaction();
 	
-	Mob getEntity();
+	Mob getMob();
 	
-	boolean isEnemy(IFaction faction);
+	boolean isEnemy(Faction faction);
 	
-	boolean isAlly(IFaction faction);
+	boolean isAlly(Faction faction);
 	
 	boolean isFriendly(Mob mob);
 	
 	boolean isHostility(Mob mob);
 	
-	void setFaction(IFaction IFaction);
+	void setFaction(Faction faction);
 	
 	void setFactionEntityType(FactionEntityType factionEntityType);
 }
