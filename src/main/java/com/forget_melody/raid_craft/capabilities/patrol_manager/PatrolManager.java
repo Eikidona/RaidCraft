@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.patrol_manager;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.Patrol;
 import com.forget_melody.raid_craft.raid.patrol_type.PatrolType;
 import net.minecraft.core.BlockPos;
@@ -10,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class PatrolManager implements IPatrolManager {
@@ -41,6 +43,22 @@ public class PatrolManager implements IPatrolManager {
 	}
 	
 	@Override
+	public void tick() {
+		Iterator<Patrol> patrols = patrolMap.values().iterator();
+		while (patrols.hasNext()){
+			Patrol patrol = patrols.next();
+			if(patrol.isStopped()){
+				patrols.remove();
+			}else {
+				if(patrol.getLeader() != null && !patrol.getLeader().getMob().isAlive()){
+					patrol.setLeader(null);
+				}
+				patrol.tick();
+			}
+		}
+	}
+	
+	@Override
 	public CompoundTag serializeNBT() {
 		CompoundTag nbt = new CompoundTag();
 		ListTag listTag = new ListTag();
@@ -55,7 +73,7 @@ public class PatrolManager implements IPatrolManager {
 	public void deserializeNBT(CompoundTag nbt) {
 		nbt.getList("Patrols", Tag.TAG_COMPOUND).forEach(tag -> {
 			CompoundTag tag1 = (CompoundTag)tag;
-			Patrol patrol = new Patrol(tag1);
+			Patrol patrol = new Patrol(this.level, tag1);
 			this.patrolMap.put(patrol.getId(), patrol);
 		});
 	}

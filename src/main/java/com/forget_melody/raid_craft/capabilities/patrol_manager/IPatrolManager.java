@@ -16,9 +16,10 @@ import java.util.Map;
 import java.util.Optional;
 
 @AutoRegisterCapability
-public interface IPatrolManager extends INBTSerializable<CompoundTag>{
+public interface IPatrolManager extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "patrol_manager");
-	static Optional<IPatrolManager> get(ServerLevel level){
+	
+	static Optional<IPatrolManager> get(ServerLevel level) {
 		return level.getCapability(Capabilities.PATROLLER_MANAGER).resolve();
 	}
 	
@@ -27,4 +28,12 @@ public interface IPatrolManager extends INBTSerializable<CompoundTag>{
 	@Nullable Patrol getPatrol(int id);
 	
 	Map<Integer, Patrol> getPatrols();
+	
+	void tick();
+	
+	@Override
+	CompoundTag serializeNBT();
+	
+	@Override
+	void deserializeNBT(CompoundTag nbt);
 }

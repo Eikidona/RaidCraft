@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft;
 
+import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.config.Config;
 import com.forget_melody.raid_craft.raid.patrol_type.PatrolType;
@@ -32,7 +33,11 @@ public class Test {
 				RaidCraft.LOGGER.error("Not found PatrolType id {}", id);
 				return;
 			}
-//			patrolType.createPatrol(event.getPlayer().serverLevel(), event.getPlayer().blockPosition());
+			IPatrolManager.get(event.getPlayer().serverLevel()).get().createPatrol(patrolType, event.getPlayer().blockPosition());
+		}
+		if (event.getMessage().contains(Component.literal("patrols"))) {
+			int count = IPatrolManager.get(event.getPlayer().serverLevel()).get().getPatrols().size();
+			event.getPlayer().sendSystemMessage(Component.literal("Patrols: " + count));
 		}
 	}
 }

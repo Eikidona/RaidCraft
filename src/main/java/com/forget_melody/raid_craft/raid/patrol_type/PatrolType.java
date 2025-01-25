@@ -13,16 +13,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class PatrolType {
 	public static final Codec<PatrolType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -59,43 +55,32 @@ public class PatrolType {
 		if (getPatrollerTypeList().isEmpty()) {
 			return null;
 		}
+		
 		RandomSource random = level.getRandom();
 		BlockPos.MutableBlockPos pos = blockpos.mutable();
-		boolean isLeader = true;
-		IPatroller leader = null;
-		Set<IPatroller> members = new HashSet<>();
-		int numCurrentSpawn = 0;
+//		boolean isLeader = true;
+//		IPatroller leader = null;
+//		Set<IPatroller> members = new HashSet<>();
+		List<IPatroller> patrollerList = new ArrayList<>();
 		int numTotalSpawn = (int) Math.ceil(level.getCurrentDifficultyAt(pos).getEffectiveDifficulty()) + 1;
 		IWeightTable<PatrollerType> weightTable = IWeightTable.of(getPatrollerTypeList().stream().map(patrollerType -> IWeightEntry.of(patrollerType, patrollerType.getWeight())).toList());
-		
-		IPatroller patroller = null;
-		while (numCurrentSpawn < numTotalSpawn) {
-			numCurrentSpawn++;
+		for (int numCurrentSpawn = 0; numCurrentSpawn < numTotalSpawn; numCurrentSpawn++) {
+			
 			pos.setY(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos).getY());
-			pos.setX(pos.getX() + random.nextInt(5) - random.nextInt(5));
-			pos.setZ(pos.getZ() + random.nextInt(5) - random.nextInt(5));
+			pos.setX(pos.getX() + random.nextInt(10) - 5);
+			pos.setZ(pos.getZ() + random.nextInt(10) - 5);
 			// 已经检查过列表是否为空 这不需要再判断权重表是否为空
-			patroller = weightTable.getElement().spawn(level, pos, this, isLeader);
+			IPatroller patroller = weightTable.getElement().spawn(level, pos, this);
 			if (patroller == null) {
 				continue;
 			}
-			if (isLeader) {
-				leader = patroller;
-				isLeader = false;
-				Mob mob = patroller.getMob();
-				ItemStack itemStack = mob.getItemBySlot(EquipmentSlot.HEAD);
-				if (!itemStack.isEmpty()) {
-					mob.spawnAtLocation(itemStack);
-				}
-				mob.setItemSlot(EquipmentSlot.HEAD, getBanner());
-				mob.setDropChance(EquipmentSlot.HEAD, 2.0F);
-			}else {
-				members.add(patroller);
-			}
+			patrollerList.add(patroller);
 		}
-		if(leader == null){
+
+		if (patrollerList.isEmpty()) {
 			return null;
 		}
-		return new Patrol(id, this, patroller, members);
+		Patrol patrol = new Patrol(id, level, this, patrollerList);
+		return patrol;
 	}
 }

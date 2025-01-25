@@ -1,11 +1,10 @@
 package com.forget_melody.raid_craft.world.entity.ai.goal.patrol;
 
 import com.forget_melody.raid_craft.capabilities.patroller.IPatroller;
+import com.forget_melody.raid_craft.raid.Patrol;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -13,62 +12,64 @@ import java.util.Optional;
 public class PatrolGoal<T extends Mob> extends Goal {
 	private final T mob;
 	private final double speedModifier;
-	private final double leaderSpeedModifier;
-	private int patrolCooldown = 200;
+	private int cooldownTicks = 200;
 	
-	public PatrolGoal(T mob, double speedModifier, double leaderSpeedModifier) {
+	public PatrolGoal(T mob, double speedModifier) {
 		this.mob = mob;
 		this.speedModifier = speedModifier;
-		this.leaderSpeedModifier = leaderSpeedModifier;
 		this.setFlags(EnumSet.of(Flag.MOVE));
 	}
 	
+	/**
+	 * 实体必须拥有巡逻队 且处于巡逻状态才可用
+	 *
+	 * @return
+	 */
 	@Override
 	public boolean canUse() {
-		if (this.patrolCooldown > 0) {
-			patrolCooldown--;
-			return false;
-		} else {
-			patrolCooldown = 200;
-		}
-		Optional<IPatroller> optional = IPatroller.get(this.mob);
+		Optional<IPatroller> optional = getPatroller();
 		if (optional.isEmpty()) {
 			return false;
 		}
+		if (mob.getTarget() != null) {
+			return false;
+		}
 		IPatroller patroller = optional.get();
-		return patroller.getPatrol() != null && mob.getNavigation().isDone();
+		Patrol patrol = patroller.getPatrol();
+		if (patrol == null) {
+			return false;
+		}
+		if (!patroller.isPatrolling()) {
+			return false;
+		}
+		if (patrol.getPatrolTarget() == null) {
+			return false;
+		}
+		return true;
 	}
 	
+	/**
+	 * 普通成员 走到目标位置
+	 * 巡逻队队长 除去走到目标位置外 还需要更新和检查巡逻位置
+	 */
 	@Override
 	public void tick() {
-		Optional<IPatroller> optional = IPatroller.get(this.mob);
+		Optional<IPatroller> optional = getPatroller();
 		if (optional.isEmpty()) {
 			return;
 		}
 		IPatroller patroller = optional.get();
-		BlockPos patrolTarget = patroller.getPatrol().getPatrolTarget();
-		if (patrolTarget == null) {
-			if (patroller.isPatrolLeader()) {
-				patroller.getPatrol().setPatrolTarget(findPatrolTarget());
-			}
-			return;
+		BlockPos target = patroller.getPatrol().getPatrolTarget();
+		// 抵达目标点时解除巡逻状态
+		if (target.closerThan(mob.blockPosition(), mob.getBbWidth() + 1.0D)) {
+			patroller.setPatrolling(false);
 		}
-		if (patrolTarget.closerThan(mob.blockPosition(), 3.0)) {
-			return;
-		}
-		if (!mob.getNavigation().moveTo(patrolTarget.getX(), patrolTarget.getY(), patrolTarget.getZ(), speedModifier)) {
-			moveRandomly();
+		// 走向目标地点
+		if(mob.getNavigation().isDone()){
+			mob.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), speedModifier);
 		}
 	}
-	
-	private void moveRandomly() {
-		RandomSource random = this.mob.getRandom();
-		BlockPos blockpos = this.mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.mob.blockPosition().offset(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-		this.mob.getNavigation().moveTo(blockpos.getX(), blockpos.getY(), blockpos.getZ(), this.speedModifier);
-	}
-	
-	private BlockPos findPatrolTarget() {
-		BlockPos blockPos = mob.blockPosition().offset(-500 + mob.getRandom().nextInt(1000), 0, -500 + mob.getRandom().nextInt(1000));
-		return mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockPos);
+	private Optional<IPatroller> getPatroller() {
+		return IPatroller.get(mob);
 	}
 }

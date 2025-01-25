@@ -30,6 +30,8 @@ public interface IPatroller extends INBTSerializable<CompoundTag> {
 	
 	boolean isPatrolLeader();
 	
+	void setPatrolling(boolean patrolling);
+	
 	void setPatrolLeader(boolean leader);
 	
 	boolean isPatrolling();

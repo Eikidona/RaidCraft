@@ -41,7 +41,7 @@ public class PatrollerType {
 	}
 	
 	@Nullable
-	public IPatroller spawn(ServerLevel level, BlockPos pos, PatrolType patrolType, boolean isLeader) {
+	public IPatroller spawn(ServerLevel level, BlockPos pos, PatrolType patrolType) {
 		EntityType<?> entityType1 = ForgeRegistries.ENTITY_TYPES.getValue(this.entityType);
 		if (entityType1 == null) {
 			RaidCraft.LOGGER.error("Not found Entity type id {}", this.entityType);
@@ -55,10 +55,6 @@ public class PatrollerType {
 				return null;
 			}
 			IPatroller patroller = optional.get();
-
-			if(isLeader){
-				patroller.setPatrolLeader(true);
-			}
 			return patroller;
 		}
 		return null;
