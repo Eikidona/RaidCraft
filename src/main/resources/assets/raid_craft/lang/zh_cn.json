@@ -1,0 +1,4 @@
+{
+  "config.jade.plugin_raid_craft.faction_entity": "Test",
+  "jade.raid_craft.faction": "阵营: %s"
+}
