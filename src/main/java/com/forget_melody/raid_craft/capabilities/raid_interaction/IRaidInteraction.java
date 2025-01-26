@@ -2,7 +2,7 @@ package com.forget_melody.raid_craft.capabilities.raid_interaction;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
-import com.forget_melody.raid_craft.raid.raid_type.RaidType;
+import com.forget_melody.raid_craft.faction.Faction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,13 +18,13 @@ public interface IRaidInteraction extends INBTSerializable<CompoundTag> {
 		return player.getCapability(Capabilities.RAID_INTERACTION).resolve();
 	}
 	
-	RaidType getRaidType();
+	Faction getFaction();
 	
 	ServerPlayer getPlayer();
 	
 	int getBadOmenLevel();
 	
-	void addBadOmen(RaidType raidType, int amplifier);
+	void addBadOmen(Faction raidConfig, int duration, int amplifier);
 	
 	void clearBadOmen();
 	

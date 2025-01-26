@@ -33,11 +33,13 @@ public class BadOmenEffect extends MobEffect {
 			
 			// 如果是村庄立即触发Raid
 			if (level.isVillage(pLivingEntity.blockPosition())) {
-				if (raidInteraction.getRaidType() != null) {
-					IRaidManager.get(level).get().createRaid(pLivingEntity.blockPosition(), raidInteraction.getRaidType());
+				if (raidInteraction.getFaction() != null) {
+					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel()).get();
+					manager.createRaid(pLivingEntity.blockPosition(), raidInteraction.getFaction());
 				} else {
-					RaidCraft.LOGGER.error("raidInteraction raidType is null");
+					RaidCraft.LOGGER.error("raidInteraction faction is null");
 				}
+				pLivingEntity.removeEffect(MobEffects.BAD_OMEN.get());
 			}
 			
 		}

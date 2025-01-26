@@ -2,10 +2,9 @@ package com.forget_melody.raid_craft.capabilities.patroller;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
-import com.forget_melody.raid_craft.raid.Patrol;
+import com.forget_melody.raid_craft.raid.patrol.Patrol;
 import com.forget_melody.raid_craft.world.entity.ai.goal.patrol.PatrolGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.patrol.PatrolLeaderGoal;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -30,21 +29,12 @@ public class Patroller implements IPatroller {
 			if (goal == null) {
 				goal = new PatrolGoal<>(mob, 0.9D);
 			}
-			if(isPatrolLeader()){
-				if(leaderGoal == null){
-					leaderGoal = new PatrolLeaderGoal<>(mob);
-				}
-				mob.goalSelector.addGoal(2, leaderGoal);
-			}
 			mob.goalSelector.addGoal(2, goal);
 		}
 		// remove
 		else {
 			if (goal != null) {
 				mob.goalSelector.removeGoal(goal);
-			}
-			if(leaderGoal != null){
-				mob.goalSelector.removeGoal(leaderGoal);
 			}
 		}
 	}
@@ -75,10 +65,23 @@ public class Patroller implements IPatroller {
 		this.patrolling = patrolling;
 	}
 	
+	private void updateLeaderGoal(boolean leader){
+		if(leader){
+			if(leaderGoal == null){
+				leaderGoal = new PatrolLeaderGoal<>(mob);
+			}
+			mob.goalSelector.addGoal(3, leaderGoal);
+		}else {
+			if(leaderGoal != null){
+				mob.goalSelector.removeGoal(leaderGoal);
+			}
+		}
+	}
+	
 	@Override
 	public void setPatrolLeader(boolean leader) {
 		patrolLeader = leader;
-		
+		updateLeaderGoal(leader);
 	}
 	
 	@Override
@@ -112,6 +115,8 @@ public class Patroller implements IPatroller {
 					}
 					RaidCraft.LOGGER.info("加入巡逻队");
 				} else {
+					setPatrolling(false);
+					setPatrolLeader(false);
 					RaidCraft.LOGGER.error("意外的Null: Patroller反序列化时加入巡逻队，patrol为null");
 				}
 			}

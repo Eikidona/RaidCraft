@@ -2,6 +2,7 @@ package com.forget_melody.raid_craft;
 
 import com.forget_melody.raid_craft.config.Config;
 import com.forget_melody.raid_craft.registries.Registries;
+import com.forget_melody.raid_craft.world.effect.MobEffects;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -24,6 +25,7 @@ public class RaidCraft
         IEventBus bus = context.getModEventBus();
         context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
         Registries.register(bus);
+        MobEffects.register(bus);
     }
     
 }

@@ -1,6 +1,9 @@
 {
   "replace":false,
-  "faction_entity_types": [
-    "raid_craft:default"
-  ]
+  "raid_config": {
+
+  },
+  "patrol_config": {
+
+  }
 }

@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.world.entity.ai.goal.patrol;
 
 import com.forget_melody.raid_craft.capabilities.patroller.IPatroller;
-import com.forget_melody.raid_craft.raid.Patrol;
+import com.forget_melody.raid_craft.raid.patrol.Patrol;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -61,8 +61,9 @@ public class PatrolGoal<T extends Mob> extends Goal {
 		IPatroller patroller = optional.get();
 		BlockPos target = patroller.getPatrol().getPatrolTarget();
 		// 抵达目标点时解除巡逻状态
-		if (target.closerThan(mob.blockPosition(), mob.getBbWidth() + 1.0D)) {
+		if (patroller.getMob().blockPosition().distManhattan(target) <= patroller.getMob().getBbWidth() + 5.0D) {
 			patroller.setPatrolling(false);
+			return;
 		}
 		// 走向目标地点
 		if(mob.getNavigation().isDone()){

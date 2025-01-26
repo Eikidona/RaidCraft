@@ -2,9 +2,9 @@ package com.forget_melody.raid_craft.world.spawner;
 
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
 import com.forget_melody.raid_craft.config.Config;
-import com.forget_melody.raid_craft.raid.Patrol;
-import com.forget_melody.raid_craft.raid.patrol_type.PatrolType;
-import com.forget_melody.raid_craft.registries.DatapackRegistries;
+import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -71,20 +71,20 @@ public class PatrolSpawner implements CustomSpawner {
 		if (biomeTag != null && biomeTag.contains(biome)) {
 			return 0;
 		}
-		ResourceLocation faction = DatapackRegistries.FACTIONS.getRandomKey();
+		Faction faction = DataPackRegistries.FACTIONS.getRandomValue();
 		if (faction == null) {
 			return 0;
 		}
-		PatrolType patrolType = DatapackRegistries.PATROL_TYPES.getValueByReMapKey(faction);
-		if (patrolType == null) {
-			return 0;
-		}
+//		Faction patrolType = DataPackRegistries.PATROL_TYPES.getValueByReMapKey(faction);
+//		if (patrolType == null) {
+//			return 0;
+//		}
 		Optional<IPatrolManager> optional = IPatrolManager.get(pLevel);
 		if (optional.isEmpty()) {
 			return 0;
 		}
 		IPatrolManager manager = optional.get();
-		Patrol patrol = manager.createPatrol(patrolType, blockpos$mutable);
+		Patrol patrol = manager.createPatrol(faction, blockpos$mutable);
 		if(patrol == null){
 			return 0;
 		}
@@ -117,7 +117,7 @@ public class PatrolSpawner implements CustomSpawner {
 //		List<Pair<FactionEntityType, Integer>> weightMap = faction.getWeightMap();
 //		List<Pair<FactionEntityType, Integer>> filtered = weightMap.stream().filter(pair -> (pLeader && pair.getFirst().canBeBannerHolder()) || (!pLeader && pair.getFirst().getRank().equals(FactionEntityType.FactionRank.SOLDIER))).collect(Collectors.toList());
 //		FactionEntityType factionEntityType = GeneralUtils.getRandomEntry(filtered, pRandom);
-//		EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITIES.getValue(factionEntityType.getEntityType());
+//		EntityType<? extends Mob> entityType = (EntityType<? extends Mob>) ENTITIES.getValue(factionEntityType.getFactionEntityTypeLocation());
 //		if (!WorldEntitySpawner.isValidEmptySpawnBlock(pLevel, pPos, blockstate, blockstate.getFluidState(), entityType)) {
 //			return false;
 //		} else if (!(pLevel.getBrightness(LightType.BLOCK, pPos) <= 8 && pLevel.getDifficulty() != Difficulty.PEACEFUL && Mob.checkMobSpawnRules(entityType, pLevel, SpawnReason.PATROL, pPos, pRandom))) {

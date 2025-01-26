@@ -17,19 +17,19 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public boolean canUse() {
-		Optional<IRaider> raider = IRaider.getRaider(mob);
+		Optional<IRaider> raider = IRaider.get(mob);
 		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	
 	@Override
 	public boolean canContinueToUse() {
-		Optional<IRaider> raider = IRaider.getRaider(mob);
+		Optional<IRaider> raider = IRaider.get(mob);
 		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	
 	@Override
 	public void tick() {
-		Optional<IRaider> raider = IRaider.getRaider(mob);
+		Optional<IRaider> raider = IRaider.get(mob);
 		if(mob.getNavigation().isDone()){
 			mob.getNavigation().moveTo(raider.get().getRaid().getCenter().getX(), raider.get().getRaid().getCenter().getY(), raider.get().getRaid().getCenter().getZ(), 1.0D);
 		}

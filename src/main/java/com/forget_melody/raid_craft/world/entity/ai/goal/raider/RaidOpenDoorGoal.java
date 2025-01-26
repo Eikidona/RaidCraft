@@ -14,7 +14,7 @@ public class RaidOpenDoorGoal extends OpenDoorGoal {
 	
 	@Override
 	public boolean canUse() {
-		Optional<IRaider> raider = IRaider.getRaider(mob);
+		Optional<IRaider> raider = IRaider.get(mob);
 		return super.canUse() && raider.get().hasActiveRaid();
 	}
 }

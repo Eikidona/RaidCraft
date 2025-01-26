@@ -3,8 +3,8 @@ package com.forget_melody.raid_craft.capabilities.faction_entity;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
+import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.forget_melody.raid_craft.world.entity.ai.goal.faction_entity.NearestEnemyFactionEntityTargetGoal;
-import com.forget_melody.raid_craft.registries.DatapackRegistries;
 import com.forget_melody.raid_craft.registries.Factions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +27,11 @@ public class FactionEntity implements IFactionEntity {
 	}
 	
 	@Override
+	public FactionEntityType getFactionEntityType() {
+		return factionEntityType;
+	}
+	
+	@Override
 	public Mob getMob() {
 		return mob;
 	}
@@ -37,7 +42,7 @@ public class FactionEntity implements IFactionEntity {
 			RaidCraft.LOGGER.error("isEnemy NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return faction.getFactionRelations().getEnemies().add(DatapackRegistries.FACTIONS.getKey(faction));
+		return faction.getFactionRelations().getEnemies().add(DataPackRegistries.FACTIONS.getKey(faction));
 	}
 	
 	@Override
@@ -46,7 +51,7 @@ public class FactionEntity implements IFactionEntity {
 			RaidCraft.LOGGER.error("isAlly NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return faction.getFactionRelations().getAllies().add(DatapackRegistries.FACTIONS.getKey(faction));
+		return faction.getFactionRelations().getAllies().add(DataPackRegistries.FACTIONS.getKey(faction));
 	}
 	
 	@Override
@@ -81,17 +86,17 @@ public class FactionEntity implements IFactionEntity {
 	public CompoundTag serializeNBT() {
 		CompoundTag tag = new CompoundTag();
 		if(this.faction != null){
-			tag.putString("Faction", DatapackRegistries.FACTIONS.getKey((Faction) this.faction).toString());
+			tag.putString("Faction", DataPackRegistries.FACTIONS.getKey((Faction) this.faction).toString());
 		}
 		if(this.factionEntityType != null){
-//			tag.putString("FactionEntityType", DatapackRegistries..getKey(this.faction).toString());
+			tag.putString("FactionEntityType", DataPackRegistries.Faction_ENTITY_TYPES.getKey(this.factionEntityType).toString());
 		}
 		return tag;
 	}
 	
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		Faction IFaction = DatapackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
+		Faction IFaction = DataPackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
 		setFaction(IFaction);
 	}
 }

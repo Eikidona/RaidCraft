@@ -1,28 +1,23 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.raid.raid.IRaid;
-import com.forget_melody.raid_craft.raid.raider_type.RaiderType;
-import com.forget_melody.raid_craft.registries.DatapackRegistries;
+import com.forget_melody.raid_craft.raid.raid.Raid;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.InvadeHomeGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.MoveTowardsRaidGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.ObtainRaidLeaderBannerGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.RaidOpenDoorGoal;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	private final Mob mob;
-	private IRaid raid = null;
-	private RaiderType raiderType = null;
+	private Raid raid = null;
 	private int wave = 0;
 	private final InvadeHomeGoal invadeHomeGoal;
 	private RaidOpenDoorGoal raidOpenDoorGoal;
@@ -46,7 +41,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
-	public IRaid getRaid() {
+	public Raid getRaid() {
 		return raid;
 	}
 	
@@ -56,7 +51,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
-	public void setRaid(IRaid raid) {
+	public void setRaid(Raid raid) {
 		this.raid = raid;
 		updateWave();
 		updateRaidGoals();
@@ -68,11 +63,6 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 		} else {
 			this.wave = this.raid.getSpawnedWave();
 		}
-	}
-	
-	@Override
-	public void setRaiderType(RaiderType raiderType) {
-		this.raiderType = raiderType;
 	}
 	
 	@Override
@@ -109,11 +99,6 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	}
 	
 	@Override
-	public @Nullable RaiderType getRaiderType() {
-		return this.raiderType;
-	}
-	
-	@Override
 	public boolean isLeader() {
 		return leader;
 	}
@@ -123,9 +108,6 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 		CompoundTag compoundTag = new CompoundTag();
 		if (raid != null) {
 			compoundTag.putInt("Raid", raid.getId());
-		}
-		if (raiderType != null) {
-			compoundTag.putString("RaidType", DatapackRegistries.RAIDER_TYPES.getKey(raiderType).toString());
 		}
 		return compoundTag;
 	}
@@ -141,9 +123,6 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 				}
 			});
 			updateRaidGoals();
-		}
-		if (nbt.contains("RaiderType")) {
-			raiderType = DatapackRegistries.RAIDER_TYPES.getValue(new ResourceLocation(nbt.getString("RaiderType")));
 		}
 	}
 }

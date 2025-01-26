@@ -1,5 +1,3 @@
 {
-  "entity_type": "minecraft:husk",
-  "weight": 5,
-  "strength": 5
+  "entity_type": "minecraft:husk"
 }

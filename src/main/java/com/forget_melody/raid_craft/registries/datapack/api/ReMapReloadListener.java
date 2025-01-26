@@ -1,18 +1,18 @@
 package com.forget_melody.raid_craft.registries.datapack.api;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ReMapReloadListener<T, K> extends NormalReloadListener<T> implements IReMapRegistry<T, K>{
-	private final Map<K, T> map = new HashMap<>();
-	private final Function<T, Collection<K>> reMapFunc;
-	public ReMapReloadListener(String folder, Codec<T> codec, Function<T, Collection<K>> reMapFunc) {
+public class ReMapReloadListener<T, K, V> extends ReloadListener<T> implements IReMapRegistry<T, K, V>{
+	private final Map<K, V> reMap = new HashMap<>();
+	private final Function<T, Pair<K, V>> reMapFunc;
+	public ReMapReloadListener(String folder, Codec<T> codec, Function<T, Pair<K, V>> reMapFunc) {
 		super(folder, codec);
 		this.reMapFunc = reMapFunc;
 	}
@@ -20,12 +20,14 @@ public class ReMapReloadListener<T, K> extends NormalReloadListener<T> implement
 	@Override
 	public void register(ResourceLocation name, T value) {
 		super.register(name, value);
-		reMapFunc.apply(value).forEach(k -> map.put(k, value));
+		Pair<K, V> pair = reMapFunc.apply(value);
+		reMap.put(pair.getFirst(), pair.getSecond());
+		
 	}
 	
 	@Override
-	public @Nullable T getValueByReMapKey(K key) {
-		return map.get(key);
+	public @Nullable V getValueByReMapKey(K key) {
+		return reMap.get(key);
 	}
 	
 }

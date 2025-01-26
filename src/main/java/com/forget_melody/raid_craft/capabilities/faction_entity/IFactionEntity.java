@@ -22,6 +22,8 @@ public interface IFactionEntity extends INBTSerializable<CompoundTag> {
 	
 	Faction getFaction();
 	
+	FactionEntityType getFactionEntityType();
+	
 	Mob getMob();
 	
 	boolean isEnemy(Faction faction);

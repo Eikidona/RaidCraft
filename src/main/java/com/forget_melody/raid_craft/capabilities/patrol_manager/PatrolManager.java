@@ -1,13 +1,13 @@
 package com.forget_melody.raid_craft.capabilities.patrol_manager;
 
-import com.forget_melody.raid_craft.RaidCraft;
-import com.forget_melody.raid_craft.raid.Patrol;
-import com.forget_melody.raid_craft.raid.patrol_type.PatrolType;
+import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.raid.patrol.Patrol;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -23,12 +23,11 @@ public class PatrolManager implements IPatrolManager {
 	}
 	
 	@Override
-	public Patrol createPatrol(PatrolType patrolType, BlockPos pos) {
+	public Patrol createPatrol(Faction faction, BlockPos pos) {
 		int id = this.patrolMap.size();
-		Patrol patrol = patrolType.createPatrol(id, level, pos);
-		if(patrol != null){
-			this.patrolMap.put(id, patrol);
-		}
+//		Patrol patrol = faction.createPatrol(id, level, pos);
+		Patrol patrol = new Patrol(id, level, faction, pos);
+		this.patrolMap.put(id, patrol);
 		return patrol;
 	}
 	
@@ -47,12 +46,12 @@ public class PatrolManager implements IPatrolManager {
 		Iterator<Patrol> patrols = patrolMap.values().iterator();
 		while (patrols.hasNext()){
 			Patrol patrol = patrols.next();
-			if(patrol.isStopped()){
+			if(patrol.isStopped() || level.getDifficulty() == Difficulty.PEACEFUL){
 				patrols.remove();
 			}else {
-				if(patrol.getLeader() != null && !patrol.getLeader().getMob().isAlive()){
-					patrol.setLeader(null);
-				}
+//				if(patrol.getLeader() != null && !patrol.getLeader().getMob().isAlive()){
+//					patrol.setLeader(null);
+//				}
 				patrol.tick();
 			}
 		}

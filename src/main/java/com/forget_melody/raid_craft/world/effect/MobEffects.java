@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class MobEffects {
 	public static final DeferredRegister<MobEffect> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, RaidCraft.MODID);
 	
-	public static final RegistryObject<MobEffect> BAD_OMEN = register("bad_omen", () -> new BadOmenEffect());
+	public static final RegistryObject<MobEffect> BAD_OMEN = register("bad_omen", BadOmenEffect::new);
 	
 	private static RegistryObject<MobEffect> register(String name, Supplier<MobEffect> supplier) {
 		return DEFERRED_REGISTER.register(name, supplier);

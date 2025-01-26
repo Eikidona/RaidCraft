@@ -7,5 +7,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 public class NearestEnemyFactionEntityTargetGoal extends NearestAttackableTargetGoal<Mob> {
 	public NearestEnemyFactionEntityTargetGoal(Mob pMob) {
 		super(pMob, Mob.class, false, target -> target instanceof Mob && IFactionEntity.get(pMob).isPresent() && IFactionEntity.get(pMob).get().isHostility((Mob) target));
+		
 	}
 }

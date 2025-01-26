@@ -1,22 +1,26 @@
-package com.forget_melody.raid_craft.raid.raider_type;
+package com.forget_melody.raid_craft.raid.raid;
 
+import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
+import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
+import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class RaiderType {
+	public static final RaiderType DEFAULT = new RaiderType(new ResourceLocation(RaidCraft.MODID, "default"), new CompoundTag(), 5, 5, 0, 999, 0, 999);
+	
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ResourceLocation.CODEC.fieldOf("entity_type").forGetter(RaiderType::getEntityType),
+			ResourceLocation.CODEC.fieldOf("faction_entity_type").forGetter(RaiderType::getFactionEntityTypeLocation),
 			CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(RaiderType::getTag),
 			Codec.INT.optionalFieldOf("weight", 5).forGetter(RaiderType::getWeight),
 			Codec.INT.optionalFieldOf("strength", 5).forGetter(RaiderType::getStrength),
@@ -26,7 +30,7 @@ public class RaiderType {
 			Codec.INT.optionalFieldOf("maxSpawned", 999).forGetter(RaiderType::getMaxSpawned) // 波次内最大生成数
 	).apply(instance, RaiderType::new));
 	
-	private final ResourceLocation entityType;
+	private final ResourceLocation factionEntityType;
 	private final CompoundTag tag;
 	private final int weight;
 	private final int strength;
@@ -35,8 +39,8 @@ public class RaiderType {
 	private final int minSpawned;
 	private final int maxSpawned;
 	
-	public RaiderType(ResourceLocation entityType, CompoundTag tag, int weight, int strength, int minWave, int maxWave, int minSpawned, int maxWaveSpawned) {
-		this.entityType = entityType;
+	public RaiderType(ResourceLocation factionEntityType, CompoundTag tag, int weight, int strength, int minWave, int maxWave, int minSpawned, int maxWaveSpawned) {
+		this.factionEntityType = factionEntityType;
 		this.tag = tag;
 		this.weight = weight;
 		this.strength = strength;
@@ -46,8 +50,12 @@ public class RaiderType {
 		this.maxSpawned = maxWaveSpawned;
 	}
 	
-	public ResourceLocation getEntityType() {
-		return entityType;
+	public FactionEntityType getFactionEntityType() {
+		return DataPackRegistries.Faction_ENTITY_TYPES.getValue(getFactionEntityTypeLocation());
+	}
+	
+	public ResourceLocation getFactionEntityTypeLocation() {
+		return factionEntityType;
 	}
 	
 	public CompoundTag getTag() {
@@ -80,16 +88,20 @@ public class RaiderType {
 	
 	@Nullable
 	public IRaider spawn(ServerLevel level, BlockPos pos) {
-		EntityType<?> entityType1 = ForgeRegistries.ENTITY_TYPES.getValue(entityType);
-		if(entityType1 == null){
+		FactionEntityType factionEntityType1 = getFactionEntityType();
+		if(factionEntityType1 == null){
+			RaidCraft.LOGGER.error("Not found FactionEntityType id {}", getFactionEntityTypeLocation());
 			return null;
 		}
-		Entity entity = entityType1.spawn(level, pos, MobSpawnType.EVENT);
-		if (entity instanceof Mob) {
-			IRaider raider = IRaider.getRaider((Mob) entity).get();
-			raider.setRaiderType(this);
-			return raider;
+		IFactionEntity factionEntity = factionEntityType1.spawn(level, pos, MobSpawnType.EVENT);
+		if(factionEntity == null){
+			return null;
 		}
-		return null;
+		Optional<IRaider> optional = IRaider.get(factionEntity.getMob());
+		if(optional.isEmpty()){
+			RaidCraft.LOGGER.error("IRaider is null by FactionEntityType {}", getFactionEntityTypeLocation());
+			return null;
+		}
+		return optional.get();
 	}
 }
