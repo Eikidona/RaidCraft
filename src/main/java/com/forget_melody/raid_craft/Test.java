@@ -3,11 +3,9 @@ package com.forget_melody.raid_craft;
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.config.Config;
-import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.forget_melody.raid_craft.registries.Factions;
+import com.forget_melody.raid_craft.registries.RaidTargets;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,7 +19,10 @@ public class Test {
 //		}
 		if (event.getMessage().contains(Component.literal("raid"))) {
 			event.getPlayer().sendSystemMessage(Component.literal("Try Create Raid"));
-			IRaidManager.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), Factions.DEFAULT);
+			IRaidManager.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), Factions.DEFAULT, RaidTargets.VILLAGE.get());
+		}
+		if (event.getMessage().contains(Component.literal("raids"))) {
+			event.getPlayer().sendSystemMessage(Component.literal("Raids" + IRaidManager.get(event.getPlayer().serverLevel()).get().getRaids().size()));
 		}
 		if (event.getMessage().contains(Component.literal("config"))) {
 			event.getPlayer().sendSystemMessage(Component.literal("Config: " + Config.PATROL_TICK_DELAY_BETWEEN_SPAWN_ATTEMPTS.get()));

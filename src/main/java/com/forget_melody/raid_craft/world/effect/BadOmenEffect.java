@@ -3,6 +3,8 @@ package com.forget_melody.raid_craft.world.effect;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_interaction.IRaidInteraction;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
+import com.forget_melody.raid_craft.registries.RaidTargets;
+import com.forget_melody.raid_craft.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -35,7 +37,7 @@ public class BadOmenEffect extends MobEffect {
 			if (level.isVillage(pLivingEntity.blockPosition())) {
 				if (raidInteraction.getFaction() != null) {
 					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel()).get();
-					manager.createRaid(pLivingEntity.blockPosition(), raidInteraction.getFaction());
+					manager.createRaid(pLivingEntity.blockPosition(), raidInteraction.getFaction(), RaidTargets.VILLAGE.get());
 				} else {
 					RaidCraft.LOGGER.error("raidInteraction faction is null");
 				}

@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft.world.entity.ai.goal.raider;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -18,12 +19,14 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	@Override
 	public boolean canUse() {
 		Optional<IRaider> raider = IRaider.get(mob);
+		RaidCraft.LOGGER.info("canUse: Target: {}, hasActiveRaid: {}", mob.getTarget() == null, raider.get().hasActiveRaid());
 		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	
 	@Override
 	public boolean canContinueToUse() {
 		Optional<IRaider> raider = IRaider.get(mob);
+		RaidCraft.LOGGER.info("canContinueToUse: Target: {}, hasActiveRaid: {}", mob.getTarget() == null, raider.get().hasActiveRaid());
 		return mob.getTarget() == null && !mob.isVehicle() && raider.get().hasActiveRaid();
 	}
 	

@@ -6,5 +6,6 @@ public class Registries {
 	
 	public static void register(IEventBus eventBus){
 		Factions.register();
+		RaidTargets.register(eventBus);
 	}
 }

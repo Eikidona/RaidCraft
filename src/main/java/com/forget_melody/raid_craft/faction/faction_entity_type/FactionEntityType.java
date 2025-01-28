@@ -20,16 +20,18 @@ import java.util.Optional;
 public class FactionEntityType {
 	public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ResourceLocation.CODEC.fieldOf("entity_type").forGetter(FactionEntityType::getEntityTypeLocation),
-			CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(FactionEntityType::getCompoundTag)
+			CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(FactionEntityType::getCompoundTag),
+			Codec.INT.optionalFieldOf("strength", 5).forGetter(FactionEntityType::getStrength)
 	).apply(instance, FactionEntityType::new));
 	
 	private final ResourceLocation entityTypeLocation;
 	private final CompoundTag tag;
+	private final int strength;
 	
-	
-	public FactionEntityType(ResourceLocation entityTypeLocation, CompoundTag tag) {
+	public FactionEntityType(ResourceLocation entityTypeLocation, CompoundTag tag, int strength) {
 		this.entityTypeLocation = entityTypeLocation;
 		this.tag = tag;
+		this.strength = strength;
 	}
 	
 	@Nullable
@@ -63,5 +65,9 @@ public class FactionEntityType {
 	
 	public CompoundTag getCompoundTag() {
 		return tag;
+	}
+	
+	public int getStrength() {
+		return strength;
 	}
 }

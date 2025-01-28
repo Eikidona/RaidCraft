@@ -4,6 +4,7 @@ import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.target.IRaidTarget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +32,9 @@ public interface IRaidManager extends INBTSerializable<CompoundTag> {
 	Raid getRaidAtPos(BlockPos blockPos);
 	
 	// 创建一个袭击
-	void createRaid(BlockPos blockPos, Faction faction);
+	void createRaid(BlockPos blockPos, Faction faction, IRaidTarget IRaidTarget);
 	
-	void createRaid(BlockPos blockPos, ResourceLocation faction);
+	void createRaid(BlockPos blockPos, ResourceLocation faction, ResourceLocation raidTarget);
 	
 	HashMap<Integer, Raid> getRaids();
 }

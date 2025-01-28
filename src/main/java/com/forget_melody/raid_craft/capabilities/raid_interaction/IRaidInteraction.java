@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import java.util.List;
 import java.util.Optional;
 
 @AutoRegisterCapability
@@ -24,7 +25,7 @@ public interface IRaidInteraction extends INBTSerializable<CompoundTag> {
 	
 	int getBadOmenLevel();
 	
-	void addBadOmen(Faction raidConfig, int duration, int amplifier);
+	void addBadOmen(Faction faction, int duration, int amplifier);
 	
 	void clearBadOmen();
 	

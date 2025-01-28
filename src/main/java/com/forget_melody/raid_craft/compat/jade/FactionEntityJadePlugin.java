@@ -14,6 +14,8 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
+import java.util.List;
+
 public class FactionEntityJadePlugin implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 	
 	@Override

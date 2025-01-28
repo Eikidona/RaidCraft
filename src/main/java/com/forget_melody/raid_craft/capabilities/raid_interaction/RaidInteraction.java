@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 
+import java.util.List;
+
 public class RaidInteraction implements IRaidInteraction {
 	private final ServerPlayer player;
 	private int badOmenLevel = 0;
@@ -33,8 +35,8 @@ public class RaidInteraction implements IRaidInteraction {
 	}
 	
 	@Override
-	public void addBadOmen(Faction raidConfig, int duration, int amplifier) {
-		this.faction = raidConfig;
+	public void addBadOmen(Faction faction, int duration, int amplifier) {
+		this.faction = faction;
 		this.badOmenLevel = amplifier;
 		this.player.addEffect(new MobEffectInstance(new BadOmenEffect(),duration, amplifier));
 	}

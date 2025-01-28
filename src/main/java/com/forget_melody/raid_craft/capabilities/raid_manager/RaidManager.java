@@ -3,7 +3,10 @@ package com.forget_melody.raid_craft.capabilities.raid_manager;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.raid.target.IRaidTarget;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
+import com.forget_melody.raid_craft.registries.RaidTargets;
+import com.forget_melody.raid_craft.registries.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -66,23 +69,24 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	// 创建一个袭击
 	@Override
-	public void createRaid(BlockPos blockPos, Faction faction) {
-		Raid raid = getRaidAtPos(blockPos);
-		if (raid == null) {
-			if(faction != null){
+	public void createRaid(BlockPos blockPos, Faction faction, IRaidTarget IRaidTarget) {
+		if (getRaidAtPos(blockPos) == null) {
+			if (faction != null) {
 				int id = raidMap.size();
-				Raid raid1 = new Raid(level, id, faction, blockPos);
-				raidMap.put(id, raid1);
-			}else {
-				RaidCraft.LOGGER.error("RaidType is Null!");
+				Raid raid = new Raid(id, level, faction, blockPos, IRaidTarget);
+				raidMap.put(id, raid);
+			} else {
+				RaidCraft.LOGGER.error("Faction is Null!");
 			}
+		}else {
+			RaidCraft.LOGGER.error("has Raid at this");
 		}
 	}
 	
 	@Override
-	public void createRaid(BlockPos blockPos, ResourceLocation faction) {
+	public void createRaid(BlockPos blockPos, ResourceLocation faction, ResourceLocation raidTarget) {
 		if (DataPackRegistries.FACTIONS.containsKey(faction)) {
-			createRaid(blockPos, DataPackRegistries.FACTIONS.getValue(faction));
+			createRaid(blockPos, DataPackRegistries.FACTIONS.getValue(faction), RaidTargets.RAID_TARGETS.get().getValue(raidTarget));
 		} else {
 			RaidCraft.LOGGER.error("Not found {} RaidType id", faction.toString());
 		}

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class PatrolManager implements IPatrolManager {
@@ -49,8 +50,8 @@ public class PatrolManager implements IPatrolManager {
 			if(patrol.isStopped() || level.getDifficulty() == Difficulty.PEACEFUL){
 				patrols.remove();
 			}else {
-//				if(patrol.getLeader() != null && !patrol.getLeader().getMob().isAlive()){
-//					patrol.setLeader(null);
+//				if(patrol.getWaveLeaderMap() != null && !patrol.getWaveLeaderMap().getMob().isAlive()){
+//					patrol.setWaveLeaderMap(null);
 //				}
 				patrol.tick();
 			}

@@ -21,6 +21,8 @@ public interface IRaider extends INBTSerializable<CompoundTag> {
 	
 	boolean hasActiveRaid();
 	
+	void setWave(int wave);
+	
 	boolean isLeader();
 	
 	Mob getMob();

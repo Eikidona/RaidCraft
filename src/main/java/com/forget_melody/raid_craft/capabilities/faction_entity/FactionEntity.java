@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.List;
+
 public class FactionEntity implements IFactionEntity {
 	private final Mob mob;
 	private Faction faction = Factions.DEFAULT;
@@ -96,7 +98,7 @@ public class FactionEntity implements IFactionEntity {
 	
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		Faction IFaction = DataPackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
-		setFaction(IFaction);
+		Faction faction = DataPackRegistries.FACTIONS.getValue(new ResourceLocation(nbt.getString("Faction")));
+		setFaction(faction);
 	}
 }

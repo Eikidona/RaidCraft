@@ -1,5 +1,6 @@
 package com.forget_melody.raid_craft.capabilities.raider;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.raid.raid.Raid;
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.InvadeHomeGoal;
@@ -8,12 +9,9 @@ import com.forget_melody.raid_craft.world.entity.ai.goal.raider.ObtainRaidLeader
 import com.forget_melody.raid_craft.world.entity.ai.goal.raider.RaidOpenDoorGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraftforge.common.util.INBTSerializable;
-
-import java.util.Optional;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	private final Mob mob;
@@ -53,20 +51,15 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	@Override
 	public void setRaid(Raid raid) {
 		this.raid = raid;
-		updateWave();
 		updateRaidGoals();
-	}
-	
-	private void updateWave() {
-		if (this.raid == null) {
-			this.wave = 0;
-		} else {
-			this.wave = this.raid.getSpawnedWave();
-		}
 	}
 	
 	@Override
 	public boolean hasActiveRaid() {
+		RaidCraft.LOGGER.info("Raider: raid != null: {}", raid != null);
+		if (raid != null) {
+			RaidCraft.LOGGER.info("Raider: raidIsActive: {}", raid.isActive());
+		}
 		return raid != null && raid.isActive();
 	}
 	
@@ -78,6 +71,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 			}
 			mob.goalSelector.addGoal(4, invadeHomeGoal);
 			mob.goalSelector.addGoal(5, moveTowardsRaidGoal);
+			RaidCraft.LOGGER.info("Raider add Goals");
 		} else {
 			mob.goalSelector.removeGoal(moveTowardsRaidGoal);
 			mob.goalSelector.removeGoal(invadeHomeGoal);
@@ -89,13 +83,16 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	@Override
 	public void setLeader(boolean leader) {
 		this.leader = leader;
-		this.mob.setItemSlot(EquipmentSlot.HEAD, raid.getBanner());
-		this.mob.setDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 	
 	@Override
 	public int getWave() {
 		return wave;
+	}
+	
+	@Override
+	public void setWave(int wave) {
+		this.wave = wave;
 	}
 	
 	@Override
@@ -105,23 +102,29 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	
 	@Override
 	public CompoundTag serializeNBT() {
-		CompoundTag compoundTag = new CompoundTag();
+		CompoundTag tag = new CompoundTag();
 		if (raid != null) {
-			compoundTag.putInt("Raid", raid.getId());
+			tag.putInt("Raid", raid.getId());
 		}
-		return compoundTag;
+		if (wave != 0) {
+			tag.putInt("Wave", this.wave);
+		}
+		return tag;
 	}
 	
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
+		if (nbt.contains("Wave")) {
+			this.wave = nbt.getInt("Wave");
+		}
 		if (nbt.contains("Raid")) {
-			Optional<IRaidManager> optional = IRaidManager.get((ServerLevel) mob.level());
-			optional.ifPresent(iRaidManager -> {
-				raid = iRaidManager.getRaid(nbt.getInt("Raid"));
-				if (raid != null) {
-					raid.joinRaid(this);
-				}
-			});
+			IRaidManager manager = IRaidManager.get((ServerLevel) mob.level()).get();
+			Raid raid1 = manager.getRaid(nbt.getInt("Raid"));
+			if (raid1 != null) {
+				raid1.joinRaid(this, false);
+			} else {
+				RaidCraft.LOGGER.error("Not found valid raid id {}", nbt.getInt("Raid"));
+			}
 			updateRaidGoals();
 		}
 	}

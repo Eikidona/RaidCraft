@@ -18,6 +18,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
 import net.minecraftforge.registries.tags.ITagManager;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PatrolSpawner implements CustomSpawner {
