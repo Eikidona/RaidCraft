@@ -112,4 +112,12 @@ public class Faction {
 	public ResourceLocation getActivationAdvancement() {
 		return activationAdvancement;
 	}
+	
+	public boolean isAlly(Faction targetFaction){
+		return getFactionRelations().getAllies().contains(DataPackRegistries.FACTIONS.getKey(targetFaction).toString());
+	}
+	
+	public boolean isEnemy(Faction targetFaction){
+		return getFactionRelations().getEnemies().contains(DataPackRegistries.FACTIONS.getKey(targetFaction).toString());
+	}
 }

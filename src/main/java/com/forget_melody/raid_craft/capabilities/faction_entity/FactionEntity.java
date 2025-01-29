@@ -39,31 +39,31 @@ public class FactionEntity implements IFactionEntity {
 	}
 	
 	@Override
-	public boolean isEnemy(Faction faction) {
-		if(faction == null){
+	public boolean isEnemy(Faction targetFaction) {
+		if(targetFaction == null){
 			RaidCraft.LOGGER.error("isEnemy NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return faction.getFactionRelations().getEnemies().add(DataPackRegistries.FACTIONS.getKey(faction));
+		return targetFaction != Factions.DEFAULT && faction != Factions.DEFAULT && faction.isEnemy(targetFaction);
 	}
 	
 	@Override
-	public boolean isAlly(Faction faction) {
-		if(faction == null){
+	public boolean isAlly(Faction targetFaction) {
+		if(targetFaction == null){
 			RaidCraft.LOGGER.error("isAlly NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return faction.getFactionRelations().getAllies().add(DataPackRegistries.FACTIONS.getKey(faction));
+		return targetFaction != Factions.DEFAULT && faction != Factions.DEFAULT && faction.isAlly(targetFaction);
 	}
 	
 	@Override
-	public boolean isFriendly(Mob mob) {
-		return IFactionEntity.get(mob).get().isAlly(faction);
+	public boolean isFriendly(Mob target) {
+		return IFactionEntity.get(target).get().isAlly(faction);
 	}
 	
 	@Override
-	public boolean isHostility(Mob mob) {
-		return IFactionEntity.get(mob).get().isEnemy(faction);
+	public boolean isHostility(Mob target) {
+		return IFactionEntity.get(target).get().isEnemy(faction);
 	}
 	
 	@Override

@@ -8,7 +8,6 @@ import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.MobSpawnType;
@@ -17,29 +16,26 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class RaiderType {
-	public static final RaiderType DEFAULT = new RaiderType(new ResourceLocation(RaidCraft.MODID, "default"), new CompoundTag(), 5, 0, 999, 0, 999);
+	public static final RaiderType DEFAULT = new RaiderType(new ResourceLocation(RaidCraft.MODID, "default"), 5, 0, 999, 0, 999);
 	
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ResourceLocation.CODEC.fieldOf("faction_entity_type").forGetter(RaiderType::getFactionEntityTypeLocation),
-			CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(RaiderType::getTag),
 			Codec.INT.optionalFieldOf("weight", 5).forGetter(RaiderType::getWeight),
 			Codec.INT.optionalFieldOf("minWave", 0).forGetter(RaiderType::getMinWave),// 最小生成波次
 			Codec.INT.optionalFieldOf("maxWave", 999).forGetter(RaiderType::getMaxWave), // 最大生成波次
-			Codec.INT.optionalFieldOf("minSpawned", 5).forGetter(RaiderType::getMinSpawned), // 波次内最少生成数
+			Codec.INT.optionalFieldOf("minSpawned", 0).forGetter(RaiderType::getMinSpawned), // 波次内最少生成数
 			Codec.INT.optionalFieldOf("maxSpawned", 999).forGetter(RaiderType::getMaxSpawned) // 波次内最大生成数
 	).apply(instance, RaiderType::new));
 	
 	private final ResourceLocation factionEntityType;
-	private final CompoundTag tag;
 	private final int weight;
 	private final int minWave;
 	private final int maxWave;
 	private final int minSpawned;
 	private final int maxSpawned;
 	
-	public RaiderType(ResourceLocation factionEntityType, CompoundTag tag, int weight, int minWave, int maxWave, int minSpawned, int maxWaveSpawned) {
+	public RaiderType(ResourceLocation factionEntityType, int weight, int minWave, int maxWave, int minSpawned, int maxWaveSpawned) {
 		this.factionEntityType = factionEntityType;
-		this.tag = tag;
 		this.weight = weight;
 		this.minWave = minWave;
 		this.maxWave = maxWave;
@@ -53,10 +49,6 @@ public class RaiderType {
 	
 	public ResourceLocation getFactionEntityTypeLocation() {
 		return factionEntityType;
-	}
-	
-	public CompoundTag getTag() {
-		return tag;
 	}
 	
 	public int getWeight() {

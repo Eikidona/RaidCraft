@@ -60,10 +60,10 @@ public class Raid {
 	private int strength = 0;
 	private final List<BlockPos> waveSpawnPos = new ArrayList<>();
 	private boolean started = false;
+	private boolean stopped = false;
 	private boolean victory = false;
 	private boolean defeat = false;
 	private boolean active = true;
-	private int notHasChunkAtTicks = 0;
 	
 	public Raid(int id, ServerLevel level, Faction faction, BlockPos center, IRaidTarget raidTarget) {
 		this.id = id;
@@ -108,14 +108,14 @@ public class Raid {
 		this.strength = tag.getInt("Strength");
 		this.raidTarget = RaidTargets.RAID_TARGETS.get().getValue(new ResourceLocation(tag.getString("RaidTarget")));
 		this.started = tag.getBoolean("Started");
+		this.stopped = tag.getBoolean("Stopped");
 		this.victory = tag.getBoolean("Victory");
 		this.defeat = tag.getBoolean("Defeat");
 		this.active = tag.getBoolean("Active");
 	}
 	
 	public void tick() {
-		if (status == RaidStatus.STOP) {
-			RaidCraft.LOGGER.info("Raid Stop");
+		if (isStopped()) {
 			return;
 		}
 		
@@ -130,6 +130,7 @@ public class Raid {
 					postRaidTicks++;
 				}
 			} else {
+				RaidCraft.LOGGER.info("运行检查阶段PostRaidTicks归零");
 				postRaidTicks = 0;
 			}
 		}
@@ -138,24 +139,23 @@ public class Raid {
 			stop();
 			return;
 		}
-		// Stop or Defeat
-		if (!raidTarget.isValidTarget(this)) {
-			Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
-			if (optional.isEmpty()) {
-				if (!isStarted()) {
-					RaidCraft.LOGGER.info("Raid is not valid target");
-					stop();
-				} else {
-					defeat();
-				}
-				return;
-			} else {
-				setCenter(optional.get());
-			}
-		}
+//		// Stop or Defeat
+//		if (!raidTarget.isValidTarget(this)) {
+//			Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
+//			if (optional.isEmpty()) {
+//				if (!isStarted()) {
+//					RaidCraft.LOGGER.info("Raid is not valid target");
+//					stop();
+//				} else {
+//					defeat();
+//				}
+//				return;
+//			} else {
+//				setCenter(optional.get());
+//			}
+//		}
 		
 		updatePlayer(); // 干脆不延时了 延时延出问题来
-		updateRaider(); // getNumOfLivingRaider方法依赖此方法更新的值
 		
 		activeTicks++;
 		if (activeTicks >= 48000) {
@@ -164,6 +164,17 @@ public class Raid {
 		}
 		
 		if (status == RaidStatus.START) {
+			// 检查目标有效性
+			if (!raidTarget.isValidTarget(this)) {
+				Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
+				if (optional.isEmpty()) {
+					RaidCraft.LOGGER.info("Raid is not valid target");
+					stop();
+					return;
+				} else {
+					setCenter(optional.get());
+				}
+			}
 			if (raidCooldownTicks == 0) {
 				raidCooldownTicks = 300;
 				start();
@@ -175,6 +186,7 @@ public class Raid {
 		}
 		
 		if (status == RaidStatus.ACTIVE) {
+			updateRaider(); // getNumOfLivingRaider方法依赖此方法更新的值
 			// Spawn
 			while (shouldSpawnWave()) {
 				int multiplier = 1;
@@ -202,19 +214,18 @@ public class Raid {
 			
 			int numLivingRaider = getNumOfLivingRaiders();
 			// BossBar
-			if (numLivingRaider == 0 && raidCooldownTicks > 0 && hasMoreWave()) {
-				raidCooldownTicks--;
-				raidEvent.setProgress(Mth.clamp((float) (300 - raidCooldownTicks) / 300, 0.0F, 1.0F));
+			if (numLivingRaider == 0) {
+				if (hasMoreWave() && raidCooldownTicks > 0) {
+					raidCooldownTicks--;
+					raidEvent.setProgress(Mth.clamp((float) (300 - raidCooldownTicks) / 300, 0.0F, 1.0F));
+					RaidCraft.LOGGER.info("BossBar branch-1");
+				}
 				raidEvent.setName(raidConfig.getNameComponent());
-				RaidCraft.LOGGER.info("BossBar branch-1");
 			} else {
 				raidCooldownTicks = 300;
 			}
 			if (numLivingRaider > 0) {
 				if (numLivingRaider <= 3) {
-					// glowing
-					Set<IRaider> livingRaiders = getLivingRaiders();
-					livingRaiders.forEach(raider -> raider.getMob().addEffect(new MobEffectInstance(MobEffects.GLOWING, 100)));
 					raidEvent.setName(raidConfig.getNameComponent().copy().append("-").append(Component.translatable("event.minecraft.raid.raiders_remaining", numLivingRaider)));
 				} else {
 					raidEvent.setName(raidConfig.getNameComponent());
@@ -222,10 +233,18 @@ public class Raid {
 				RaidCraft.LOGGER.info("BossBar branch-2");
 				updateBossBar();
 			}
+			// Glowing
+			if (numLivingRaider > 0 && numLivingRaider <= 3) {
+				if (activeTicks % 120 == 0) {
+					Set<IRaider> livingRaiders = getLivingRaiders();
+					livingRaiders.forEach(raider -> raider.getMob().addEffect(new MobEffectInstance(MobEffects.GLOWING, 60)));
+				}
+			}
 			// Victory
 			if (numLivingRaider == 0 && !hasMoreWave()) {
 				if (postRaidTicks > 40) {
 					victory();
+					return;
 				} else {
 					postRaidTicks++;
 				}
@@ -234,14 +253,25 @@ public class Raid {
 			else if (numLivingRaider > 0 && raidEvent.getPlayers().isEmpty()) {
 				if (postRaidTicks > 40) {
 					defeat();
+					return;
 				} else {
 					postRaidTicks++;
 				}
-			}
-			// 重置
-			else {
+			} else {
+				RaidCraft.LOGGER.info("成功失败阶段PostRaidTicks归零");
 				postRaidTicks = 0;
 			}
+			// Target Defeat
+			if (!raidTarget.isValidTarget(this)) {
+				Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
+				if (optional.isEmpty()) {
+					defeat();
+					return;
+				} else {
+					setCenter(optional.get());
+				}
+			}
+			RaidCraft.LOGGER.info("Raid: livingOfRaider: {}, raidCooldownTicks: {}, hasMoreWave: {}, postRaidTicks: {}", getNumOfLivingRaiders(), raidCooldownTicks, hasMoreWave(), postRaidTicks);
 			return;
 		}
 		
@@ -251,8 +281,8 @@ public class Raid {
 			} else {
 				stop();
 			}
-			return;
 		}
+		
 	}
 	
 	private void defeat() {
@@ -318,16 +348,20 @@ public class Raid {
 				}
 			}
 		}
+		if (activeTicks % 200 == 0) {
+			waveRaiderMap.values().stream().flatMap(Collection::stream).toList().forEach(raider -> RaidCraft.LOGGER.info("isAlive: {}, position: {}, isAddedToWorld: {}", raider.getMob().isAlive(), raider.getMob().blockPosition(), raider.getMob().isAddedToWorld()));
+		}
+		
 		outOfRaid.forEach(raider -> removeForRaid(raider, true));
 		deadRaider.forEach(raider -> removeForRaid(raider, false));
 	}
 	
-	private void removeForRaid(IRaider raider, boolean outOfRaid) {
+	private void removeForRaid(IRaider raider, boolean isAlive) {
 		waveRaiderMap.get(raider.getWave()).remove(raider);
 		if (raider.isLeader()) {
 			waveLeaderMap.remove(raider.getWave());
 		}
-		if (outOfRaid) {
+		if (isAlive) {
 			totalHealth -= raider.getMob().getMaxHealth();
 			raider.setRaid(null);
 			raider.setWave(0);
@@ -535,7 +569,7 @@ public class Raid {
 		return !hasFirstWaveSpawned() || raidCooldownTicks == 0 && hasMoreWave() && getNumOfLivingRaiders() == 0;
 	}
 	
-	private int getNumOfLivingRaiders() {
+	public int getNumOfLivingRaiders() {
 		return waveRaiderMap.values().stream().mapToInt(Set::size).sum();
 	}
 	
@@ -552,7 +586,7 @@ public class Raid {
 	}
 	
 	public void stop() {
-		status = RaidStatus.STOP;
+		stopped = true;
 		raidEvent.removeAllPlayers();
 		raidEvent.setVisible(false);
 	}
@@ -562,7 +596,7 @@ public class Raid {
 	}
 	
 	public boolean isStopped() {
-		return status == RaidStatus.STOP;
+		return stopped;
 	}
 	
 	public int getId() {
@@ -585,6 +619,7 @@ public class Raid {
 		tag.putInt("Strength", this.strength);
 		tag.putString("RaidTarget", RaidTargets.RAID_TARGETS.get().getKey(this.raidTarget).toString());
 		tag.putBoolean("Started", this.started);
+		tag.putBoolean("Stopped", this.stopped);
 		tag.putBoolean("Victory", this.victory);
 		tag.putBoolean("Defeat", this.defeat);
 		tag.putBoolean("Active", this.active);
@@ -629,10 +664,7 @@ public class Raid {
 	private enum RaidStatus {
 		START,
 		ACTIVE,
-		OVER,
-		VICTORY,
-		DEFEAT,
-		STOP;
+		OVER;
 		
 		private static final RaidStatus[] VALUES = values();
 		

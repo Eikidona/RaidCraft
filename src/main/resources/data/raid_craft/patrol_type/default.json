@@ -1,9 +1,0 @@
-{
-  "faction": "raid_craft:default",
-  "patrollers": [
-    {
-      "entity_type": "minecraft:husk",
-      "weight": 5
-    }
-  ]
-}

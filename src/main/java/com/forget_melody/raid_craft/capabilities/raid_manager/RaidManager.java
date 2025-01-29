@@ -42,6 +42,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 //				RaidCraft.LOGGER.info("raid is tick");
 				raid.tick();
 			}
+			RaidCraft.LOGGER.info("Raid: isStopped: {}, isActive: {}, livingOfRaider: {}", raid.isStopped(), raid.isActive(), raid.getNumOfLivingRaiders());
 		}
 	}
 	

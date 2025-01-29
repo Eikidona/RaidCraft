@@ -68,15 +68,15 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 		return loadedData;
 	}
 	
-	public @Nullable T getValue(ResourceLocation name) {
+	public T getValue(ResourceLocation name) {
 		return loadedData.get(name);
 	}
 	
-	public @Nullable ResourceLocation getKey(T value) {
+	public ResourceLocation getKey(T value) {
 		return loadedData.inverse().get(value);
 	}
 	
-	public @Nullable T getRandomValue() {
+	public T getRandomValue() {
 		Collection<T> collection = getValues();
 		if (collection.isEmpty()) {
 			return null;
@@ -84,7 +84,7 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 		return collection.stream().toList().get((int) (Math.random() * collection.size()));
 	}
 	
-	public @Nullable ResourceLocation getRandomKey() {
+	public ResourceLocation getRandomKey() {
 		Collection<ResourceLocation> collection = getKeys();
 		if(collection.isEmpty()){
 			return null;

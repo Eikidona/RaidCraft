@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -28,6 +29,16 @@ public class FactionEntityHandler {
 			Faction faction = DataPackRegistries.FACTIONS.getFaction(event.getEntity().getType());
 			if (faction != null) {
 				factionEntity.setFaction(faction);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public static void stopAttackAlly(LivingChangeTargetEvent event){
+		if(event.getEntity() instanceof Mob mob && event.getNewTarget() instanceof Mob target){
+			IFactionEntity factionEntity = IFactionEntity.get(mob).get();
+			if(factionEntity.isFriendly(target)){
+				event.setCanceled(true);
 			}
 		}
 	}

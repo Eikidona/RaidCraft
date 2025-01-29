@@ -10,7 +10,7 @@ public class PatrolConfig {
 	public static final PatrolConfig DEFAULT = new PatrolConfig(List.of(PatrollerType.DEFAULT));
 	
 	public static final Codec<PatrolConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			PatrollerType.CODEC.listOf().optionalFieldOf("patrollers", new ArrayList<>()).forGetter(PatrolConfig::getPatrollerTypeList)
+			PatrollerType.CODEC.listOf().optionalFieldOf("patrollers", new ArrayList<>()).forGetter(PatrolConfig::getPatrollerTypes)
 	).apply(instance, PatrolConfig::new));
 	
 	private final List<PatrollerType> patrollerTypeList;
@@ -19,7 +19,7 @@ public class PatrolConfig {
 		this.patrollerTypeList = patrollerTypeList;
 	}
 	
-	public List<PatrollerType> getPatrollerTypeList() {
+	public List<PatrollerType> getPatrollerTypes() {
 		return patrollerTypeList;
 	}
 	

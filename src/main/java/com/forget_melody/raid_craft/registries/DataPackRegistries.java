@@ -1,6 +1,5 @@
 package com.forget_melody.raid_craft.registries;
 
-import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.registries.datapack.api.FactionEntityTypeReloadListener;
 import com.forget_melody.raid_craft.registries.datapack.api.FactionReloadListener;
 import net.minecraftforge.event.AddReloadListenerEvent;

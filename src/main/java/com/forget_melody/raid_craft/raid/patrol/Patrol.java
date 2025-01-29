@@ -150,7 +150,7 @@ public class Patrol {
 		BlockPos.MutableBlockPos pos = originPos.mutable();
 		int numBaseSpawn = level.getDifficulty().getId() * 2;
 		int numTotalSpawn = (int) Math.ceil(level.getCurrentDifficultyAt(pos).getEffectiveDifficulty()) + numBaseSpawn;
-		IWeightTable<PatrollerType> weightTable = IWeightTable.of(faction.getPatrolConfig().getPatrollerTypeList().stream().map(patrollerType -> IWeightEntry.of(patrollerType, patrollerType.getWeight())).toList());
+		IWeightTable<PatrollerType> weightTable = IWeightTable.of(faction.getPatrolConfig().getPatrollerTypes().stream().map(patrollerType -> IWeightEntry.of(patrollerType, patrollerType.getWeight())).toList());
 		for (int numCurrentSpawn = 0; numCurrentSpawn < numTotalSpawn; numCurrentSpawn++) {
 			
 			pos.setY(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos).getY());

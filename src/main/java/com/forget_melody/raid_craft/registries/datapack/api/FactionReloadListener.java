@@ -26,6 +26,8 @@ public class FactionReloadListener extends ReloadListener<Faction> {
 				faction.getEntities().forEach(resourceLocation -> originalFaction.getEntities().add(resourceLocation));
 				faction.getFactionRelations().getAllies().forEach(resourceLocation -> originalFaction.getFactionRelations().getAllies().add(resourceLocation));
 				faction.getFactionRelations().getEnemies().forEach(resourceLocation -> originalFaction.getFactionRelations().getEnemies().add(resourceLocation));
+				faction.getRaidConfig().getRaiderTypes().forEach(raiderType -> originalFaction.getRaidConfig().getRaiderTypes().add(raiderType));
+				faction.getPatrolConfig().getPatrollerTypes().forEach(patrollerType -> originalFaction.getPatrolConfig().getPatrollerTypes().add(patrollerType));
 			}
 		} else {
 			loadedData.put(name, faction);

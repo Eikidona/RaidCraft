@@ -1,7 +1,15 @@
 {
   "replace":false,
+  "entities": [
+    "minecraft:husk",
+    "minecraft:zombie"
+  ],
   "raid_config": {
-
+    "raiders": [
+      {
+        "faction_entity_type":"raid_craft:zombie"
+      }
+    ]
   },
   "patrol_config": {
 

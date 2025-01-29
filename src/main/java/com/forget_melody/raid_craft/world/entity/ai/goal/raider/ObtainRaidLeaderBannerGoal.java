@@ -43,7 +43,7 @@ public class ObtainRaidLeaderBannerGoal<T extends Mob> extends Goal {
 			List<ItemEntity> list = mob.level().getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D), itemEntity -> !itemEntity.hasPickUpDelay() && itemEntity.isAlive() && ItemStack.matches(itemEntity.getItem(), factionEntity.getFaction().getBanner()));
 			if (!list.isEmpty()) {
 				list.get(0).discard();
-				raider.getRaid().setRaider(raider, false);
+				raider.getRaid().setRaider(raider, true);
 			}
 		}
 	}
