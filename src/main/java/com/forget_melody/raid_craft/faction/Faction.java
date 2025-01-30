@@ -29,8 +29,9 @@ public class Faction {
 			RaidConfig.CODEC.optionalFieldOf("raid_config", RaidConfig.DEFAULT).forGetter(Faction::getRaidConfig),
 			PatrolConfig.CODEC.optionalFieldOf("patrol_config", PatrolConfig.DEFAULT).forGetter(Faction::getPatrolConfig),
 			FactionRelations.CODEC.optionalFieldOf("relations", FactionRelations.DEFAULT).forGetter(Faction::getFactionRelations),
-			ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(RaidCraft.MODID, "start")).forGetter(Faction::getActivationAdvancement)
+			ResourceLocation.CODEC.optionalFieldOf("activation_advancement", new ResourceLocation(RaidCraft.MOD_ID, "start")).forGetter(Faction::getActivationAdvancement)
 	).apply(factionInstance, Faction::new));
+	public static final Faction DEFAULT = new Faction(false, new CompoundTag(), new HashSet<>(), RaidConfig.DEFAULT, PatrolConfig.DEFAULT, FactionRelations.DEFAULT, new ResourceLocation(RaidCraft.MOD_ID, "start"));
 	
 	private final boolean replace;
 	private final CompoundTag banner;

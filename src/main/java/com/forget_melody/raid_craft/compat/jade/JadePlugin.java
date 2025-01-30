@@ -10,7 +10,7 @@ import snownee.jade.api.WailaPlugin;
 
 @WailaPlugin
 public class JadePlugin implements IWailaPlugin {
-	public static final ResourceLocation FACTION_ENTITY = new ResourceLocation(RaidCraft.MODID, "faction_entity");
+	public static final ResourceLocation FACTION_ENTITY = new ResourceLocation(RaidCraft.MOD_ID, "faction_entity");
 	@Override
 	public void register(IWailaCommonRegistration registration) {
 		registration.registerEntityDataProvider(new FactionEntityJadePlugin(), Mob.class);

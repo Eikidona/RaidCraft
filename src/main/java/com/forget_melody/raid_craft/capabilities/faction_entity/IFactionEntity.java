@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IFactionEntity extends INBTSerializable<CompoundTag> {
-	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "faction_entity");
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "faction_entity");
 	
 	static Optional<IFactionEntity> get(Mob mob) {
 		return mob.getCapability(Capabilities.FACTION_ENTITY).resolve();

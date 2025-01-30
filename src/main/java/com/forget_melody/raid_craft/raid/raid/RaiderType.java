@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class RaiderType {
-	public static final RaiderType DEFAULT = new RaiderType(new ResourceLocation(RaidCraft.MODID, "default"), 5, 0, 999, 0, 999);
 	
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ResourceLocation.CODEC.fieldOf("faction_entity_type").forGetter(RaiderType::getFactionEntityTypeLocation),

@@ -164,6 +164,11 @@ public class Raid {
 		}
 		
 		if (status == RaidStatus.START) {
+			// 检查RaidConfig有效性
+			if(raidConfig.getRaiderTypes().isEmpty()){
+				stop();
+				return;
+			}
 			// 检查目标有效性
 			if (!raidTarget.isValidTarget(this)) {
 				Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
@@ -558,7 +563,7 @@ public class Raid {
 			int z = center.getZ() + Mth.floor(Mth.sin(f) * 32.0F * (float) offsetMultiplier) + this.level.random.nextInt(5);
 			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 			pos.set(x, y, z);
-			if (level.hasChunksAt(pos.getX() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getZ() + 10) && this.level.isPositionEntityTicking(pos) && level.getBlockState(pos.below()).is(TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), new ResourceLocation(RaidCraft.MODID, "raiders_spawnable_on"))) && level.getBlockState(pos).isAir()) {
+			if (level.hasChunksAt(pos.getX() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getZ() + 10) && this.level.isPositionEntityTicking(pos) && level.getBlockState(pos.below()).is(TagKey.create(ForgeRegistries.BLOCKS.getRegistryKey(), new ResourceLocation(RaidCraft.MOD_ID, "raiders_spawnable_on"))) && level.getBlockState(pos).isAir()) {
 				return pos;
 			}
 		}

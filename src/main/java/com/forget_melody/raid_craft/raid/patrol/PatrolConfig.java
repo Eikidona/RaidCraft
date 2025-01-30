@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PatrolConfig {
-	public static final PatrolConfig DEFAULT = new PatrolConfig(List.of(PatrollerType.DEFAULT));
+	public static final PatrolConfig DEFAULT = new PatrolConfig(new ArrayList<>());
 	
 	public static final Codec<PatrolConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			PatrollerType.CODEC.listOf().optionalFieldOf("patrollers", new ArrayList<>()).forGetter(PatrolConfig::getPatrollerTypes)

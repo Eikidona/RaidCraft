@@ -1,10 +1,10 @@
 package com.forget_melody.raid_craft.capabilities.patroller;
 
-import com.forget_melody.raid_craft.RaidCraft;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -14,6 +14,17 @@ public class PatrollerHandler {
 	public static void addCapability(AttachCapabilitiesEvent<Entity> event){
 		if(event.getObject() instanceof Mob){
 			event.addCapability(IPatroller.ID, new PatrollerProvider((Mob) event.getObject()));
+		}
+	}
+	@SubscribeEvent
+	public static void addEffectToKiller(LivingDeathEvent event){
+		if(event.getEntity() instanceof Mob mob && event.getSource().getEntity() instanceof ServerPlayer player){
+			IPatroller patroller = IPatroller.get(mob).get();
+			if(patroller.isPatrolLeader()){
+				/**
+				 * 
+				 */
+			}
 		}
 	}
 }

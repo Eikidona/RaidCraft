@@ -5,17 +5,14 @@ import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.forget_melody.raid_craft.world.entity.ai.goal.faction_entity.NearestEnemyFactionEntityTargetGoal;
-import com.forget_melody.raid_craft.registries.Factions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.List;
-
 public class FactionEntity implements IFactionEntity {
 	private final Mob mob;
-	private Faction faction = Factions.DEFAULT;
+	private Faction faction = Faction.DEFAULT;
 	private FactionEntityType factionEntityType;
 	private NearestEnemyFactionEntityTargetGoal goal;
 	
@@ -44,7 +41,7 @@ public class FactionEntity implements IFactionEntity {
 			RaidCraft.LOGGER.error("isEnemy NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return targetFaction != Factions.DEFAULT && faction != Factions.DEFAULT && faction.isEnemy(targetFaction);
+		return targetFaction != Faction.DEFAULT && faction != Faction.DEFAULT && faction.isEnemy(targetFaction);
 	}
 	
 	@Override
@@ -53,7 +50,7 @@ public class FactionEntity implements IFactionEntity {
 			RaidCraft.LOGGER.error("isAlly NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
-		return targetFaction != Factions.DEFAULT && faction != Factions.DEFAULT && faction.isAlly(targetFaction);
+		return targetFaction != Faction.DEFAULT && faction != Faction.DEFAULT && faction.isAlly(targetFaction);
 	}
 	
 	@Override
@@ -73,7 +70,7 @@ public class FactionEntity implements IFactionEntity {
 	}
 	
 	private void updateGoal(){
-		if(faction != Factions.DEFAULT && goal == null){
+		if(faction != Faction.DEFAULT && goal == null){
 			goal = new NearestEnemyFactionEntityTargetGoal(mob);
 			mob.goalSelector.addGoal(2, goal);
 		}

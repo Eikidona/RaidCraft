@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "entities": [
+    "minecraft:vindicator",
+    "minecraft:pillager",
+    "minecraft:ravager"
+  ],
+  "relations": {
+    "allies": [],
+    "enemies": [
+      "raid_craft:village",
+      "raid_craft:undead"
+    ]
+  },
+  "raid_config": {
+    "raiders": [
+    ]
+  },
+  "patrol_config": {
+  }
+}

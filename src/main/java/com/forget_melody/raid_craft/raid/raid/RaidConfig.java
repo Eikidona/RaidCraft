@@ -10,10 +10,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.BossEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RaidConfig {
-	public static final RaidConfig DEFAULT = new RaidConfig("event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", "red", "notched_10", 20, new ArrayList<RaiderType>(List.of(RaiderType.DEFAULT)), SoundEvents.RAID_HORN, SoundEvents.RAID_HORN, SoundEvents.RAID_HORN);
+	public static final RaidConfig DEFAULT = new RaidConfig("event.minecraft.raid", "event.minecraft.raid.victory", "event.minecraft.raid.defeat", "red", "notched_10", 20, new ArrayList<>(), SoundEvents.RAID_HORN, SoundEvents.RAID_HORN, SoundEvents.RAID_HORN);
 	
 	public static final Codec<RaidConfig> CODEC = RecordCodecBuilder.create(raidTypeInstance -> raidTypeInstance.group(
 			Codec.STRING.optionalFieldOf("name", "event.minecraft.raid").forGetter(RaidConfig::getName),
@@ -22,7 +21,7 @@ public class RaidConfig {
 			Codec.STRING.optionalFieldOf("color", "red").forGetter(RaidConfig::getColorString),
 			Codec.STRING.optionalFieldOf("overlay", "notched_10").forGetter(RaidConfig::getOverlayString),
 			Codec.INT.optionalFieldOf("strength", 20).forGetter(RaidConfig::getStrength),
-			RaiderType.CODEC.listOf().optionalFieldOf("raiders", new ArrayList<>()).forGetter(RaidConfig::getRaiderTypes),
+			RaiderType.CODEC.listOf().xmap(ArrayList::new, ArrayList::new).optionalFieldOf("raiders", new ArrayList<>()).forGetter(RaidConfig::getRaiderTypes),
 			SoundEvent.CODEC.optionalFieldOf("wave_sound", SoundEvents.RAID_HORN).forGetter(RaidConfig::getWaveSoundEvent),
 			SoundEvent.CODEC.optionalFieldOf("victory_sound", SoundEvents.RAID_HORN).forGetter(RaidConfig::getVictorySoundEvent),
 			SoundEvent.CODEC.optionalFieldOf("defeat_sound", SoundEvents.RAID_HORN).forGetter(RaidConfig::getDefeatSoundEvent)
@@ -34,7 +33,7 @@ public class RaidConfig {
 	private final String color;
 	private final String overlay;
 	private final int strength;
-	private final List<RaiderType> raiderTypes;
+	private final ArrayList<RaiderType> raiderTypes;
 	private final Holder<SoundEvent> waveSoundEvent;
 	private final Holder<SoundEvent> victorySoundEvent;
 	private final Holder<SoundEvent> defeatSoundEvent;
@@ -46,7 +45,7 @@ public class RaidConfig {
 			String color,
 			String overlay,
 			int strength,
-			List<RaiderType> raiderTypes,
+			ArrayList<RaiderType> raiderTypes,
 			Holder<SoundEvent> waveSoundEvent,
 			Holder<SoundEvent> victorySoundEvent,
 			Holder<SoundEvent> defeatSoundEvent
@@ -87,7 +86,7 @@ public class RaidConfig {
 		return BossEvent.BossBarOverlay.byName(overlay);
 	}
 	
-	public List<RaiderType> getRaiderTypes() {
+	public ArrayList<RaiderType> getRaiderTypes() {
 		return raiderTypes;
 	}
 	

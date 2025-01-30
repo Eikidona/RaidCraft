@@ -12,13 +12,12 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IPatrolManager extends INBTSerializable<CompoundTag> {
-	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "patrol_manager");
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "patrol_manager");
 	
 	static Optional<IPatrolManager> get(ServerLevel level) {
 		return level.getCapability(Capabilities.PATROLLER_MANAGER).resolve();

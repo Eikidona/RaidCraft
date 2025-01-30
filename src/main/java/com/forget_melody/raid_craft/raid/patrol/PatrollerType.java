@@ -16,22 +16,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class PatrollerType {
-	public static final PatrollerType DEFAULT = new PatrollerType(new ResourceLocation(RaidCraft.MODID, "default"), 5);
 	
 	public static final Codec<PatrollerType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			net.minecraft.resources.ResourceLocation.CODEC.fieldOf("faction_entity_type").forGetter(PatrollerType::getFactionEntityTypeLocation),
+			ResourceLocation.CODEC.fieldOf("faction_entity_type").forGetter(PatrollerType::getFactionEntityTypeLocation),
 			Codec.INT.optionalFieldOf("weight", 5).forGetter(PatrollerType::getWeight)
 	).apply(instance, PatrollerType::new));
 	
-	private final net.minecraft.resources.ResourceLocation factionEntityTypeLocation;
+	private final ResourceLocation factionEntityTypeLocation;
 	private final int weight;
 	
-	public PatrollerType(net.minecraft.resources.ResourceLocation factionEntityTypeLocation, int weight) {
+	public PatrollerType(ResourceLocation factionEntityTypeLocation, int weight) {
 		this.factionEntityTypeLocation = factionEntityTypeLocation;
 		this.weight = weight;
 	}
 	
-	public net.minecraft.resources.ResourceLocation getFactionEntityTypeLocation() {
+	public ResourceLocation getFactionEntityTypeLocation() {
 		return factionEntityTypeLocation;
 	}
 	

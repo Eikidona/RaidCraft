@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "entities": [
+    "minecraft:villager",
+    "minecraft:iron_golem"
+  ],
+  "relations": {
+    "allies": [],
+    "enemies": [
+      "raid_craft:undead"
+    ]
+  },
+  "raid_config": {
+  },
+  "patrol_config": {
+  }
+}

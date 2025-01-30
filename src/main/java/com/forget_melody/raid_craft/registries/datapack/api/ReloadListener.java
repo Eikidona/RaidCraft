@@ -1,6 +1,7 @@
 package com.forget_melody.raid_craft.registries.datapack.api;
 
 import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
@@ -14,7 +15,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Reader;
 import java.util.Collection;
@@ -26,16 +26,34 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 	protected final String prefix;
 	protected final Codec<T> codec;
 	protected final BiMap<ResourceLocation, T> loadedData = HashBiMap.create();
+	protected ResourceLocation defaultKey;
+	protected T defaultValue;
 	
 	public ReloadListener(String folder, Codec<T> codec) {
+		this(folder, codec, RaidCraft.DEFAULT_KEY, null);
+	}
+	
+	public ReloadListener(String folder, Codec<T> codec, T defaultValue) {
+		this(folder, codec, RaidCraft.DEFAULT_KEY, defaultValue);
+	}
+	
+	public ReloadListener(String folder, Codec<T> codec, ResourceLocation defaultKey, T defaultValue) {
 		this.folder = folder;
 		this.prefix = folder + '/';
 		this.codec = codec;
+		this.defaultKey = defaultKey;
+		this.defaultValue = defaultValue;
 	}
 	
 	@Override
 	protected @NotNull Map<ResourceLocation, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller filler) {
-		return listResources(resourceManager, filler);
+		loadedData.clear();
+		if(defaultValue != null && defaultKey != null){
+			loadedData.put(defaultKey, defaultValue);
+		}
+		loadedData.putAll(listResources(resourceManager, filler));
+		RaidCraft.LOGGER.info("Size: {}", loadedData.size());
+		return loadedData;
 	}
 	
 	@Override
@@ -56,7 +74,6 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 					 .resultOrPartial(error -> RaidCraft.LOGGER.error("Failed to parse DataPack Entry: {}", error))
 					 .ifPresent(instance -> {
 						 register(name, instance);
-						 RaidCraft.LOGGER.info("DataPack Entry {} is register! id: {}", folder, name);
 					 });
 			} catch (JsonParseException e) {
 				RaidCraft.LOGGER.error("Failed to parse JSON for DataPack entry: {}, {}", name, resource.getKey(), e);
@@ -74,22 +91,6 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 	
 	public ResourceLocation getKey(T value) {
 		return loadedData.inverse().get(value);
-	}
-	
-	public T getRandomValue() {
-		Collection<T> collection = getValues();
-		if (collection.isEmpty()) {
-			return null;
-		}
-		return collection.stream().toList().get((int) (Math.random() * collection.size()));
-	}
-	
-	public ResourceLocation getRandomKey() {
-		Collection<ResourceLocation> collection = getKeys();
-		if(collection.isEmpty()){
-			return null;
-		}
-		return collection.stream().toList().get((int) (Math.random() * collection.size()));
 	}
 	
 	public boolean containsValue(T value) {

@@ -15,7 +15,7 @@ import java.util.Optional;
 @AutoRegisterCapability
 public interface IPatroller extends INBTSerializable<CompoundTag> {
 	
-	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "patroller");
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "patroller");
 	
 	static Optional<IPatroller> get(Mob mob) {
 		return mob.getCapability(Capabilities.PATROLLER).resolve();

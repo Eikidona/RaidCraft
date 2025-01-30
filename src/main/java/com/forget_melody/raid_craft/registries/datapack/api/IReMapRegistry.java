@@ -12,10 +12,6 @@ public interface IReMapRegistry<T, K, V> {
 	
 	@Nullable ResourceLocation getKey(T value);
 	
-	T getRandomValue();
-	
-	@Nullable ResourceLocation getRandomKey();
-	
 	boolean containsValue(T value);
 	
 	boolean containsKey(ResourceLocation name);

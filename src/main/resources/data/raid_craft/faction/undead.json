@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "entities": [
+    "minecraft:husk",
+    "minecraft:zombie"
+  ],
+  "relations": {
+    "allies": [],
+    "enemies": [
+      "raid_craft:village"
+    ]
+  },
+  "raid_config": {
+    "raiders": [
+      {
+        "faction_entity_type": "raid_craft:zombie"
+      }
+    ]
+  },
+  "patrol_config": {
+  }
+}

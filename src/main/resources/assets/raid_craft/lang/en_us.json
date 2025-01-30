@@ -1,0 +1,8 @@
+{
+  "config.jade.plugin_raid_craft.faction_entity": "Faction",
+  "jade.raid_craft.faction": "Faction: %s",
+  "effect.raid_craft.bad_omen": "Bad Omen",
+  "faction.raid_craft.default": "none",
+  "faction.raid_craft.village": "village",
+  "faction.raid_craft.undead": "undead"
+}

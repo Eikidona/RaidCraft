@@ -10,7 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.function.Supplier;
 
 public class MobEffects {
-	public static final DeferredRegister<MobEffect> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, RaidCraft.MODID);
+	public static final DeferredRegister<MobEffect> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, RaidCraft.MOD_ID);
 	
 	public static final RegistryObject<MobEffect> BAD_OMEN = register("bad_omen", BadOmenEffect::new);
 	

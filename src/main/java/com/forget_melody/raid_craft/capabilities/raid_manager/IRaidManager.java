@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IRaidManager extends INBTSerializable<CompoundTag> {
-	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raid_manager");
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "raid_manager");
 	
 	static Optional<IRaidManager> get(ServerLevel level) {
 		return level.getCapability(Capabilities.RAID_MANAGER).resolve();

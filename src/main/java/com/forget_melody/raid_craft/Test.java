@@ -3,7 +3,7 @@ package com.forget_melody.raid_craft;
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.config.Config;
-import com.forget_melody.raid_craft.registries.Factions;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.registries.RaidTargets;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.ServerChatEvent;
@@ -19,7 +19,7 @@ public class Test {
 //		}
 		if (event.getMessage().contains(Component.literal("raid"))) {
 			event.getPlayer().sendSystemMessage(Component.literal("Try Create Raid"));
-			IRaidManager.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), Factions.DEFAULT, RaidTargets.VILLAGE.get());
+			IRaidManager.get(event.getPlayer().serverLevel()).get().createRaid(event.getPlayer().blockPosition(), Faction.DEFAULT, RaidTargets.VILLAGE.get());
 		}
 		if (event.getMessage().contains(Component.literal("raids"))) {
 			event.getPlayer().sendSystemMessage(Component.literal("Raids" + IRaidManager.get(event.getPlayer().serverLevel()).get().getRaids().size()));
@@ -29,13 +29,13 @@ public class Test {
 		}
 		if (event.getMessage().contains(Component.literal("patrol"))) {
 			event.getPlayer().sendSystemMessage(Component.literal("Try Spawn Patrol"));
-//			ResourceLocation id = new ResourceLocation(RaidCraft.MODID, "default");
+//			ResourceLocation id = new ResourceLocation(RaidCraft.MOD_ID, "default");
 //			Faction faction = DataPackRegistries.PATROL_TYPES.getValue(id);
 //			if (faction == null) {
 //				RaidCraft.LOGGER.error("Not found PatrolType id {}", id);
 //				return;
 //			}
-			IPatrolManager.get(event.getPlayer().serverLevel()).get().createPatrol(Factions.DEFAULT, event.getPlayer().blockPosition());
+			IPatrolManager.get(event.getPlayer().serverLevel()).get().createPatrol(Faction.DEFAULT, event.getPlayer().blockPosition());
 		}
 		if (event.getMessage().contains(Component.literal("patrols"))) {
 			int count = IPatrolManager.get(event.getPlayer().serverLevel()).get().getPatrols().size();

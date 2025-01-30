@@ -14,16 +14,14 @@ import snownee.jade.api.IServerDataProvider;
 import snownee.jade.api.ITooltip;
 import snownee.jade.api.config.IPluginConfig;
 
-import java.util.List;
-
 public class FactionEntityJadePlugin implements IEntityComponentProvider, IServerDataProvider<EntityAccessor> {
 	
 	@Override
 	public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
 		if (entityAccessor.getServerData().contains("Faction")) {
 			iTooltip.add(Component.translatable(
-					"jade" + "." + RaidCraft.MODID + "." + "faction",
-					entityAccessor.getServerData().getString("Faction")
+					"jade" + "." + RaidCraft.MOD_ID + "." + "faction",
+					Component.translatable(entityAccessor.getServerData().getString("Faction"))
 			));
 		}
 	}

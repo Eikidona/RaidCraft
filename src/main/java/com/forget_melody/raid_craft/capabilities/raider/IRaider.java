@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IRaider extends INBTSerializable<CompoundTag> {
-	ResourceLocation ID = new ResourceLocation(RaidCraft.MODID, "raider");
+	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "raider");
 	
 	static Optional<IRaider> get(Mob mob) {
 		return mob.getCapability(Capabilities.RAIDER).resolve();

@@ -13,7 +13,7 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.function.Supplier;
 
 public class RaidTargets {
-	public static final DeferredRegister<IRaidTarget> DEFERRED_REGISTER = DeferredRegister.create(new ResourceLocation(RaidCraft.MODID, "raid_target"), RaidCraft.MODID);
+	public static final DeferredRegister<IRaidTarget> DEFERRED_REGISTER = DeferredRegister.create(new ResourceLocation(RaidCraft.MOD_ID, "raid_target"), RaidCraft.MOD_ID);
 	public static final Supplier<IForgeRegistry<IRaidTarget>> RAID_TARGETS = DEFERRED_REGISTER.makeRegistry(() -> new RegistryBuilder<IRaidTarget>().setMaxID(1024));
 	
 	public static final RegistryObject<IRaidTarget> VILLAGE = register("village", new VillageRaidTarget());
