@@ -9,8 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 
-import java.util.Optional;
-
 public class Patroller implements IPatroller {
 	private final Mob mob;
 	private Patrol patrol;
@@ -104,21 +102,18 @@ public class Patroller implements IPatroller {
 	public void deserializeNBT(CompoundTag nbt) {
 		this.patrolLeader = nbt.getBoolean("PatrolLeader");
 		if (nbt.contains("Patrol")) {
-			Optional<IPatrolManager> optional = IPatrolManager.get((ServerLevel) mob.level());
-			if (optional.isPresent()) {
-				IPatrolManager manager = optional.get();
-				this.patrol = manager.getPatrol(nbt.getInt("Patrol"));
-				if (this.patrol != null) {
-					this.patrol.joinPatrol(this);
-					if (this.patrolLeader) {
-						this.patrol.setLeader(this);
-					}
-					RaidCraft.LOGGER.info("加入巡逻队");
-				} else {
-					setPatrolling(false);
-					setPatrolLeader(false);
-					RaidCraft.LOGGER.error("意外的Null: Patroller反序列化时加入巡逻队，patrol为null");
+			IPatrolManager manager = IPatrolManager.get((ServerLevel) mob.level());
+			this.patrol = manager.getPatrol(nbt.getInt("Patrol"));
+			if (this.patrol != null) {
+				this.patrol.joinPatrol(this);
+				if (this.patrolLeader) {
+					this.patrol.setLeader(this);
 				}
+				RaidCraft.LOGGER.info("加入巡逻队");
+			} else {
+				setPatrolling(false);
+				setPatrolLeader(false);
+				RaidCraft.LOGGER.error("意外的Null: Patroller反序列化时加入巡逻队，patrol为null");
 			}
 		}
 		this.patrolling = nbt.getBoolean("Patrolling");

@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.EnumSet;
 import java.util.List;
 
-public class ObtainRaidLeaderBannerGoal<T extends Mob> extends Goal {
+public class ObtainRaidLeaderBannerGoal extends Goal {
 	private final Mob mob;
 	public ObtainRaidLeaderBannerGoal(Mob mob) {
 		this.mob = mob;
@@ -20,8 +20,8 @@ public class ObtainRaidLeaderBannerGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public boolean canUse() {
-		IRaider raider = IRaider.get(mob).get();
-		IFactionEntity factionEntity = IFactionEntity.get(mob).get();
+		IRaider raider = IRaider.get(mob);
+		IFactionEntity factionEntity = IFactionEntity.get(mob);
 		if(raider.hasActiveRaid()){
 			Raid raid = raider.getRaid();
 			if(raid.getLeader() == null){
@@ -36,9 +36,8 @@ public class ObtainRaidLeaderBannerGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public void tick() {
-		IRaider raider = IRaider.get(mob).get();
-		IFactionEntity factionEntity = IFactionEntity.get(mob).get();
-		Raid raid = raider.getRaid();
+		IRaider raider = IRaider.get(mob);
+		IFactionEntity factionEntity = IFactionEntity.get(mob);
 		if (mob.getNavigation().getTargetPos().closerToCenterThan(mob.position(), 1.414D)) {
 			List<ItemEntity> list = mob.level().getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D), itemEntity -> !itemEntity.hasPickUpDelay() && itemEntity.isAlive() && ItemStack.matches(itemEntity.getItem(), factionEntity.getFaction().getBanner()));
 			if (!list.isEmpty()) {

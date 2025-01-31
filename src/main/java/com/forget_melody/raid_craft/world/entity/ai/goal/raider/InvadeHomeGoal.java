@@ -54,7 +54,7 @@ public class InvadeHomeGoal extends Goal {
 	}
 	
 	private boolean isValidRaid() {
-		IRaider raider = IRaider.get(mob).get();
+		IRaider raider = IRaider.get(mob);
 		return raider.hasActiveRaid();
 	}
 	

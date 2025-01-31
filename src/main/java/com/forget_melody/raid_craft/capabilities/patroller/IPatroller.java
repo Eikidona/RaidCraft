@@ -10,15 +10,13 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 @AutoRegisterCapability
 public interface IPatroller extends INBTSerializable<CompoundTag> {
 	
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "patroller");
 	
-	static Optional<IPatroller> get(Mob mob) {
-		return mob.getCapability(Capabilities.PATROLLER).resolve();
+	static IPatroller get(Mob mob) {
+		return mob.getCapability(Capabilities.PATROLLER).resolve().get();
 	}
 	
 	Mob getMob();

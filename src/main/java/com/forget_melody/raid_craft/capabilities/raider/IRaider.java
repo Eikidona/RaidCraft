@@ -9,14 +9,12 @@ import net.minecraft.world.entity.Mob;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.Optional;
-
 @AutoRegisterCapability
 public interface IRaider extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "raider");
 	
-	static Optional<IRaider> get(Mob mob) {
-		return mob.getCapability(Capabilities.RAIDER).resolve();
+	static IRaider get(Mob mob) {
+		return mob.getCapability(Capabilities.RAIDER).resolve().get();
 	}
 	
 	boolean hasActiveRaid();

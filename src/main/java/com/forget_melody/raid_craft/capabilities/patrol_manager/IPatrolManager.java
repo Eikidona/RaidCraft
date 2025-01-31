@@ -13,14 +13,13 @@ import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IPatrolManager extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "patrol_manager");
 	
-	static Optional<IPatrolManager> get(ServerLevel level) {
-		return level.getCapability(Capabilities.PATROLLER_MANAGER).resolve();
+	static IPatrolManager get(ServerLevel level) {
+		return level.getCapability(Capabilities.PATROLLER_MANAGER).resolve().get();
 	}
 	
 	Patrol createPatrol(Faction patrolType, BlockPos pos);

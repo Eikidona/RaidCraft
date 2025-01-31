@@ -13,14 +13,13 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 @AutoRegisterCapability
 public interface IRaidManager extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "raid_manager");
 	
-	static Optional<IRaidManager> get(ServerLevel level) {
-		return level.getCapability(Capabilities.RAID_MANAGER).resolve();
+	static IRaidManager get(ServerLevel level) {
+		return level.getCapability(Capabilities.RAID_MANAGER).resolve().get();
 	}
 	
 	ServerLevel getLevel();

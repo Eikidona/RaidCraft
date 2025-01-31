@@ -10,14 +10,12 @@ import net.minecraft.world.entity.Mob;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.Optional;
-
 @AutoRegisterCapability
 public interface IFactionEntity extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "faction_entity");
 	
-	static Optional<IFactionEntity> get(Mob mob) {
-		return mob.getCapability(Capabilities.FACTION_ENTITY).resolve();
+	static IFactionEntity get(Mob mob) {
+		return mob.getCapability(Capabilities.FACTION_ENTITY).resolve().get();
 	}
 	
 	Faction getFaction();

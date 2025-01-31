@@ -12,17 +12,17 @@ import net.minecraftforge.fml.common.Mod;
 public class PatrollerHandler {
 	@SubscribeEvent
 	public static void addCapability(AttachCapabilitiesEvent<Entity> event){
-		if(event.getObject() instanceof Mob){
-			event.addCapability(IPatroller.ID, new PatrollerProvider((Mob) event.getObject()));
+		if(event.getObject() instanceof Mob mob){
+			event.addCapability(IPatroller.ID, new PatrollerProvider(mob));
 		}
 	}
 	@SubscribeEvent
 	public static void addEffectToKiller(LivingDeathEvent event){
 		if(event.getEntity() instanceof Mob mob && event.getSource().getEntity() instanceof ServerPlayer player){
-			IPatroller patroller = IPatroller.get(mob).get();
+			IPatroller patroller = IPatroller.get(mob);
 			if(patroller.isPatrolLeader()){
 				/**
-				 * 
+				 * todo {BadOmen}
 				 */
 			}
 		}

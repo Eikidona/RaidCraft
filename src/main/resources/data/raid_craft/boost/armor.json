@@ -1,0 +1,11 @@
+{
+  "type": "equipment",
+  "head": {
+    "id": "minecraft:iron_helmet",
+    "Count": 1
+  },
+  "chest": {
+    "id": "minecraft:iron_chestplate",
+    "Count": 1
+  }
+}

@@ -9,10 +9,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FactionReloadListener extends ReloadListener<Faction> {
+public class Factions extends ReloadListener<Faction> {
 	private final Map<EntityType<?>, Faction> entityTypeFactionMap = new HashMap<>();
 	
-	public FactionReloadListener() {
+	public Factions() {
 		super("faction", Faction.CODEC, Faction.DEFAULT);
 	}
 	

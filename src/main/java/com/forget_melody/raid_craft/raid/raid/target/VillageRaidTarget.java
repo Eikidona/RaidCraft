@@ -26,7 +26,7 @@ public class VillageRaidTarget implements IRaidTarget{
 	
 	@Override
 	public int getTargetStrength(Raid raid) {
-		List<IFactionEntity> list = raid.getLevel().getEntitiesOfClass(Mob.class, new AABB(raid.getCenter().offset(-16, -16, -16), raid.getCenter().offset(16, 16, 16)), raid::isTarget).stream().map(mob -> IFactionEntity.get(mob).get()).toList();
+		List<IFactionEntity> list = raid.getLevel().getEntitiesOfClass(Mob.class, new AABB(raid.getCenter().offset(-16, -16, -16), raid.getCenter().offset(16, 16, 16)), raid::isTarget).stream().map(mob -> IFactionEntity.get(mob)).toList();
 		int strength = 0;
 		for(IFactionEntity factionEntity: list){
 			if(factionEntity.getFactionEntityType() != null){

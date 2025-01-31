@@ -13,8 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.MobSpawnType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class PatrollerType {
 	
 	public static final Codec<PatrollerType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -54,11 +52,6 @@ public class PatrollerType {
 		if(factionEntity == null){
 			return null;
 		}
-		Optional<IPatroller> optional = IPatroller.get(factionEntity.getMob());
-		if(optional.isEmpty()){
-			RaidCraft.LOGGER.error("IPatroller is null by FactionEntityType id {}", getFactionEntityTypeLocation());
-			return null;
-		}
-		return optional.get();
+		return IPatroller.get(factionEntity.getMob());
 	}
 }

@@ -9,13 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import java.util.Optional;
-
 @AutoRegisterCapability
 public interface IRaidInteraction extends INBTSerializable<CompoundTag> {
 	ResourceLocation ID = new ResourceLocation(RaidCraft.MOD_ID, "raid_interaction");
-	static Optional<IRaidInteraction> get(ServerPlayer player) {
-		return player.getCapability(Capabilities.RAID_INTERACTION).resolve();
+	static IRaidInteraction get(ServerPlayer player) {
+		return player.getCapability(Capabilities.RAID_INTERACTION).resolve().get();
 	}
 	
 	Faction getFaction();

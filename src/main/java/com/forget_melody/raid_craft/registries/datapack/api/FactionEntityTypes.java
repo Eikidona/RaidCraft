@@ -1,6 +1,5 @@
 package com.forget_melody.raid_craft.registries.datapack.api;
 
-import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -12,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FactionEntityTypeReloadListener extends ReloadListener<FactionEntityType> {
+public class FactionEntityTypes extends ReloadListener<FactionEntityType> {
 	private final Map<EntityType<?>, List<FactionEntityType>> entityTypeListMap = new HashMap<>();
 	
-	public FactionEntityTypeReloadListener() {
+	public FactionEntityTypes() {
 		super("faction_entity_type", FactionEntityType.CODEC);
 	}
 	

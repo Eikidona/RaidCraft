@@ -4,13 +4,13 @@ import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_interaction.IRaidInteraction;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.registries.RaidTargets;
-import com.forget_melody.raid_craft.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class BadOmenEffect extends MobEffect {
 	public BadOmenEffect() {
@@ -23,20 +23,20 @@ public class BadOmenEffect extends MobEffect {
 	}
 	
 	@Override
-	public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
-		if (pLivingEntity instanceof ServerPlayer && !pLivingEntity.isSpectator()) {
+	public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier) {
+		if (pLivingEntity instanceof ServerPlayer player && !pLivingEntity.isSpectator()) {
 			
-			ServerLevel level = ((ServerPlayer) (pLivingEntity)).serverLevel();
+			ServerLevel level = player.serverLevel();
 			if (level.getDifficulty() == Difficulty.PEACEFUL) {
 				return;
 			}
 			
-			IRaidInteraction raidInteraction = IRaidInteraction.get((ServerPlayer) pLivingEntity).get();
+			IRaidInteraction raidInteraction = IRaidInteraction.get(player);
 			
 			// 如果是村庄立即触发Raid
 			if (level.isVillage(pLivingEntity.blockPosition())) {
 				if (raidInteraction.getFaction() != null) {
-					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel()).get();
+					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel());
 					manager.createRaid(pLivingEntity.blockPosition(), raidInteraction.getFaction(), RaidTargets.VILLAGE.get());
 				} else {
 					RaidCraft.LOGGER.error("raidInteraction faction is null");

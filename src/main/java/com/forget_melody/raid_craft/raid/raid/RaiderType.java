@@ -13,8 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.MobSpawnType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class RaiderType {
 	
 	public static final Codec<RaiderType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -85,11 +83,6 @@ public class RaiderType {
 		if(factionEntity == null){
 			return null;
 		}
-		Optional<IRaider> optional = IRaider.get(factionEntity.getMob());
-		if(optional.isEmpty()){
-			RaidCraft.LOGGER.error("IRaider is null by FactionEntityType {}", getFactionEntityTypeLocation());
-			return null;
-		}
-		return optional.get();
+		return IRaider.get(factionEntity.getMob());
 	}
 }

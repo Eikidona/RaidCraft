@@ -474,7 +474,7 @@
 
 43.1
 ====
- - 43.1.65 Allow discovering services from the mods folder that use java's modular definition. (#9143)
+ - 43.1.65 Allow discovering services from the mods directory that use java's modular definition. (#9143)
  - 43.1.64 Make Datapack Registries support ICondition(s) (#9113)
  - 43.1.63 Enable additional build types to handle pull request validation. (#9159)
  - 43.1.62 Check source permission level before selector permission (#9147)

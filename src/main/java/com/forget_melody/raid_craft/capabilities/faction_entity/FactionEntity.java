@@ -55,12 +55,12 @@ public class FactionEntity implements IFactionEntity {
 	
 	@Override
 	public boolean isFriendly(Mob target) {
-		return IFactionEntity.get(target).get().isAlly(faction);
+		return IFactionEntity.get(target).isAlly(faction);
 	}
 	
 	@Override
 	public boolean isHostility(Mob target) {
-		return IFactionEntity.get(target).get().isEnemy(faction);
+		return IFactionEntity.get(target).isEnemy(faction);
 	}
 	
 	@Override

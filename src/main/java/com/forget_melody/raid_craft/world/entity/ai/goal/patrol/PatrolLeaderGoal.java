@@ -6,9 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
 
 /**
  * 仅负责寻找巡逻位置 更新自身及其队友的巡逻状态
@@ -25,14 +22,11 @@ public class PatrolLeaderGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public boolean canUse() {
-		Optional<IPatroller> optional = getPatroller();
-		if (optional.isEmpty()) {
-			return false;
-		}
+		
 		if (mob.getTarget() != null) {
 			return false;
 		}
-		IPatroller patroller = optional.get();
+		IPatroller patroller = IPatroller.get(mob);
 		if (patroller.getPatrol() == null) {
 			return false;
 		}
@@ -47,20 +41,12 @@ public class PatrolLeaderGoal<T extends Mob> extends Goal {
 	
 	@Override
 	public void tick() {
-		Optional<IPatroller> optional = getPatroller();
-		if (optional.isEmpty()) {
-			return;
-		}
-		IPatroller patroller = optional.get();
+		
+		IPatroller patroller = IPatroller.get(mob);
 		Patrol patrol = patroller.getPatrol();
 		if (cooldownTicks == 0) {
-			
-//			Vec3 origin = patrol.getOriginPos().getCenter();
-//			Vec3 self = patroller.getMob().position();
-//			Vec3 vec3 = origin.subtract(self).yRot(90.0F).add(self).normalize().scale(10.0D);
-//			BlockPos pos = new BlockPos((int) vec3.x(), (int) vec3.y(), (int) vec3.z());
-//			patrol.updatePatrolTarget(mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos));
-			cooldownTicks = 100;
+
+cooldownTicks = 100;
 			patrol.updatePatrolTarget(findPatrolTarget(patrol.getOriginPos()));
 		} else {
 			cooldownTicks--;
@@ -76,7 +62,7 @@ public class PatrolLeaderGoal<T extends Mob> extends Goal {
 		return mob.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockPos);
 	}
 	
-	private Optional<IPatroller> getPatroller() {
+	private IPatroller getPatroller() {
 		return IPatroller.get(mob);
 	}
 }

@@ -17,15 +17,15 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
 import net.minecraftforge.registries.tags.ITagManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PatrolSpawner implements CustomSpawner {
 	private int cooldownTicks;
 	
 	@Override
-	public int tick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies) {
+	public int tick(@NotNull ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies) {
 		// 非生成敌对怪物 退出
 		if (!spawnEnemies) {
 			return 0;
@@ -77,11 +77,7 @@ public class PatrolSpawner implements CustomSpawner {
 		if (faction == null || faction.getPatrolConfig().getPatrollerTypes().isEmpty()) {
 			return 0;
 		}
-		Optional<IPatrolManager> optional = IPatrolManager.get(level);
-		if (optional.isEmpty()) {
-			return 0;
-		}
-		IPatrolManager manager = optional.get();
+		IPatrolManager manager = IPatrolManager.get(level);
 		Patrol patrol = manager.createPatrol(faction, blockPos$mutable);
 		if (patrol == null) {
 			return 0;

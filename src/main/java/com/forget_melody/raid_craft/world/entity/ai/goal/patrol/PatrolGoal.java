@@ -7,12 +7,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 public class PatrolGoal<T extends Mob> extends Goal {
 	private final T mob;
 	private final double speedModifier;
-	private int cooldownTicks = 200;
 	
 	public PatrolGoal(T mob, double speedModifier) {
 		this.mob = mob;
@@ -27,14 +25,10 @@ public class PatrolGoal<T extends Mob> extends Goal {
 	 */
 	@Override
 	public boolean canUse() {
-		Optional<IPatroller> optional = getPatroller();
-		if (optional.isEmpty()) {
-			return false;
-		}
 		if (mob.getTarget() != null) {
 			return false;
 		}
-		IPatroller patroller = optional.get();
+		IPatroller patroller = IPatroller.get(mob);
 		Patrol patrol = patroller.getPatrol();
 		if (patrol == null) {
 			return false;
@@ -54,11 +48,7 @@ public class PatrolGoal<T extends Mob> extends Goal {
 	 */
 	@Override
 	public void tick() {
-		Optional<IPatroller> optional = getPatroller();
-		if (optional.isEmpty()) {
-			return;
-		}
-		IPatroller patroller = optional.get();
+		IPatroller patroller = IPatroller.get(mob);
 		BlockPos target = patroller.getPatrol().getPatrolTarget();
 		// 抵达目标点时解除巡逻状态
 		if (patroller.getMob().blockPosition().distManhattan(target) <= patroller.getMob().getBbWidth() + 5.0D) {
@@ -69,8 +59,5 @@ public class PatrolGoal<T extends Mob> extends Goal {
 		if(mob.getNavigation().isDone()){
 			mob.getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), speedModifier);
 		}
-	}
-	private Optional<IPatroller> getPatroller() {
-		return IPatroller.get(mob);
 	}
 }

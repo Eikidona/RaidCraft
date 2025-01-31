@@ -28,7 +28,7 @@ public class FactionEntityJadePlugin implements IEntityComponentProvider, IServe
 	
 	@Override
 	public void appendServerData(CompoundTag compoundTag, EntityAccessor entityAccessor) {
-		Faction faction = IFactionEntity.get((Mob) entityAccessor.getEntity()).get().getFaction();
+		Faction faction = IFactionEntity.get((Mob) entityAccessor.getEntity()).getFaction();
 		ResourceLocation id = DataPackRegistries.FACTIONS.getKey(faction);
 		compoundTag.putString("Faction", id.toLanguageKey("faction"));
 	}

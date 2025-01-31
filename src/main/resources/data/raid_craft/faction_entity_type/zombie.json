@@ -1,3 +1,6 @@
 {
-  "entity_type": "minecraft:zombie"
+  "entity_type": "minecraft:zombie",
+  "boosts": [
+    "raid_craft:armor"
+  ]
 }

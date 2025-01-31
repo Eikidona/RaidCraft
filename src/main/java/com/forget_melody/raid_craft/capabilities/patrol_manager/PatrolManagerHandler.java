@@ -7,15 +7,13 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Optional;
-
 
 @Mod.EventBusSubscriber
 public class PatrolManagerHandler {
 	@SubscribeEvent
 	public static void addCapability(AttachCapabilitiesEvent<Level> event) {
-		if (event.getObject() instanceof ServerLevel) {
-			event.addCapability(IPatrolManager.ID, new PatrolManagerProvider((ServerLevel) event.getObject()));
+		if (event.getObject() instanceof ServerLevel level) {
+			event.addCapability(IPatrolManager.ID, new PatrolManagerProvider(level));
 		}
 	}
 	
@@ -23,12 +21,7 @@ public class PatrolManagerHandler {
 	public static void tick(TickEvent.LevelTickEvent event) {
 		if (event.level.isClientSide()) return;
 		
-		Optional<IPatrolManager> optional = IPatrolManager.get((ServerLevel) event.level);
-		if(optional.isEmpty()){
-			return;
-		}
-		
-		IPatrolManager manager = optional.get();
+		IPatrolManager manager = IPatrolManager.get((ServerLevel) event.level);
 		manager.tick();
 	}
 }

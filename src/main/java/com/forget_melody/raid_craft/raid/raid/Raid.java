@@ -139,22 +139,6 @@ public class Raid {
 			stop();
 			return;
 		}
-//		// Stop or Defeat
-//		if (!raidTarget.isValidTarget(this)) {
-//			Optional<BlockPos> optional = raidTarget.updateTargetPos(this);
-//			if (optional.isEmpty()) {
-//				if (!isStarted()) {
-//					RaidCraft.LOGGER.info("Raid is not valid target");
-//					stop();
-//				} else {
-//					defeat();
-//				}
-//				return;
-//			} else {
-//				setCenter(optional.get());
-//			}
-//		}
-		
 		updatePlayer(); // 干脆不延时了 延时延出问题来
 		
 		activeTicks++;
@@ -476,7 +460,7 @@ public class Raid {
 						}
 						currentSpawn++;
 						Mob mob = raider.getMob();
-						IFactionEntity factionEntity = IFactionEntity.get(mob).get();
+						IFactionEntity factionEntity = IFactionEntity.get(mob);
 						FactionEntityType factionEntityType = factionEntity.getFactionEntityType();
 						if (map.containsKey(factionEntityType)) {
 							map.put(factionEntityType, map.get(factionEntityType) + 1);
@@ -548,7 +532,7 @@ public class Raid {
 	
 	private void equipBanner(IRaider raider) {
 		Mob mob = raider.getMob();
-		IFactionEntity factionEntity = IFactionEntity.get(mob).get();
+		IFactionEntity factionEntity = IFactionEntity.get(mob);
 		ItemStack banner = factionEntity.getFaction().getBanner();
 		mob.setItemSlot(EquipmentSlot.HEAD, banner);
 		mob.setDropChance(EquipmentSlot.HEAD, 2.0F);

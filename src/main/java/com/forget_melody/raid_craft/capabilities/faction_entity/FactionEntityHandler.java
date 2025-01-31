@@ -10,23 +10,21 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.List;
-
 @Mod.EventBusSubscriber
 public class FactionEntityHandler {
 	@SubscribeEvent
 	public static void addCapability(AttachCapabilitiesEvent<Entity> event) {
-		if (event.getObject() instanceof Mob) {
-			event.addCapability(IFactionEntity.ID, new FactionEntityProvider((Mob) event.getObject()));
+		if (event.getObject() instanceof Mob mob) {
+			event.addCapability(IFactionEntity.ID, new FactionEntityProvider(mob));
 		}
 	}
 	
 	@SubscribeEvent
 	public static void joinFaction(EntityJoinLevelEvent event) {
 		if(event.getLevel().isClientSide()) return;
-		if (event.getEntity() instanceof Mob) {
-			IFactionEntity factionEntity = IFactionEntity.get((Mob) event.getEntity()).get();
-			Faction faction = DataPackRegistries.FACTIONS.getFaction(event.getEntity().getType());
+		if (event.getEntity() instanceof Mob mob) {
+			IFactionEntity factionEntity = IFactionEntity.get(mob);
+			Faction faction = DataPackRegistries.FACTIONS.getFaction(mob.getType());
 			if (faction != null) {
 				factionEntity.setFaction(faction);
 			}
@@ -36,7 +34,7 @@ public class FactionEntityHandler {
 	@SubscribeEvent
 	public static void stopAttackAlly(LivingChangeTargetEvent event){
 		if(event.getEntity() instanceof Mob mob && event.getNewTarget() instanceof Mob target){
-			IFactionEntity factionEntity = IFactionEntity.get(mob).get();
+			IFactionEntity factionEntity = IFactionEntity.get(mob);
 			if(factionEntity.isFriendly(target)){
 				event.setCanceled(true);
 			}

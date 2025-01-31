@@ -20,7 +20,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	private final InvadeHomeGoal invadeHomeGoal;
 	private RaidOpenDoorGoal raidOpenDoorGoal;
 	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
-	private final ObtainRaidLeaderBannerGoal<Mob> obtainRaidLeaderBannerGoal;
+	private final ObtainRaidLeaderBannerGoal obtainRaidLeaderBannerGoal;
 	private boolean leader;
 	
 	public Raider(Mob mob) {
@@ -30,7 +30,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 		if (GoalUtils.hasGroundPathNavigation(mob)) {
 			raidOpenDoorGoal = new RaidOpenDoorGoal(mob);
 		}
-		obtainRaidLeaderBannerGoal = new ObtainRaidLeaderBannerGoal<>(mob);
+		obtainRaidLeaderBannerGoal = new ObtainRaidLeaderBannerGoal(mob);
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 			this.wave = nbt.getInt("Wave");
 		}
 		if (nbt.contains("Raid")) {
-			IRaidManager manager = IRaidManager.get((ServerLevel) mob.level()).get();
+			IRaidManager manager = IRaidManager.get((ServerLevel) mob.level());
 			Raid raid1 = manager.getRaid(nbt.getInt("Raid"));
 			if (raid1 != null) {
 				raid1.joinRaid(this, false);

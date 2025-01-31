@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.Behavior;
+import org.jetbrains.annotations.NotNull;
 
 public class BeginRaid extends Behavior<Mob> {
 	public BeginRaid() {
@@ -14,13 +15,13 @@ public class BeginRaid extends Behavior<Mob> {
 	}
 	
 	@Override
-	protected boolean checkExtraStartConditions(ServerLevel level, Mob owner) {
+	protected boolean checkExtraStartConditions(ServerLevel level, @NotNull Mob owner) {
 		return level.random.nextInt(20) == 0;
 	}
 	
 	@Override
-	protected void start(ServerLevel level, Mob owner, long gametime) {
-		IRaidManager manager = IRaidManager.get(level).get();
+	protected void start(@NotNull ServerLevel level, Mob owner, long gametime) {
+		IRaidManager manager = IRaidManager.get(level);
 		Raid raid = manager.getRaidAtPos(owner.blockPosition());
 		
 	}
