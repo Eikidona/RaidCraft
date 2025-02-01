@@ -7,4 +7,5 @@ public interface IBoost {
 	
 	void apply(Mob mob);
 	
+	int getStrength();
 }

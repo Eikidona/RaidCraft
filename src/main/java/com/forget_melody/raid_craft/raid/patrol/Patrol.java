@@ -202,7 +202,7 @@ public class Patrol {
 	
 	public void stop() {
 		this.stopped = true;
-		RaidCraft.LOGGER.info("巡逻队Stop");
+//		RaidCraft.LOGGER.info("巡逻队Stop");
 	}
 	
 	public CompoundTag save() {

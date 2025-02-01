@@ -19,4 +19,9 @@ public class MountBoost implements IBoost{
 	public void apply(Mob mob) {
 	
 	}
+	
+	@Override
+	public int getStrength() {
+		return 0;
+	}
 }

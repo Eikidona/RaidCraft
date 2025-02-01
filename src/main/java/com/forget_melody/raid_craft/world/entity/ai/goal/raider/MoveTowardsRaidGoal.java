@@ -25,7 +25,7 @@ public class MoveTowardsRaidGoal<T extends Mob> extends Goal {
 	@Override
 	public boolean canContinueToUse() {
 		IRaider raider = IRaider.get(mob);
-		RaidCraft.LOGGER.info("canContinueToUse: Target: {}, hasActiveRaid: {}", mob.getTarget() == null, raider.hasActiveRaid());
+//		RaidCraft.LOGGER.info("canContinueToUse: Target: {}, hasActiveRaid: {}", mob.getTarget() == null, raider.hasActiveRaid());
 		return mob.getTarget() == null && !mob.isVehicle() && raider.hasActiveRaid();
 	}
 	

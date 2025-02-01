@@ -13,7 +13,8 @@
   "raid_config": {
     "raiders": [
       {
-        "faction_entity_type": "raid_craft:zombie"
+        "faction_entity_type": "raid_craft:undead/zombie",
+        "weight": 5
       }
     ]
   },

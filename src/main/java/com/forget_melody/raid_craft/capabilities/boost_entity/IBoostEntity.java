@@ -23,6 +23,8 @@ public interface IBoostEntity extends INBTSerializable<CompoundTag> {
 	
 	List<IBoost> getBoosts();
 	
+	int getStrength();
+	
 	void addBoost(IBoost boost);
 	
 	void addBoosts(List<IBoost> boosts);

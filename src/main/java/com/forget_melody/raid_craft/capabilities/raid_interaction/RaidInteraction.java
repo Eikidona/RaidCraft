@@ -7,8 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
-
-import java.util.List;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 
 public class RaidInteraction implements IRaidInteraction {
 	private final ServerPlayer player;
@@ -17,6 +17,19 @@ public class RaidInteraction implements IRaidInteraction {
 	
 	public RaidInteraction(ServerPlayer player) {
 		this.player = player;
+	}
+	
+	@Override
+	public int getStrength() {
+		int baseStrength = 0;
+		AttributeInstance armorInstance = player.getAttribute(Attributes.ARMOR);
+		AttributeInstance damageInstance = player.getAttribute(Attributes.ATTACK_DAMAGE);
+		AttributeInstance maxHealthInstance = player.getAttribute(Attributes.MAX_HEALTH);
+		double armor = armorInstance == null ? 0.0D : armorInstance.getValue();
+		double damage = damageInstance == null ? 0.0D : damageInstance.getValue();
+		double maxHealth = maxHealthInstance == null ? 0.0D : maxHealthInstance.getValue() - 20;
+		baseStrength += (int) (armor + damage + maxHealth);
+		return baseStrength;
 	}
 	
 	@Override
@@ -38,7 +51,7 @@ public class RaidInteraction implements IRaidInteraction {
 	public void addBadOmen(Faction faction, int duration, int amplifier) {
 		this.faction = faction;
 		this.badOmenLevel = amplifier;
-		this.player.addEffect(new MobEffectInstance(new BadOmenEffect(),duration, amplifier));
+		this.player.addEffect(new MobEffectInstance(new BadOmenEffect(), duration, amplifier));
 	}
 	
 	@Override

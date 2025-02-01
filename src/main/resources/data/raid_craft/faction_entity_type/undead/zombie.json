@@ -1,5 +1,6 @@
 {
   "entity_type": "minecraft:zombie",
+  "strength": 10,
   "boosts": [
     "raid_craft:armor"
   ]

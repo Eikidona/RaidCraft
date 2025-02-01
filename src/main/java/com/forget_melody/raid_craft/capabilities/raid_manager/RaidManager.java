@@ -6,7 +6,6 @@ import com.forget_melody.raid_craft.raid.raid.Raid;
 import com.forget_melody.raid_craft.raid.raid.target.IRaidTarget;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.forget_melody.raid_craft.registries.RaidTargets;
-import com.forget_melody.raid_craft.registries.Registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -42,7 +41,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 //				RaidCraft.LOGGER.info("raid is tick");
 				raid.tick();
 			}
-			RaidCraft.LOGGER.info("Raid: isStopped: {}, isActive: {}, livingOfRaider: {}", raid.isStopped(), raid.isActive(), raid.getNumOfLivingRaiders());
+//			RaidCraft.LOGGER.info("Raid: isStopped: {}, isActive: {}, livingOfRaider: {}", raid.isStopped(), raid.isActive(), raid.getNumOfLivingRaiders());
 		}
 	}
 	
@@ -109,7 +108,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 			   .forEach(tag -> {
 				   Raid raid = new Raid(level, (CompoundTag) tag);
 				   raidMap.put(raid.getId(), raid);
-				   RaidCraft.LOGGER.info("deserializeNBT raid");
+//				   RaidCraft.LOGGER.info("deserializeNBT raid");
 			   });
 		}
 	}

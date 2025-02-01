@@ -33,7 +33,7 @@ public class BadOmenEffect extends MobEffect {
 			
 			IRaidInteraction raidInteraction = IRaidInteraction.get(player);
 			
-			// 如果是村庄立即触发Raid
+			// 如果是村庄立即触发Village Target Raid
 			if (level.isVillage(pLivingEntity.blockPosition())) {
 				if (raidInteraction.getFaction() != null) {
 					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel());

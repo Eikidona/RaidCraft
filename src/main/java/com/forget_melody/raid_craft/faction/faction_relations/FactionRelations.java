@@ -1,11 +1,14 @@
 package com.forget_melody.raid_craft.faction.faction_relations;
 
+import com.forget_melody.raid_craft.faction.Faction;
+import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class FactionRelations {
 	public static final Codec<FactionRelations> CODEC = RecordCodecBuilder.create(factionRelationsInstance -> factionRelationsInstance.group(
@@ -25,6 +28,28 @@ public class FactionRelations {
 	
 	public HashSet<ResourceLocation> getAllies() {
 		return allies;
+	}
+	
+	public List<Faction> getAllyFactions(){
+		List<Faction> factions = new ArrayList<>();
+		for(ResourceLocation location: getAllies()){
+			Faction faction	= DataPackRegistries.FACTIONS.getValue(location);
+			if(faction != null){
+				factions.add(faction);
+			}
+		}
+		return factions;
+	}
+	
+	public List<Faction> getEnemyFactions(){
+		List<Faction> factions = new ArrayList<>();
+		for(ResourceLocation location: getEnemies()){
+			Faction faction	= DataPackRegistries.FACTIONS.getValue(location);
+			if(faction != null){
+				factions.add(faction);
+			}
+		}
+		return factions;
 	}
 	
 	public HashSet<ResourceLocation> getEnemies() {

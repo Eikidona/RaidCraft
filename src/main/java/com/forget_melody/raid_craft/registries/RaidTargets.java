@@ -2,6 +2,7 @@ package com.forget_melody.raid_craft.registries;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.raid.raid.target.IRaidTarget;
+import com.forget_melody.raid_craft.raid.raid.target.PlayerRaidTarget;
 import com.forget_melody.raid_craft.raid.raid.target.VillageRaidTarget;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,6 +18,7 @@ public class RaidTargets {
 	public static final Supplier<IForgeRegistry<IRaidTarget>> RAID_TARGETS = DEFERRED_REGISTER.makeRegistry(() -> new RegistryBuilder<IRaidTarget>().setMaxID(1024));
 	
 	public static final RegistryObject<IRaidTarget> VILLAGE = register("village", new VillageRaidTarget());
+	public static final RegistryObject<IRaidTarget> PLAYER = register("player", new PlayerRaidTarget());
 	
 	public static RegistryObject<IRaidTarget> register(String name, IRaidTarget raidTarget){
 		return DEFERRED_REGISTER.register(name, () -> raidTarget);

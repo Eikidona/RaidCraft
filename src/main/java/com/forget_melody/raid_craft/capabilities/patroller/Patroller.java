@@ -109,7 +109,7 @@ public class Patroller implements IPatroller {
 				if (this.patrolLeader) {
 					this.patrol.setLeader(this);
 				}
-				RaidCraft.LOGGER.info("加入巡逻队");
+//				RaidCraft.LOGGER.info("加入巡逻队");
 			} else {
 				setPatrolling(false);
 				setPatrolLeader(false);

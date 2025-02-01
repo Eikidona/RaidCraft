@@ -1,6 +1,7 @@
 package com.forget_melody.raid_craft.capabilities.faction_entity;
 
 import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.capabilities.boost_entity.IBoostEntity;
 import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.faction.faction_entity_type.FactionEntityType;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
@@ -21,6 +22,14 @@ public class FactionEntity implements IFactionEntity {
 	}
 	
 	@Override
+	public int getStrength() {
+		if (getFactionEntityType() != null) {
+			return getFactionEntityType().getStrength() + IBoostEntity.get(mob).getStrength();
+		}
+		return 5;
+	}
+	
+	@Override
 	public Faction getFaction() {
 		return faction;
 	}
@@ -37,7 +46,7 @@ public class FactionEntity implements IFactionEntity {
 	
 	@Override
 	public boolean isEnemy(Faction targetFaction) {
-		if(targetFaction == null){
+		if (targetFaction == null) {
 			RaidCraft.LOGGER.error("isEnemy NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
@@ -46,7 +55,7 @@ public class FactionEntity implements IFactionEntity {
 	
 	@Override
 	public boolean isAlly(Faction targetFaction) {
-		if(targetFaction == null){
+		if (targetFaction == null) {
 			RaidCraft.LOGGER.error("isAlly NullPointerException by entity type id {}", ForgeRegistries.ENTITY_TYPES.getKey(this.mob.getType()));
 			return false;
 		}
@@ -69,10 +78,10 @@ public class FactionEntity implements IFactionEntity {
 		updateGoal();
 	}
 	
-	private void updateGoal(){
-		if(faction != Faction.DEFAULT && goal == null){
+	private void updateGoal() {
+		if (faction != Faction.DEFAULT && goal == null) {
 			goal = new NearestEnemyFactionEntityTargetGoal(mob);
-			mob.goalSelector.addGoal(2, goal);
+			mob.goalSelector.addGoal(3, goal);
 		}
 	}
 	
@@ -84,10 +93,10 @@ public class FactionEntity implements IFactionEntity {
 	@Override
 	public CompoundTag serializeNBT() {
 		CompoundTag tag = new CompoundTag();
-		if(this.faction != null){
-			tag.putString("Faction", DataPackRegistries.FACTIONS.getKey((Faction) this.faction).toString());
+		if (this.faction != null) {
+			tag.putString("Faction", DataPackRegistries.FACTIONS.getKey(this.faction).toString());
 		}
-		if(this.factionEntityType != null){
+		if (this.factionEntityType != null) {
 			tag.putString("FactionEntityType", DataPackRegistries.Faction_ENTITY_TYPES.getKey(this.factionEntityType).toString());
 		}
 		return tag;

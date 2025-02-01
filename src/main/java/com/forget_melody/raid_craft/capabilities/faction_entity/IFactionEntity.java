@@ -18,6 +18,8 @@ public interface IFactionEntity extends INBTSerializable<CompoundTag> {
 		return mob.getCapability(Capabilities.FACTION_ENTITY).resolve().get();
 	}
 	
+	int getStrength();
+	
 	Faction getFaction();
 	
 	FactionEntityType getFactionEntityType();

@@ -1,5 +1,8 @@
 package com.forget_melody.raid_craft.capabilities.patroller;
 
+import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;
+import com.forget_melody.raid_craft.capabilities.faction_interaction.IFactionInteraction;
+import com.forget_melody.raid_craft.faction.Faction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -24,6 +27,10 @@ public class PatrollerHandler {
 				/**
 				 * todo {BadOmen}
 				 */
+				Faction faction = IFactionEntity.get(patroller.getMob()).getFaction();
+				if(IFactionInteraction.get(player).getAllianceValue(faction) <= IFactionInteraction.HOSTILITY){
+				
+				}
 			}
 		}
 	}

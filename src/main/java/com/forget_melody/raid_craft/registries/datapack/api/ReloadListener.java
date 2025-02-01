@@ -123,6 +123,7 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 	}
 	
 	public void register(ResourceLocation name, T value) {
+		RaidCraft.LOGGER.info("DataPack Entry: {} id: {} is register", directory, name);
 		loadedData.put(name, value);
 	}
 	

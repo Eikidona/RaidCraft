@@ -1,6 +1,5 @@
 package com.forget_melody.raid_craft.boost;
 
-import com.forget_melody.raid_craft.RaidCraft;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -9,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class EquipmentBoost implements IBoost {
 	public static final Codec<EquipmentBoost> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Codec.INT.optionalFieldOf("strength", 5).forGetter(EquipmentBoost::getStrength),
 			ItemStack.CODEC.optionalFieldOf("head", ItemStack.EMPTY).forGetter(EquipmentBoost::getHead),
 			ItemStack.CODEC.optionalFieldOf("chest", ItemStack.EMPTY).forGetter(EquipmentBoost::getChest),
 			ItemStack.CODEC.optionalFieldOf("legs", ItemStack.EMPTY).forGetter(EquipmentBoost::getLegs),
@@ -16,6 +16,7 @@ public class EquipmentBoost implements IBoost {
 			ItemStack.CODEC.optionalFieldOf("mainHand", ItemStack.EMPTY).forGetter(EquipmentBoost::getMainHand),
 			ItemStack.CODEC.optionalFieldOf("offHand", ItemStack.EMPTY).forGetter(EquipmentBoost::getOffHand)
 	).apply(instance, EquipmentBoost::new));
+	private final int strength;
 	private final ItemStack head;
 	private final ItemStack chest;
 	private final ItemStack legs;
@@ -23,7 +24,8 @@ public class EquipmentBoost implements IBoost {
 	private final ItemStack mainHand;
 	private final ItemStack offHand;
 	
-	public EquipmentBoost(ItemStack head, ItemStack chest, ItemStack legs, ItemStack feet, ItemStack mainHand, ItemStack offHand) {
+	public EquipmentBoost(int strength, ItemStack head, ItemStack chest, ItemStack legs, ItemStack feet, ItemStack mainHand, ItemStack offHand) {
+		this.strength = strength;
 		this.head = head;
 		this.chest = chest;
 		this.legs = legs;
@@ -64,28 +66,27 @@ public class EquipmentBoost implements IBoost {
 	@Override
 	public void apply(Mob mob) {
 		if(head != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("Head Item Set");
-			mob.setItemSlot(EquipmentSlot.HEAD, head);
+			mob.setItemSlot(EquipmentSlot.HEAD, head.copy());
 		}
 		if(chest != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("Chest Item Set");
-			mob.setItemSlot(EquipmentSlot.CHEST, chest);
+			mob.setItemSlot(EquipmentSlot.CHEST, chest.copy());
 		}
 		if(legs != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("Legs Item Set");
-			mob.setItemSlot(EquipmentSlot.LEGS, legs);
+			mob.setItemSlot(EquipmentSlot.LEGS, legs.copy());
 		}
 		if(feet != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("Feet Item Set");
-			mob.setItemSlot(EquipmentSlot.FEET, feet);
+			mob.setItemSlot(EquipmentSlot.FEET, feet.copy());
 		}
 		if(mainHand != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("MainHand Item Set");
-			mob.setItemSlot(EquipmentSlot.MAINHAND, mainHand);
+			mob.setItemSlot(EquipmentSlot.MAINHAND, mainHand.copy());
 		}
 		if(offHand != ItemStack.EMPTY){
-			RaidCraft.LOGGER.info("OffHand Item Set");
-			mob.setItemSlot(EquipmentSlot.OFFHAND, offHand);
+			mob.setItemSlot(EquipmentSlot.OFFHAND, offHand.copy());
 		}
+	}
+	
+	@Override
+	public int getStrength() {
+		return strength;
 	}
 }

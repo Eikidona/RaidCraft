@@ -3,34 +3,35 @@ package com.forget_melody.raid_craft.capabilities.raider;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
 import com.forget_melody.raid_craft.raid.raid.Raid;
-import com.forget_melody.raid_craft.world.entity.ai.goal.raider.InvadeHomeGoal;
-import com.forget_melody.raid_craft.world.entity.ai.goal.raider.MoveTowardsRaidGoal;
-import com.forget_melody.raid_craft.world.entity.ai.goal.raider.ObtainRaidLeaderBannerGoal;
-import com.forget_melody.raid_craft.world.entity.ai.goal.raider.RaidOpenDoorGoal;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.util.GoalUtils;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraftforge.common.util.INBTSerializable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	private final Mob mob;
 	private Raid raid = null;
 	private int wave = 0;
-	private final InvadeHomeGoal invadeHomeGoal;
-	private RaidOpenDoorGoal raidOpenDoorGoal;
-	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
-	private final ObtainRaidLeaderBannerGoal obtainRaidLeaderBannerGoal;
+	private final List<Pair<Integer, Goal>> raiderGoals = new ArrayList<>();
+//	private final InvadeHomeGoal invadeHomeGoal;
+//	private RaidOpenDoorGoal raidOpenDoorGoal;
+//	private final MoveTowardsRaidGoal<Mob> moveTowardsRaidGoal;
+//	private final ObtainRaidLeaderBannerGoal obtainRaidLeaderBannerGoal;
 	private boolean leader;
 	
 	public Raider(Mob mob) {
 		this.mob = mob;
-		invadeHomeGoal = new InvadeHomeGoal(mob, 1.05F, 1);
-		moveTowardsRaidGoal = new MoveTowardsRaidGoal<>(mob);
-		if (GoalUtils.hasGroundPathNavigation(mob)) {
-			raidOpenDoorGoal = new RaidOpenDoorGoal(mob);
-		}
-		obtainRaidLeaderBannerGoal = new ObtainRaidLeaderBannerGoal(mob);
+//		invadeHomeGoal = new InvadeHomeGoal(mob, 1.05F, 1);
+//		moveTowardsRaidGoal = new MoveTowardsRaidGoal<>(mob);
+//		if (GoalUtils.hasGroundPathNavigation(mob)) {
+//			raidOpenDoorGoal = new RaidOpenDoorGoal(mob);
+//		}
+//		obtainRaidLeaderBannerGoal = new ObtainRaidLeaderBannerGoal(mob);
 	}
 	
 	@Override
@@ -56,27 +57,31 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 	
 	@Override
 	public boolean hasActiveRaid() {
-		RaidCraft.LOGGER.info("Raider: raid != null: {}", raid != null);
-		if (raid != null) {
-			RaidCraft.LOGGER.info("Raider: raidIsActive: {}", raid.isActive());
-		}
+//		RaidCraft.LOGGER.info("Raider: raid != null: {}", raid != null);
+//		if (raid != null) {
+//			RaidCraft.LOGGER.info("Raider: raidIsActive: {}", raid.isActive());
+//		}
 		return raid != null && raid.isActive();
 	}
 	
 	private void updateRaidGoals() {
 		if (raid != null) {
-			mob.goalSelector.addGoal(2, obtainRaidLeaderBannerGoal);
-			if (raidOpenDoorGoal != null) {
-				mob.goalSelector.addGoal(3, raidOpenDoorGoal);
-			}
-			mob.goalSelector.addGoal(4, invadeHomeGoal);
-			mob.goalSelector.addGoal(5, moveTowardsRaidGoal);
-			RaidCraft.LOGGER.info("Raider add Goals");
+//			mob.goalSelector.addGoal(2, obtainRaidLeaderBannerGoal);
+//			if (raidOpenDoorGoal != null) {
+//				mob.goalSelector.addGoal(3, raidOpenDoorGoal);
+//			}
+//			mob.goalSelector.addGoal(4, invadeHomeGoal);
+//			mob.goalSelector.addGoal(5, moveTowardsRaidGoal);
+//			RaidCraft.LOGGER.info("Add Raid Goals Pre: {}", mob.goalSelector.getAvailableGoals().size());
+			raid.getRaidTarget().addGoal(this);
+//			RaidCraft.LOGGER.info("Add Raid Goals: {}", mob.goalSelector.getAvailableGoals().size());
 		} else {
-			mob.goalSelector.removeGoal(moveTowardsRaidGoal);
-			mob.goalSelector.removeGoal(invadeHomeGoal);
-			mob.goalSelector.removeGoal(raidOpenDoorGoal);
-			mob.goalSelector.removeGoal(obtainRaidLeaderBannerGoal);
+//			RaidCraft.LOGGER.info("Remove Raid Goals");
+			removeAllGoals();
+//			mob.goalSelector.removeGoal(moveTowardsRaidGoal);
+//			mob.goalSelector.removeGoal(invadeHomeGoal);
+//			mob.goalSelector.removeGoal(raidOpenDoorGoal);
+//			mob.goalSelector.removeGoal(obtainRaidLeaderBannerGoal);
 		}
 	}
 	
@@ -125,7 +130,39 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 			} else {
 				RaidCraft.LOGGER.error("Not found valid raid id {}", nbt.getInt("Raid"));
 			}
-			updateRaidGoals();
 		}
+	}
+	
+	@Override
+	public void addAllGoals(List<Pair<Integer, Goal>> goals){
+		raiderGoals.addAll(goals);
+		goals.forEach(pair -> {
+			mob.goalSelector.addGoal(pair.getFirst(), pair.getSecond());
+		});
+	}
+	
+	@Override
+	public void addGoal(int priority, Goal goal){
+		raiderGoals.add(new Pair<>(priority, goal));
+		mob.goalSelector.addGoal(priority, goal);
+	}
+	
+	@Override
+	public <T extends Goal> void removeGoal(Class<T> goalClass) {
+		raiderGoals.removeIf(pair -> {
+			if(goalClass.isInstance(pair.getSecond())){
+				mob.goalSelector.removeGoal(pair.getSecond());
+				return true;
+			}
+			return false;
+		});
+	}
+	
+	@Override
+	public void removeAllGoals(){
+		for(Pair<Integer, Goal> pair: raiderGoals){
+			mob.goalSelector.removeGoal(pair.getSecond());
+		}
+		raiderGoals.clear();
 	}
 }

@@ -36,6 +36,11 @@ public class BoostEntity implements IBoostEntity {
 	}
 	
 	@Override
+	public int getStrength() {
+		return getBoosts().stream().mapToInt(IBoost::getStrength).sum();
+	}
+	
+	@Override
 	public void addBoost(IBoost boost) {
 		boosts.add(boost);
 	}

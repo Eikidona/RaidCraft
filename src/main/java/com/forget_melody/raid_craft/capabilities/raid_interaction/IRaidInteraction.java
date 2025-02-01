@@ -16,6 +16,8 @@ public interface IRaidInteraction extends INBTSerializable<CompoundTag> {
 		return player.getCapability(Capabilities.RAID_INTERACTION).resolve().get();
 	}
 	
+	int getStrength();
+	
 	Faction getFaction();
 	
 	ServerPlayer getPlayer();
