@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.world.entity.ai.brain;
 
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;

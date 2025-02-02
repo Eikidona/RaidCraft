@@ -5,6 +5,7 @@
     "minecraft:pillager",
     "minecraft:ravager"
   ],
+  "home_dimension": "minecraft:overworld",
   "relations": {
     "allies": [],
     "enemies": [
@@ -14,8 +15,34 @@
   },
   "raid_config": {
     "raiders": [
+      {
+        "faction_entity_type": "raid_craft:pillager/vindicator",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:pillager/pillager",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:pillager/ravager",
+        "weight": 1
+      }
     ]
   },
   "patrol_config": {
+    "patrollers": [
+      {
+        "faction_entity_type": "raid_craft:pillager/vindicator",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:pillager/pillager",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:pillager/ravager",
+        "weight": 1
+      }
+    ]
   }
 }

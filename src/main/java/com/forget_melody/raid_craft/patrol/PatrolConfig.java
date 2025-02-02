@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.raid.patrol;
+package com.forget_melody.raid_craft.patrol;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

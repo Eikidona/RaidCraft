@@ -1,9 +1,12 @@
 package com.forget_melody.raid_craft.faction.faction_entity_type;
 
 import com.forget_melody.raid_craft.RaidCraft;
+import com.forget_melody.raid_craft.boost.BoostConfig;
+import com.forget_melody.raid_craft.boost.IBoost;
 import com.forget_melody.raid_craft.capabilities.boost_entity.BoostEntityHooks;
 import com.forget_melody.raid_craft.capabilities.boost_entity.IBoostEntity;
 import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;
+import com.forget_melody.raid_craft.faction.Faction;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,26 +19,24 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FactionEntityType {
 	public static final Codec<FactionEntityType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			ResourceLocation.CODEC.fieldOf("entity_type").forGetter(FactionEntityType::getEntityTypeLocation),
-			ResourceLocation.CODEC.listOf().optionalFieldOf("boosts", new ArrayList<>()).forGetter(FactionEntityType::getBoostLocations),
+			BoostConfig.CODEC.optionalFieldOf("boost_config", BoostConfig.DEFAULT).forGetter(FactionEntityType::getBoostConfig),
 			CompoundTag.CODEC.optionalFieldOf("tag", new CompoundTag()).forGetter(FactionEntityType::getCompoundTag),
 			Codec.INT.optionalFieldOf("strength", 5).forGetter(FactionEntityType::getStrength)
 	).apply(instance, FactionEntityType::new));
 	
 	private final ResourceLocation entityTypeLocation;
-	private final List<ResourceLocation> boostLocations;
+	private final BoostConfig boostConfig;
 	private final CompoundTag tag;
 	private final int strength;
 	
-	public FactionEntityType(ResourceLocation entityTypeLocation, List<ResourceLocation> boostLocations, CompoundTag tag, int strength) {
+	public FactionEntityType(ResourceLocation entityTypeLocation, BoostConfig boostConfig, CompoundTag tag, int strength) {
 		this.entityTypeLocation = entityTypeLocation;
-		this.boostLocations = boostLocations;
+		this.boostConfig = boostConfig;
 		this.tag = tag;
 		this.strength = strength;
 	}
@@ -52,29 +53,22 @@ public class FactionEntityType {
 			RaidCraft.LOGGER.error("Not found entity type id {}", getEntityTypeLocation());
 			return null;
 		}
+		Faction faction = DataPackRegistries.FACTIONS.getFaction(entityType);
+		List<IBoost> boosts = faction.getBoostConfig().getApplyBoosts(strength);
+		boosts.addAll(getBoostConfig().getApplyBoosts(strength));
+		RaidCraft.LOGGER.info("FactionEntityType Boosts: {}", boosts.size());
 		
-		IBoostEntity boostEntity = BoostEntityHooks.spawn(level, pos, entityType, MobSpawnType.EVENT, getBoostLocations().stream().map(DataPackRegistries.BOOSTS::getValue).filter(Objects::nonNull).toList());
+		IBoostEntity boostEntity = BoostEntityHooks.spawn(level, pos, entityType, MobSpawnType.EVENT, boosts);
 		if (boostEntity != null) {
 			return IFactionEntity.get(boostEntity.getMob());
 		}
-//		Entity entity = entityType.spawn(level, pos, mobSpawnType);
-//		if(entity instanceof Mob mob){
-//			getBoostLocations().forEach(location -> {
-//				IBoost boost = DataPackRegistries.BOOSTS.getValue(location);
-//				if(boost != null){
-//					IBoostEntity.get(mob).addBoost(boost);
-//				}else {
-//					RaidCraft.LOGGER.error("Not found boost: {}", location);
-//				}
-//			});
-//			return IFactionEntity.get(mob);
-//		}
+		
 		RaidCraft.LOGGER.error("entity type {} is not a mob!", getEntityTypeLocation());
 		return null;
 	}
 	
-	public List<ResourceLocation> getBoostLocations() {
-		return boostLocations;
+	public BoostConfig getBoostConfig() {
+		return boostConfig;
 	}
 	
 	public ResourceLocation getEntityTypeLocation() {

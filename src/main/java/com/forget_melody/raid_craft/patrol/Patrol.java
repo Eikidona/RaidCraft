@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.raid.patrol;
+package com.forget_melody.raid_craft.patrol;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.patroller.IPatroller;
@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -31,10 +32,11 @@ public class Patrol {
 	private int activeTicks;
 	private BlockPos originPos;
 	private BlockPos patrolTarget;
-	private int patrolCoolDownTicks = 200;
+	private int patrolPostTicks = 40;
 	private final Faction faction;
 	private IPatroller leader;
 	private final List<IPatroller> patrollers = new ArrayList<>();
+	private boolean spawned = false;
 	
 	public Patrol(int id, ServerLevel level, Faction faction, BlockPos originPos) {
 		this.id = id;
@@ -48,6 +50,7 @@ public class Patrol {
 		this.id = tag.getInt("Id");
 		this.started = tag.getBoolean("Start");
 		this.activeTicks = tag.getInt("ActiveTicks");
+		this.spawned = tag.getBoolean("Spawned");
 		if(tag.contains("OriginPos")){
 			this.originPos = NbtUtils.readBlockPos(tag.getCompound("OriginPos"));
 		}
@@ -75,7 +78,7 @@ public class Patrol {
 	
 	private void equipBanner(IPatroller leader) {
 		Mob mob = leader.getMob();
-		mob.setItemSlot(EquipmentSlot.HEAD, faction.getBanner());
+		mob.setItemSlot(EquipmentSlot.HEAD, faction.getBanner().copy());
 		mob.setDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 	
@@ -111,36 +114,57 @@ public class Patrol {
 		}
 	}
 	
+	protected boolean shouldSpawnPatrollers(){
+		return !spawned;
+	}
+	
+	protected boolean canContinueTick(){
+		return level.getDifficulty() != Difficulty.PEACEFUL;
+	}
+	
 	public void tick() {
-		if (isStopped()) return;
+		
+		if (!canContinueTick()){
+			stop();
+			return;
+		}
+		
 		activeTicks++;
 		if (!started) {
 			start();
 		}
 		
-		if(activeTicks % 20 == 0){
-			updatePatroller();
+		if(shouldSpawnPatrollers()){
+			spawnPatroller();
+			if(!patrollers.isEmpty()){
+				IPatroller patroller = patrollers.get(0);
+				setLeader(patroller);
+				equipBanner(patroller);
+			}
+			if(patrollers.isEmpty()){
+				stop();
+				return;
+			}
 		}
+		
+		updatePatroller();
 		if (patrollers.isEmpty()) {
-			if (patrolCoolDownTicks == 0) {
+			if (patrolPostTicks >= 40) {
 				stop();
 			} else {
-				patrolCoolDownTicks--;
+				patrolPostTicks--;
 			}
 		}else {
-			patrolCoolDownTicks = 200;
+			patrolPostTicks = 0;
 		}
 	}
 	
 	private void start() {
 		started = true;
-		spawnPatroller();
-		IPatroller patroller = patrollers.get(0);
-		setLeader(patroller);
-		equipBanner(patroller);
 	}
 	
 	private void spawnPatroller() {
+		spawned = true;
 		if (faction.getFactionEntityTypes().isEmpty()) {
 			RaidCraft.LOGGER.warn("faction {} is not have any FactionEntityType", DataPackRegistries.FACTIONS.getKey(faction));
 			return;
@@ -209,6 +233,7 @@ public class Patrol {
 		CompoundTag tag = new CompoundTag();
 		tag.putInt("Id", this.id);
 		tag.putBoolean("Start", this.started);
+		tag.putBoolean("Spawned", this.spawned);
 		tag.putString("Faction", DataPackRegistries.FACTIONS.getKey(this.faction).toString());
 		tag.putInt("ActiveTicks", this.activeTicks);
 		if(this.originPos != null){

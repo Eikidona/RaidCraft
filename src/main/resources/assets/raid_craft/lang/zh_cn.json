@@ -1,8 +1,11 @@
 {
   "config.jade.plugin_raid_craft.faction_entity": "派系",
-  "jade.raid_craft.faction": "派系: %s",
   "effect.raid_craft.bad_omen": "不祥之兆",
   "faction.raid_craft.default": "无",
+  "faction.raid_craft.ender": "末影",
+  "faction.raid_craft.piglin": "猪灵",
+  "faction.raid_craft.pillager": "灾厄",
+  "faction.raid_craft.undead": "亡灵",
   "faction.raid_craft.village": "村庄",
-  "faction.raid_craft.undead": "亡灵"
+  "jade.raid_craft.faction": "派系: %s"
 }

@@ -2,8 +2,10 @@
   "replace": false,
   "entities": [
     "minecraft:wither_skeleton",
-    "minecraft:blaze"
+    "minecraft:blaze",
+    "minecraft:ghast"
   ],
+  "home_dimension": "minecraft:nether",
   "relations": {
     "allies": [],
     "enemies": [
@@ -13,8 +15,34 @@
   },
   "raid_config": {
     "raiders": [
+      {
+        "faction_entity_type": "raid_craft:wither/wither_skeleton",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:wither/blaze",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:wither/ghast",
+        "weight": 5
+      }
     ]
   },
   "patrol_config": {
+    "patrollers": [
+      {
+        "faction_entity_type": "raid_craft:wither/wither_skeleton",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:wither/blaze",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:wither/ghast",
+        "weight": 5
+      }
+    ]
   }
 }

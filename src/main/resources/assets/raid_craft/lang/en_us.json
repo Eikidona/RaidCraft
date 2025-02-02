@@ -1,8 +1,12 @@
 {
   "config.jade.plugin_raid_craft.faction_entity": "Faction",
-  "jade.raid_craft.faction": "Faction: %s",
   "effect.raid_craft.bad_omen": "Bad Omen",
+  "faction.raid_craft.Wither": "Wither",
   "faction.raid_craft.default": "none",
+  "faction.raid_craft.ender": "Ender",
+  "faction.raid_craft.piglin": "Piglin",
+  "faction.raid_craft.pillager": "Pillager",
+  "faction.raid_craft.undead": "undead",
   "faction.raid_craft.village": "village",
-  "faction.raid_craft.undead": "undead"
+  "jade.raid_craft.faction": "Faction: %s"
 }

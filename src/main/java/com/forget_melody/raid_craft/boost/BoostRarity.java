@@ -10,7 +10,19 @@ public enum BoostRarity {
 	EPIC("epic", 3),
 	ANCIENT("ancient", 1);
 	
+	private final String name;
+	private final int weight;
 	BoostRarity(String name, int weight) {
+		this.name = name;
+		this.weight = weight;
+	}
+	
+	public int getWeight(){
+		return weight;
+	}
+	
+	public String getName(){
+		return name;
 	}
 	
 	public static final Codec<BoostRarity> CODEC = Codec.STRING.flatComapMap(BoostRarity::byName, boostRarity -> DataResult.success(boostRarity.name()));

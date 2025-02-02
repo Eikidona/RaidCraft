@@ -1,7 +1,7 @@
 package com.forget_melody.raid_craft.world.entity.ai.goal.patrol;
 
 import com.forget_melody.raid_craft.capabilities.patroller.IPatroller;
-import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.patrol.Patrol;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;

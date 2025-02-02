@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 @AutoRegisterCapability
 public interface IFactionInteraction extends INBTSerializable<CompoundTag> {
-	
+	int NEUTRALITY = 0;
 	int HOSTILITY = -10;
 	int FRIENDLY = 10;
 	
@@ -22,6 +22,8 @@ public interface IFactionInteraction extends INBTSerializable<CompoundTag> {
 	}
 	
 	void adjustedAllianceValue(Faction faction, int value);
+	
+	void setAllianceValue(Faction faction, int value);
 	
 	boolean isAlly(Faction faction);
 	

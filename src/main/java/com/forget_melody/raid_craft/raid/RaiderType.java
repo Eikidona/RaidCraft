@@ -1,4 +1,4 @@
-package com.forget_melody.raid_craft.raid.raid;
+package com.forget_melody.raid_craft.raid;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;

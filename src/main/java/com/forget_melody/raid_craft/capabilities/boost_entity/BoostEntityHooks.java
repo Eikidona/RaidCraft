@@ -28,15 +28,15 @@ public class BoostEntityHooks {
 		if(entity instanceof Mob mob){
 			IBoostEntity boostEntity = IBoostEntity.get(mob);
 			boostEntity.setBoost(boosts);
-			applyEquipmentBoost(boostEntity);
+			applyBoost(boostEntity);
 			return boostEntity;
 		}
 		return null;
 	}
 	
-	private static void applyEquipmentBoost(IBoostEntity boostEntity){
+	private static void applyBoost(IBoostEntity boostEntity){
 		boostEntity.getBoosts().forEach(boost -> {
-			if(boost.getType() == BoostType.EQUIPMENT){
+			if(boost.getType() == BoostType.EQUIPMENT || boost.getType() == BoostType.MOUNT){
 //				RaidCraft.LOGGER.info("ApplyEquipmentBoost");
 				boost.apply(boostEntity.getMob());
 			}

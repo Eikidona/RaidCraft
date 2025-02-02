@@ -36,6 +36,11 @@ public class FactionInteraction implements IFactionInteraction {
 	}
 	
 	@Override
+	public void setAllianceValue(Faction faction, int value) {
+		map.put(faction, value);
+	}
+	
+	@Override
 	public boolean isAlly(Faction faction) {
 		return getAllianceValue(faction) >= IFactionInteraction.FRIENDLY;
 	}

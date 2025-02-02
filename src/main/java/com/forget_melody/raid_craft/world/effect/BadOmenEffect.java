@@ -3,7 +3,8 @@ package com.forget_melody.raid_craft.world.effect;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_interaction.IRaidInteraction;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.registries.RaidTargets;
+import com.forget_melody.raid_craft.raid.RaidType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -23,8 +24,8 @@ public class BadOmenEffect extends MobEffect {
 	}
 	
 	@Override
-	public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier) {
-		if (pLivingEntity instanceof ServerPlayer player && !pLivingEntity.isSpectator()) {
+	public void applyEffectTick(@NotNull LivingEntity livingEntity, int amplifier) {
+		if (livingEntity instanceof ServerPlayer player && !livingEntity.isSpectator()) {
 			
 			ServerLevel level = player.serverLevel();
 			if (level.getDifficulty() == Difficulty.PEACEFUL) {
@@ -34,14 +35,15 @@ public class BadOmenEffect extends MobEffect {
 			IRaidInteraction raidInteraction = IRaidInteraction.get(player);
 			
 			// 如果是村庄立即触发Village Target Raid
-			if (level.isVillage(pLivingEntity.blockPosition())) {
+			BlockPos pos = livingEntity.blockPosition();
+			if (level.isVillage(pos)) {
 				if (raidInteraction.getFaction() != null) {
-					IRaidManager manager = IRaidManager.get(((ServerPlayer) pLivingEntity).serverLevel());
-					manager.createRaid(pLivingEntity.blockPosition(), raidInteraction.getFaction(), RaidTargets.VILLAGE.get());
+					IRaidManager manager = IRaidManager.get(((ServerPlayer) livingEntity).serverLevel());
+					manager.createRaid(pos, raidInteraction.getFaction(), RaidType.VILLAGE);
 				} else {
 					RaidCraft.LOGGER.error("raidInteraction faction is null");
 				}
-				pLivingEntity.removeEffect(MobEffects.BAD_OMEN.get());
+				livingEntity.removeEffect(MobEffects.BAD_OMEN.get());
 			}
 			
 		}

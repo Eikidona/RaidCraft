@@ -1,6 +1,6 @@
 package com.forget_melody.raid_craft.event.raid;
 
-import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import net.minecraft.world.level.LevelAccessor;
 
 public class RaidSpawnMobEvent extends RaidEvent{

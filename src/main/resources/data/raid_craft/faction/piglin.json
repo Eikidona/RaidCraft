@@ -4,6 +4,7 @@
     "minecraft:piglin",
     "minecraft:piglin_brute"
   ],
+  "home_dimension": "minecraft:nether",
   "relations": {
     "allies": [],
     "enemies": [
@@ -13,8 +14,26 @@
   },
   "raid_config": {
     "raiders": [
+      {
+        "faction_entity_type": "raid_craft:piglin/piglin",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:piglin/piglin_brute",
+        "weight": 5
+      }
     ]
   },
   "patrol_config": {
+    "patrollers": [
+      {
+        "faction_entity_type": "raid_craft:piglin/piglin",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:piglin/piglin_brute",
+        "weight": 5
+      }
+    ]
   }
 }

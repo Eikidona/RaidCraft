@@ -1,5 +1,6 @@
 {
   "type": "equipment",
+  "strength": 5,
   "head": {
     "id": "minecraft:iron_helmet",
     "Count": 1

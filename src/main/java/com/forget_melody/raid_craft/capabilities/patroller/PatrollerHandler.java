@@ -1,7 +1,9 @@
 package com.forget_melody.raid_craft.capabilities.patroller;
 
+import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;
 import com.forget_melody.raid_craft.capabilities.faction_interaction.IFactionInteraction;
+import com.forget_melody.raid_craft.capabilities.raid_interaction.IRaidInteraction;
 import com.forget_melody.raid_craft.faction.Faction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -24,13 +26,18 @@ public class PatrollerHandler {
 		if(event.getEntity() instanceof Mob mob && event.getSource().getEntity() instanceof ServerPlayer player){
 			IPatroller patroller = IPatroller.get(mob);
 			if(patroller.isPatrolLeader()){
+				RaidCraft.LOGGER.info("Effect Handler isPatrolLeader");
 				/**
 				 * todo {BadOmen}
 				 */
 				Faction faction = IFactionEntity.get(patroller.getMob()).getFaction();
-				if(IFactionInteraction.get(player).getAllianceValue(faction) <= IFactionInteraction.HOSTILITY){
-				
-				}
+				IFactionInteraction factionInteraction = IFactionInteraction.get(player);
+				IRaidInteraction raidInteraction = IRaidInteraction.get(player);
+				raidInteraction.addBadOmen(faction, 6000);
+				factionInteraction.adjustedAllianceValue(faction, -10);
+//				if(factionInteraction.getAllianceValue(faction) <= IFactionInteraction.HOSTILITY){
+//					IRaidManager.get(player.serverLevel()).createRaid(player.blockPosition(), faction, RaidType.PLAYER);
+//				}
 			}
 		}
 	}

@@ -4,6 +4,7 @@
     "minecraft:villager",
     "minecraft:iron_golem"
   ],
+  "home_dimension": "minecraft:overworld",
   "relations": {
     "allies": [],
     "enemies": [
@@ -11,6 +12,7 @@
     ]
   },
   "raid_config": {
+
   },
   "patrol_config": {
   }

@@ -2,23 +2,22 @@ package com.forget_melody.raid_craft.capabilities.raid_manager;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.raid.raid.Raid;
-import com.forget_melody.raid_craft.raid.raid.target.IRaidTarget;
-import com.forget_melody.raid_craft.registries.DataPackRegistries;
-import com.forget_melody.raid_craft.registries.RaidTargets;
+import com.forget_melody.raid_craft.raid.Raid;
+import com.forget_melody.raid_craft.raid.RaidFactory;
+import com.forget_melody.raid_craft.raid.RaidType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> {
 	private final ServerLevel level;
-	private final HashMap<Integer, Raid> raidMap = new HashMap<>();
+	private final Map<Integer, Raid> raidMap = new HashMap<>();
 	
 	public RaidManager(ServerLevel level) {
 		this.level = level;
@@ -35,13 +34,10 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 		if (iterator.hasNext()) {
 			Raid raid = iterator.next();
 			if (raid.isStopped()) {
-//				RaidCraft.LOGGER.info("raid is stopped");
 				iterator.remove();
 			} else {
-//				RaidCraft.LOGGER.info("raid is tick");
 				raid.tick();
 			}
-//			RaidCraft.LOGGER.info("Raid: isStopped: {}, isActive: {}, livingOfRaider: {}", raid.isStopped(), raid.isActive(), raid.getNumOfLivingRaiders());
 		}
 	}
 	
@@ -50,7 +46,7 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 		return raidMap.get(id);
 	}
 	
-	public HashMap<Integer, Raid> getRaids() {
+	public Map<Integer, Raid> getRaids() {
 		return raidMap;
 	}
 	
@@ -69,11 +65,11 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	
 	// 创建一个袭击
 	@Override
-	public void createRaid(BlockPos blockPos, Faction faction, IRaidTarget IRaidTarget) {
+	public void createRaid(BlockPos blockPos, Faction faction, RaidType type) {
 		if (getRaidAtPos(blockPos) == null) {
 			if (faction != null) {
 				int id = raidMap.size();
-				Raid raid = new Raid(id, level, faction, blockPos, IRaidTarget);
+				Raid raid = RaidFactory.createRaid(id, level, faction, blockPos, type);
 				raidMap.put(id, raid);
 			} else {
 				RaidCraft.LOGGER.error("Faction is Null!");
@@ -84,19 +80,14 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 	}
 	
 	@Override
-	public void createRaid(BlockPos blockPos, ResourceLocation faction, ResourceLocation raidTarget) {
-		if (DataPackRegistries.FACTIONS.containsKey(faction)) {
-			createRaid(blockPos, DataPackRegistries.FACTIONS.getValue(faction), RaidTargets.RAID_TARGETS.get().getValue(raidTarget));
-		} else {
-			RaidCraft.LOGGER.error("Not found {} RaidType id", faction.toString());
-		}
-	}
-	
-	@Override
 	public CompoundTag serializeNBT() {
 		CompoundTag compoundTag = new CompoundTag();
 		ListTag listTag = new ListTag();
-		raidMap.values().forEach(raid -> listTag.add(raid.save()));
+		raidMap.values().forEach(raid -> {
+			CompoundTag raidTag = raid.save();
+			listTag.add(raidTag);
+			RaidCraft.LOGGER.info("serializeNBT Factions: {}", raidTag);
+		});
 		compoundTag.put("Raids", listTag);
 		return compoundTag;
 	}
@@ -106,9 +97,9 @@ public class RaidManager implements IRaidManager, INBTSerializable<CompoundTag> 
 		if (nbt.contains("Raids")) {
 			nbt.getList("Raids", ListTag.TAG_COMPOUND)
 			   .forEach(tag -> {
-				   Raid raid = new Raid(level, (CompoundTag) tag);
+				   RaidCraft.LOGGER.info("deserializeNBT Factions: {}", tag);
+				   Raid raid = RaidFactory.createRaid(level, (CompoundTag) tag);
 				   raidMap.put(raid.getId(), raid);
-//				   RaidCraft.LOGGER.info("deserializeNBT raid");
 			   });
 		}
 	}

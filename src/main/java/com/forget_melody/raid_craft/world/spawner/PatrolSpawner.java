@@ -3,7 +3,7 @@ package com.forget_melody.raid_craft.world.spawner;
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
 import com.forget_melody.raid_craft.config.Config;
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.patrol.Patrol;
 import com.forget_melody.raid_craft.registries.DataPackRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -72,7 +72,7 @@ public class PatrolSpawner implements CustomSpawner {
 		if (biomeTag != null && biomeTag.contains(biome)) {
 			return 0;
 		}
-		List<Faction> factions = DataPackRegistries.FACTIONS.getValues().stream().filter(faction1 -> faction1 != Faction.DEFAULT).toList();
+		List<Faction> factions = DataPackRegistries.FACTIONS.getValues().stream().filter(faction1 -> faction1 != Faction.DEFAULT && faction1.getHomeDimension().equals(level.dimension().location())).toList();
 		Faction faction = factions.get(level.random.nextInt(factions.size()));
 		if (faction == null || faction.getPatrolConfig().getPatrollerTypes().isEmpty()) {
 			return 0;

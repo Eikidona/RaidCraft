@@ -3,7 +3,7 @@ package com.forget_melody.raid_craft.capabilities.patrol_manager;
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.patrol.Patrol;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +22,7 @@ public interface IPatrolManager extends INBTSerializable<CompoundTag> {
 		return level.getCapability(Capabilities.PATROLLER_MANAGER).resolve().get();
 	}
 	
-	Patrol createPatrol(Faction patrolType, BlockPos pos);
+	Patrol createPatrol(Faction faction, BlockPos pos);
 	
 	@Nullable Patrol getPatrol(int id);
 	

@@ -1,7 +1,6 @@
 package com.forget_melody.raid_craft;
 
 import com.forget_melody.raid_craft.config.Config;
-import com.forget_melody.raid_craft.registries.RaidTargets;
 import com.forget_melody.raid_craft.world.effect.MobEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,7 +24,6 @@ public class RaidCraft
 //        LOGGER.log(Level.INFO, "Mod RaidCraft 正在加载");
         IEventBus bus = context.getModEventBus();
         context.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-		RaidTargets.register(bus);
         MobEffects.register(bus);
     }
     

@@ -3,6 +3,7 @@
   "entities": [
     "minecraft:enderman"
   ],
+  "home_dimension": "minecraft:end",
   "relations": {
     "allies": [],
     "enemies": [
@@ -12,8 +13,18 @@
   },
   "raid_config": {
     "raiders": [
+      {
+        "faction_entity_type": "raid_craft:ender/enderman",
+        "weight": 5
+      }
     ]
   },
   "patrol_config": {
+    "patrollers": [
+      {
+        "faction_entity_type": "raid_craft:ender/enderman",
+        "weight": 5
+      }
+    ]
   }
 }

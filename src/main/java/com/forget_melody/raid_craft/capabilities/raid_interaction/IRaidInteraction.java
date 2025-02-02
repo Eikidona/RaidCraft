@@ -26,6 +26,8 @@ public interface IRaidInteraction extends INBTSerializable<CompoundTag> {
 	
 	void addBadOmen(Faction faction, int duration, int amplifier);
 	
+	void addBadOmen(Faction faction, int duration);
+	
 	void clearBadOmen();
 	
 	@Override

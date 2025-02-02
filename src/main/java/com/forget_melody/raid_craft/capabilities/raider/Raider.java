@@ -2,7 +2,7 @@ package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.raid_manager.IRaidManager;
-import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -73,7 +73,7 @@ public class Raider implements IRaider, INBTSerializable<CompoundTag> {
 //			mob.goalSelector.addGoal(4, invadeHomeGoal);
 //			mob.goalSelector.addGoal(5, moveTowardsRaidGoal);
 //			RaidCraft.LOGGER.info("Add Raid Goals Pre: {}", mob.goalSelector.getAvailableGoals().size());
-			raid.getRaidTarget().addGoal(this);
+//			raid.getRaidTarget().addGoal(this);
 //			RaidCraft.LOGGER.info("Add Raid Goals: {}", mob.goalSelector.getAvailableGoals().size());
 		} else {
 //			RaidCraft.LOGGER.info("Remove Raid Goals");

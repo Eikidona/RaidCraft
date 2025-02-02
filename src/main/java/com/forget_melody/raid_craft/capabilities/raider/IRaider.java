@@ -2,7 +2,7 @@ package com.forget_melody.raid_craft.capabilities.raider;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.Capabilities;
-import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

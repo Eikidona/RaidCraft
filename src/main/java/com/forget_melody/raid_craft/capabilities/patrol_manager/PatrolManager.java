@@ -1,13 +1,12 @@
 package com.forget_melody.raid_craft.capabilities.patrol_manager;
 
 import com.forget_melody.raid_craft.faction.Faction;
-import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.patrol.Patrol;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class PatrolManager implements IPatrolManager {
 		Iterator<Patrol> patrols = patrolMap.values().iterator();
 		while (patrols.hasNext()){
 			Patrol patrol = patrols.next();
-			if(patrol.isStopped() || level.getDifficulty() == Difficulty.PEACEFUL){
+			if(patrol.isStopped()){
 				patrols.remove();
 			}else {
 				patrol.tick();

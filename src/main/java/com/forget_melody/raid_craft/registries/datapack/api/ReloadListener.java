@@ -65,7 +65,6 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 	
 	@Override
 	protected @NotNull Map<ResourceLocation, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller filler) {
-		loadedData.clear();
 		if (defaultValue != null && defaultKey != null) {
 			loadedData.put(defaultKey, defaultValue);
 		}
@@ -94,7 +93,7 @@ public class ReloadListener<T> extends SimplePreparableReloadListener<Map<Resour
 					}
 				} else if (codec != null) {
 					codec.parse(JsonOps.INSTANCE, element)
-						 .resultOrPartial(error -> RaidCraft.LOGGER.error("Failed to parse DataPack Entry: {}", error))
+						 .resultOrPartial(error -> RaidCraft.LOGGER.error("Failed to parse DataPack Entry: {}, {}, {}", name, resource.getKey(), error))
 						 .ifPresent(instance -> register(name, instance));
 				}
 			} catch (JsonParseException e) {

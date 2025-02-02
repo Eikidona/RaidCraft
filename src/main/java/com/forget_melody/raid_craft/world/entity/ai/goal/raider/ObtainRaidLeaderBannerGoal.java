@@ -2,7 +2,7 @@ package com.forget_melody.raid_craft.world.entity.ai.goal.raider;
 
 import com.forget_melody.raid_craft.capabilities.faction_entity.IFactionEntity;
 import com.forget_melody.raid_craft.capabilities.raider.IRaider;
-import com.forget_melody.raid_craft.raid.raid.Raid;
+import com.forget_melody.raid_craft.raid.Raid;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;

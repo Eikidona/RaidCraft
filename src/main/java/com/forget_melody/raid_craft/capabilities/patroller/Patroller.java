@@ -2,7 +2,7 @@ package com.forget_melody.raid_craft.capabilities.patroller;
 
 import com.forget_melody.raid_craft.RaidCraft;
 import com.forget_melody.raid_craft.capabilities.patrol_manager.IPatrolManager;
-import com.forget_melody.raid_craft.raid.patrol.Patrol;
+import com.forget_melody.raid_craft.patrol.Patrol;
 import com.forget_melody.raid_craft.world.entity.ai.goal.patrol.PatrolGoal;
 import com.forget_melody.raid_craft.world.entity.ai.goal.patrol.PatrolLeaderGoal;
 import net.minecraft.nbt.CompoundTag;

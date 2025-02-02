@@ -2,8 +2,10 @@
   "replace": false,
   "entities": [
     "minecraft:husk",
-    "minecraft:zombie"
+    "minecraft:zombie",
+    "minecraft:skeleton"
   ],
+  "home_dimension": "minecraft:overworld",
   "relations": {
     "allies": [],
     "enemies": [
@@ -13,11 +15,33 @@
   "raid_config": {
     "raiders": [
       {
+        "faction_entity_type": "raid_craft:undead/husk",
+        "weight": 5
+      },
+      {
         "faction_entity_type": "raid_craft:undead/zombie",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:undead/skeleton",
         "weight": 5
       }
     ]
   },
   "patrol_config": {
+    "patrollers": [
+      {
+        "faction_entity_type": "raid_craft:undead/husk",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:undead/zombie",
+        "weight": 5
+      },
+      {
+        "faction_entity_type": "raid_craft:undead/skeleton",
+        "weight": 5
+      }
+    ]
   }
 }
